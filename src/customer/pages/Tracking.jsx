@@ -1,6 +1,6 @@
 import { useParams } from 'react-router'
-import ScreenStub from '@/components/ScreenStub'
-import StubLink from '@/components/StubLink'
+import ScreenStub from '@/shared/components/ScreenStub'
+import StubLink from '@/shared/components/StubLink'
 
 export default function Tracking() {
   const { orderId } = useParams()

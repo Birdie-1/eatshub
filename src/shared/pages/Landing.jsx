@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import { LayoutDashboard, Smartphone } from 'lucide-react'
-import Logo from '@/components/Logo'
+import Logo from '@/shared/components/Logo'
 
 const entries = [
   { to: '/app/signin', label: 'แอปลูกค้า', hint: 'สั่งอาหาร ชำระเงิน ติดตามออเดอร์', icon: Smartphone },

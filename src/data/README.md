@@ -9,4 +9,4 @@ All data is static and comes from the specs (`docs/specs/04_Mobile_Order.md`, `d
 | `orders.js` | Sample order history + the assigned rider |
 | `riders.js` | 17 back-office riders (`EA00001`–`EA00017`) |
 
-Images live in `src/assets/images/` (downloaded from Unsplash, never hotlinked).
+Images live in `src/shared/assets/images/` (downloaded from Unsplash, never hotlinked).

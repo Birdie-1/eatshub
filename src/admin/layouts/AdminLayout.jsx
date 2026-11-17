@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { LogOut, Menu, X } from 'lucide-react'
-import Logo from '@/components/Logo'
-import { adminMenu } from '@/layouts/adminMenu'
+import Logo from '@/shared/components/Logo'
+import { adminMenu } from '@/admin/layouts/adminMenu'
 
 /**
  * Back-office shell (A2): white header, dark sidebar, yellow footer.

@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import Logo from '@/components/Logo'
+import Logo from '@/shared/components/Logo'
 
 /** A1 — fake sign-in: fields are prefilled, submit goes straight in (no validation). */
 export default function AdminSignIn() {

@@ -21,21 +21,21 @@ brand/                  logo files (primary color #FCBB18), imported via @brand/
 docs/REQUIREMENTS.md    mockup scope, decisions, done criteria (source of truth)
 docs/specs/             module specs summarized from the original PDFs
 src/
-  router.jsx            all routes; screen IDs (C1–C12, A1–A3) match REQUIREMENTS.md
+  main.jsx, router.jsx  entry + all routes; screen IDs (C1–C12, A1–A3) match REQUIREMENTS.md
   index.css             Tailwind + design tokens (bg-brand, bg-admin, status colors, fonts)
-  layouts/
-    PhoneFrame.jsx      customer app shell: full screen on phones, phone frame on desktop
-    TabLayout.jsx       bottom navigation (ร้านอาหาร · ตะกร้า · ออเดอร์ · บัญชี)
-    AdminLayout.jsx     back-office header, sidebar (☰ on mobile), footer
-    adminMenu.js        sidebar items; only items with `to` are in scope
-  pages/
-    Landing.jsx         choose customer app / back office
-    customer/           C1–C12 screens
-    admin/              A1 sign-in, A3 rider list
-  components/           shared UI (Logo, ScreenStub placeholder, ...)
+  customer/             customer app
+    layouts/            PhoneFrame (phone frame on desktop, full screen on phones),
+                        TabLayout (bottom nav ร้านอาหาร · ตะกร้า · ออเดอร์ · บัญชี)
+    pages/              C1–C12 screens
+  admin/                back office
+    layouts/            AdminLayout (header, sidebar with ☰ on mobile, footer), adminMenu.js
+    pages/              A1 sign-in, A3 rider list
+  shared/               used by both apps
+    pages/Landing.jsx   choose customer app / back office
+    components/         shared UI (Logo, ScreenStub placeholder, ...)
+    lib/                helpers (formatBaht, pricing, ...)
+    assets/images/      Unsplash food photos (stored in repo, never hotlinked)
   data/                 static mock data from the specs (see src/data/README.md)
-  lib/                  helpers (formatBaht, pricing, ...)
-  assets/images/        Unsplash food photos (stored in repo, never hotlinked)
 ```
 
 Screens not built yet render `ScreenStub` with buttons to the next step, so the whole flow is clickable from day one. Replace the stub when you build the real screen.
@@ -81,6 +81,6 @@ gh pr create --fill
 ```
 
 Tips to avoid conflicts:
-- Split work by screen/flow (e.g. one person on customer ordering, the other on the back-office rider list). Shared files (`router.jsx`, `index.css`, `src/data/`) change most often, so keep edits there small.
+- Split work by screen/flow (e.g. one person on customer ordering, the other on the back-office rider list). Shared files (`router.jsx`, `index.css`, `src/shared/`, `src/data/`) change most often, so keep edits there small.
 - Pull `main` often and keep PRs small.
 - After a PR is merged: `git checkout main && git pull`, then start a new branch.
