@@ -11,14 +11,29 @@
   --color-brand-dark: #e0a200;
   --color-brand-light: #fff4d6;
 
+  /* Text and surfaces */
+  --color-ink: #333333; /* main text */
+  --color-muted: #8a8a8a; /* secondary text */
+  --color-surface: #f4f6f9; /* back-office content bg, section dividers in the app */
+
   /* Back-office chrome (sidebar / sign-in background) */
   --color-admin: #2f3a45;
   --color-admin-dark: #232c35;
 
-  /* Status badges (REQUIREMENTS §4) */
-  --color-status-online: #22a559;
-  --color-status-offline: #e5484d;
-  --color-status-delivery: #f08c00;
+  /* Semantic colors — Badge tones, recommended-store label, etc. */
+  --color-success: #1f9d55;
+  --color-success-light: #e3f6ea;
+  --color-danger: #e5484d;
+  --color-danger-light: #fdecec;
+  --color-warning: #e57f00;
+  --color-warning-light: #fff1de;
+  --color-info: #1c7ed6;
+  --color-info-light: #e5f1fc;
+
+  /* Rider status badges (REQUIREMENTS §4) — aliases of the semantic colors */
+  --color-status-online: var(--color-success);
+  --color-status-offline: var(--color-danger);
+  --color-status-delivery: var(--color-warning);
 }
 
 @layer base {
@@ -28,6 +43,25 @@
     height: 100%;
   }
   body {
-    @apply bg-neutral-100 font-sans text-neutral-900 antialiased;
+    @apply bg-neutral-100 font-sans text-ink antialiased;
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
   }
 }
