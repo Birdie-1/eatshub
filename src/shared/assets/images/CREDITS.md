@@ -31,7 +31,6 @@ To add a photo: download `https://images.unsplash.com/photo-<id>?w=800&h=600&fit
 | `red-sausage.jpg` | [LikeMeat](https://unsplash.com/@likemeat) | [photo-1585325701165-351af916e581](https://images.unsplash.com/photo-1585325701165-351af916e581) |
 | `isan-sausage.jpg` | [Amanda Lim](https://unsplash.com/@mandimelanie) | [photo-1624772398061-bbfa87ec6b5a](https://images.unsplash.com/photo-1624772398061-bbfa87ec6b5a) |
 | `chrysanthemum-drink.jpg` | [Haydn Golden](https://unsplash.com/@goldensson) | [photo-1583124252668-93a11eb64a5f](https://images.unsplash.com/photo-1583124252668-93a11eb64a5f) |
-| `skewer-stall.jpg` | [Angelyn Sanjorjo](https://unsplash.com/@kiisstherain) | [photo-1771868456622-496aeeb48b2c](https://images.unsplash.com/photo-1771868456622-496aeeb48b2c) |
 | `moo-thot.jpg` | [Pacharamon Dorego](https://unsplash.com/@ifoodijourney) | [photo-1712189726339-a304fd330cc7](https://images.unsplash.com/photo-1712189726339-a304fd330cc7) |
 | `moo-thot-chunks.jpg` | [Amanda Lim](https://unsplash.com/@mandimelanie) | [photo-1625477811233-044633d10dd1](https://images.unsplash.com/photo-1625477811233-044633d10dd1) |
 | `sticky-rice.jpg` | [Faris Mohammed](https://unsplash.com/@pkmfaris) | [photo-1577110058859-74547db40bc0](https://images.unsplash.com/photo-1577110058859-74547db40bc0) |
@@ -40,7 +39,6 @@ To add a photo: download `https://images.unsplash.com/photo-<id>?w=800&h=600&fit
 | `fried-chicken.jpg` | [Kevin kevin](https://unsplash.com/@0x00kevin) | [photo-1569058242253-92a9c755a0ec](https://images.unsplash.com/photo-1569058242253-92a9c755a0ec) |
 | `larb.jpg` | [Alexandra Tran](https://unsplash.com/@alexgoesglobal) | [photo-1677366801962-483185852615](https://images.unsplash.com/photo-1677366801962-483185852615) |
 | `thai-tea.jpg` | [Inc inductgroup](https://unsplash.com/@sofia_induct) | [photo-1788016284567-f612a7383cb2](https://images.unsplash.com/photo-1788016284567-f612a7383cb2) |
-| `isan-spread.jpg` | [Alexandra Tran](https://unsplash.com/@alexgoesglobal) | [photo-1675150277436-9c7348972c11](https://images.unsplash.com/photo-1675150277436-9c7348972c11) |
 | `chicken-curry.jpg` | [Kalindu Waranga](https://unsplash.com/@varanga22) | [photo-1764304733301-3a9f335f0c67](https://images.unsplash.com/photo-1764304733301-3a9f335f0c67) |
 | `tikka-masala.jpg` | [Raman](https://unsplash.com/@potofgold07) | [photo-1603894584373-5ac82b2ae398](https://images.unsplash.com/photo-1603894584373-5ac82b2ae398) |
 | `butter-chicken-naan.jpg` | [amirali mirhashemian](https://unsplash.com/@amir_v_ali) | [photo-1565557623262-b51c2513a641](https://images.unsplash.com/photo-1565557623262-b51c2513a641) |
