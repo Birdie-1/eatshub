@@ -62,5 +62,5 @@ To add a photo: download `https://images.unsplash.com/photo-<id>?w=800&h=600&fit
 
 ## Category icons
 
-`src/shared/assets/icons/categories/*.svg` are [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (Flat style),
+`src/shared/assets/icons/categories/*.png` are [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (3D style, resized to 128 px),
 MIT License — full text in `src/shared/assets/icons/categories/LICENSE`. Each file is named after its category id in `src/data/restaurants.js`.

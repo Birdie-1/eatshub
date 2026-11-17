@@ -4,14 +4,14 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { categories } from '@/data/restaurants'
 
 /**
- * Category icons: Microsoft Fluent Emoji, Flat style (MIT, see icons/categories/LICENSE).
- * One SVG per category, named by category id.
+ * Category icons: Microsoft Fluent Emoji, 3D style (MIT, see icons/categories/LICENSE).
+ * One 128px PNG per category, named by category id.
  */
-const iconFiles = import.meta.glob('@/shared/assets/icons/categories/*.svg', {
+const iconFiles = import.meta.glob('@/shared/assets/icons/categories/*.png', {
   eager: true,
   import: 'default',
 })
-const iconFor = (id) => iconFiles[`/src/shared/assets/icons/categories/${id}.svg`]
+const iconFor = (id) => iconFiles[`/src/shared/assets/icons/categories/${id}.png`]
 
 const COLLAPSED = 8 // 2 rows of 4
 
@@ -30,7 +30,7 @@ export default function CategoryGrid() {
               className="flex flex-col items-center gap-1.5 rounded-xl text-center active:opacity-70"
             >
               <span className="grid size-14 place-items-center rounded-2xl bg-brand-light/60">
-                <img src={iconFor(c.id)} alt="" className="size-9" draggable={false} />
+                <img src={iconFor(c.id)} alt="" className="size-10" draggable={false} />
               </span>
               <span className="text-xs leading-tight">{c.name}</span>
             </Link>

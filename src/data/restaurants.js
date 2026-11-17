@@ -29,7 +29,7 @@ import { menus } from './menus'
  * Menu items live in menus.js. Cart snapshots: use `toCartRestaurant(restaurant)`.
  */
 
-/** 19 food categories in spec order. Icon: `src/shared/assets/icons/categories/<id>.svg` (see CategoryGrid). */
+/** 19 food categories in spec order. Icon: `src/shared/assets/icons/categories/<id>.png` (see CategoryGrid). */
 export const categories = [
   { id: 'seafood', name: 'อาหารทะเล' },
   { id: 'thai', name: 'อาหารไทย' },
