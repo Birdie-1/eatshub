@@ -59,3 +59,8 @@ To add a photo: download `https://images.unsplash.com/photo-<id>?w=800&h=600&fit
 | `grill-smoke.jpg` | [Chantal Lim](https://unsplash.com/@chantallim) | [photo-1586058584825-c1e87ed735b4](https://images.unsplash.com/photo-1586058584825-c1e87ed735b4) |
 | `banner-thai-spread.jpg` | [Christopher Chung](https://unsplash.com/@christopher_chung_photography) | [photo-1763647818427-326fa8e6699f](https://images.unsplash.com/photo-1763647818427-326fa8e6699f) |
 | `banner-kraphao.jpg` | [Vicky Ng](https://unsplash.com/@vickyng) | [photo-1627308595186-e6bb36712645](https://images.unsplash.com/photo-1627308595186-e6bb36712645) |
+
+## Category icons
+
+`src/shared/assets/icons/categories/*.png` are [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (3D style, resized to 128 px),
+MIT License — full text in `src/shared/assets/icons/categories/LICENSE`. Each file is named after its category id in `src/data/restaurants.js`.

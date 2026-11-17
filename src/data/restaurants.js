@@ -29,27 +29,27 @@ import { menus } from './menus'
  * Menu items live in menus.js. Cart snapshots: use `toCartRestaurant(restaurant)`.
  */
 
-/** 19 food categories in spec order. `icon` is a lucide-react icon name (see CategoryIcon). */
+/** 19 food categories in spec order. Icon: `src/shared/assets/icons/categories/<id>.png` (see CategoryGrid). */
 export const categories = [
-  { id: 'seafood', name: 'อาหารทะเล', icon: 'Shrimp', color: 'sky' },
-  { id: 'thai', name: 'อาหารไทย', icon: 'Flame', color: 'orange' },
-  { id: 'international', name: 'อาหารนานาชาติ', icon: 'Globe', color: 'blue' },
-  { id: 'tea-coffee', name: 'ชา กาแฟ', icon: 'Coffee', color: 'amber' },
-  { id: 'bakery', name: 'เบเกอรี่', icon: 'Croissant', color: 'yellow' },
-  { id: 'dessert', name: 'ของหวาน', icon: 'IceCreamCone', color: 'pink' },
-  { id: 'street-food', name: 'อาหารริมทาง', icon: 'Store', color: 'red' },
-  { id: 'buffet', name: 'บุฟเฟ่ต์', icon: 'UtensilsCrossed', color: 'violet' },
-  { id: 'noodles', name: 'ก๋วยเตี๋ยว', icon: 'Soup', color: 'orange' },
-  { id: 'pizza', name: 'พิซซ่า', icon: 'Pizza', color: 'red' },
-  { id: 'burger', name: 'เบอร์เกอร์', icon: 'Hamburger', color: 'amber' },
-  { id: 'steak', name: 'สเต๊ก', icon: 'Beef', color: 'rose' },
-  { id: 'made-to-order', name: 'อาหารตามสั่ง', icon: 'EggFried', color: 'yellow' },
-  { id: 'sushi', name: 'ซูชิ', icon: 'Fish', color: 'sky' },
-  { id: 'clean', name: 'อาหารคลีน', icon: 'Salad', color: 'green' },
-  { id: 'breakfast', name: 'อาหารเช้า', icon: 'Sunrise', color: 'amber' },
-  { id: 'ramen', name: 'ราเมง', icon: 'CookingPot', color: 'rose' },
-  { id: 'dim-sum', name: 'ติ่มซำ', icon: 'ChefHat', color: 'green' },
-  { id: 'bubble-tea', name: 'ชานมไข่มุก', icon: 'CupSoda', color: 'violet' },
+  { id: 'seafood', name: 'อาหารทะเล' },
+  { id: 'thai', name: 'อาหารไทย' },
+  { id: 'international', name: 'อาหารนานาชาติ' },
+  { id: 'tea-coffee', name: 'ชา กาแฟ' },
+  { id: 'bakery', name: 'เบเกอรี่' },
+  { id: 'dessert', name: 'ของหวาน' },
+  { id: 'street-food', name: 'อาหารริมทาง' },
+  { id: 'buffet', name: 'บุฟเฟ่ต์' },
+  { id: 'noodles', name: 'ก๋วยเตี๋ยว' },
+  { id: 'pizza', name: 'พิซซ่า' },
+  { id: 'burger', name: 'เบอร์เกอร์' },
+  { id: 'steak', name: 'สเต๊ก' },
+  { id: 'made-to-order', name: 'อาหารตามสั่ง' },
+  { id: 'sushi', name: 'ซูชิ' },
+  { id: 'clean', name: 'อาหารคลีน' },
+  { id: 'breakfast', name: 'อาหารเช้า' },
+  { id: 'ramen', name: 'ราเมง' },
+  { id: 'dim-sum', name: 'ติ่มซำ' },
+  { id: 'bubble-tea', name: 'ชานมไข่มุก' },
 ]
 
 /**
