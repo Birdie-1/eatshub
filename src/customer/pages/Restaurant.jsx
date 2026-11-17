@@ -10,6 +10,7 @@ import { notInScope } from '@/shared/components/Toast'
 import { formatBaht, formatDate } from '@/shared/lib/format'
 import { useCart, useFavorites } from '@/state'
 import { FeaturedMenuCard, MenuRow } from '@/customer/components/MenuCard'
+import FloatingCartBar from '@/customer/components/FloatingCartBar'
 import StarRating from '@/customer/components/StarRating'
 
 const TABS = [
@@ -24,7 +25,7 @@ const TOP_BAR_HEIGHT = 56 // TopBar is h-14; the tab bar sticks right under it
 /**
  * C4 Restaurant detail. The menu tab works (every item opens C5); the other tabs are display only.
  * The selected tab lives in `?tab=` so Back from C5 returns to the same tab.
- * The floating cart bar (C6) is added by #5 — the bottom padding leaves room for it.
+ * The floating cart bar (C6) sticks to the bottom when the cart has food.
  */
 export default function Restaurant() {
   const { restaurantId } = useParams()
@@ -58,7 +59,7 @@ export default function Restaurant() {
   }
 
   return (
-    <div className="flex flex-1 flex-col pb-28">
+    <div className="flex flex-1 flex-col">
       <TopBar title="ร้านอาหาร" backTo={backTo} />
       <Header restaurant={restaurant} />
 
@@ -93,6 +94,9 @@ export default function Restaurant() {
         {tab === 'offers' && <OffersTab restaurant={restaurant} />}
         {tab === 'reviews' && <ReviewsTab restaurant={restaurant} />}
       </div>
+
+      <div className="h-6" />
+      <FloatingCartBar />
     </div>
   )
 }

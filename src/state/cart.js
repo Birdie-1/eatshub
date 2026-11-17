@@ -63,6 +63,18 @@ export function makeCartItem({ restaurantId, menu, option = null, addons = [], n
   }
 }
 
+/**
+ * One-line summary of a cart line's choices for the cart / checkout / order screens:
+ * option first, then add-ons with their extra price → "สุกี้น้ำ, กุ้ง(15), ลูกชิ้นปลา(10)".
+ * Free choices show no price. Returns '' when nothing was chosen.
+ */
+export function formatChoices({ option = null, addons = [] }) {
+  const withPrice = (label, price) => (price ? `${label}(${price})` : label)
+  return [option && withPrice(option.label, option.price), ...addons.map((a) => withPrice(a.name, a.price))]
+    .filter(Boolean)
+    .join(', ')
+}
+
 /** Store offer, e.g. 15% off when food ≥ 200 ฿, capped at 50 ฿. */
 export function storeDiscountFor(food, offer) {
   if (!offer || food < offer.minFood) return 0

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { EMPTY_CART, calcTotals, cartReducer, makeCartItem, validateCoupon } from './cart'
+import { EMPTY_CART, calcTotals, cartReducer, formatChoices, makeCartItem, validateCoupon } from './cart'
 import { bamiItem, rachaAhan, sampleCart, sukiItem } from './fixtures'
 
 const noOffer = { ...rachaAhan, offer: null }
@@ -25,6 +25,19 @@ describe('makeCartItem', () => {
     expect(makeCartItem({ restaurantId: 'r', menu, note: 'ไม่ใส่ผัก' }).key).not.toBe(
       makeCartItem({ restaurantId: 'r', menu }).key,
     )
+  })
+})
+
+describe('formatChoices', () => {
+  it('option, then add-ons with their price', () => {
+    expect(formatChoices(sukiItem)).toBe('สุกี้น้ำ, กุ้ง(15), ลูกชิ้นปลา(10)')
+  })
+  it('shows a paid option price and skips free add-on prices', () => {
+    const item = { option: { label: 'ใหญ่', price: 30 }, addons: [{ group: 'g', name: 'ผักชี', price: 0 }] }
+    expect(formatChoices(item)).toBe('ใหญ่(30), ผักชี')
+  })
+  it('empty when nothing was chosen', () => {
+    expect(formatChoices(bamiItem)).toBe('')
   })
 })
 

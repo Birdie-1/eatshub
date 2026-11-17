@@ -31,7 +31,8 @@ src/
                         TabLayout (bottom nav ร้านอาหาร · ตะกร้า · ออเดอร์ · บัญชี)
     pages/              C1–C12 screens
     components/         customer-only UI: RestaurantCard, CategoryGrid, BannerCarousel,
-                        RestaurantFilterSheet, AddressSheet, MenuCard (C4 items), StarRating
+                        RestaurantFilterSheet, AddressSheet, MenuCard (C4 items), StarRating,
+                        FloatingCartBar (C6)
   admin/                back office
     layouts/            AdminLayout (header, sidebar with ☰ on mobile, footer), adminMenu.js
     pages/              A1 sign-in, A3 rider list
@@ -91,6 +92,7 @@ Inside the phone frame, use `sticky`/`absolute` instead of `fixed` so bars stay 
 | `Badge` | `tone="success" \| "danger" \| "warning" \| "info" \| "brand" \| "neutral"`, `solid` for filled |
 | `TopBar` | sticky back button + title; `backTo`, `right`, `transparent` (over a cover image) |
 | `BottomSheet` | `open`, `onClose`, `title`, `footer`; stays inside the phone frame |
+| `ConfirmDialog` | centered yes/no dialog: `open`, `title`, `confirmLabel`, `onConfirm`, `onCancel`; stays inside the phone frame |
 | `toast(msg)` / `notInScope()` | from `Toast.jsx`; `notInScope()` shows "ไม่อยู่ในขอบเขต Mockup" for buttons that go nowhere |
 
 **Money**: `formatBaht(215)` → `215 ฿` for prices in lists; `formatAmount(215)` → `215.00` for order summaries.
@@ -108,6 +110,7 @@ useFavorites() // { favorites, isFavorite(id), toggleFavorite(id) } — restaura
 ```
 
 - Build cart lines with `makeCartItem({ restaurantId, menu, option, addons, note, qty })` (same choices + note → same `key`, so quantities merge).
+- Show a line's choices with `formatChoices(item)` → `สุกี้น้ำ, กุ้ง(15), ลูกชิ้นปลา(10)` (from `@/state`).
 - `add()` returns `{ ok: false, reason: 'different-restaurant' }` when the cart has another store's food — show the "clear cart?" dialog, then call `add(item, restaurant, { replace: true })`.
 - **All money comes from `totals`** (`calcTotals` in `src/state/cart.js`): `food`, `delivery`, `storeDiscount`, `couponDiscount`, `total`, `points`, `itemCount`, `minOrder`, `meetsMinOrder`, `couponApplies`. Never recompute amounts in a screen.
 - Restaurant/menu data: `getRestaurant(id)`, `findRestaurants({ q, categoryId, type })`, `toCartRestaurant(r)` from `@/data/restaurants`; `getMenu(id)`, `menusOf(restaurantId)` from `@/data/menus` (see `src/data/README.md`).

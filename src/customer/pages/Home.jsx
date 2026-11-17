@@ -16,7 +16,7 @@ export default function Home() {
   const [sheet, setSheet] = useState(null) // 'address' | 'filter' | null
 
   return (
-    <div className="flex flex-col gap-5 pb-24">
+    <div className="flex flex-col gap-5 pb-6">
       <header className="sticky top-0 z-20 flex items-center gap-2 border-b border-neutral-100 bg-white/95 px-4 py-2.5 backdrop-blur">
         <button
           type="button"

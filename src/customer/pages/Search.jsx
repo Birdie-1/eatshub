@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router'
 import { ChevronLeft, Search as SearchIcon, SearchX, SlidersHorizontal, X } from 'lucide-react'
 import { findRestaurants, getCategory } from '@/data/restaurants'
 import Button from '@/shared/components/Button'
+import FloatingCartBar from '@/customer/components/FloatingCartBar'
 import RestaurantCard from '@/customer/components/RestaurantCard'
 import RestaurantFilterSheet from '@/customer/components/RestaurantFilterSheet'
 
@@ -131,6 +132,8 @@ export default function Search() {
           />
         )}
       </div>
+
+      <FloatingCartBar />
 
       <RestaurantFilterSheet
         key={filterOpen ? 'open' : 'closed'}
