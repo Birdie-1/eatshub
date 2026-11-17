@@ -1,5 +1,5 @@
-import ScreenStub from '@/components/ScreenStub'
-import StubLink from '@/components/StubLink'
+import ScreenStub from '@/shared/components/ScreenStub'
+import StubLink from '@/shared/components/StubLink'
 
 export default function Search() {
   return (
