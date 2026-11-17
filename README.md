@@ -45,7 +45,33 @@ src/
   state/                cart, orders, session (React Context + localStorage) and fixtures
 ```
 
-Screens not built yet render `ScreenStub` with buttons to the next step, so the whole flow is clickable from day one. Replace the stub when you build the real screen.
+Customer and back-office demo flows are implemented. See [the five-minute demo script](docs/DEMO.md) and [integration QA results](docs/QA.md).
+
+Production deployment is on hold at the user's request. No production URL has been published by this work.
+
+## Customer ordering demo
+
+- Landing has separate customer/back-office entrances. Customer routes require the demo session and return to the requested page after sign-in.
+- Checkout reads the real cart, addresses and `calcTotals` output. COD, PromptPay sample QR and PayPal confirmation are simulations; no financial credentials are collected.
+- Every order freezes its items, notes, address, totals and `DEFAULT_RIDER`. Order IDs use a persisted sequence beginning after sample order 00012.
+- Tracking advances every 8 seconds (about 32 seconds total); the demo skip button survives refresh. COD becomes paid only on delivery.
+- History seeds four sample orders once, preserves new orders across refresh and logout, and supports an explicitly empty saved history.
+- Logout clears the customer's cart and session while retaining order history. The floating cart bar uses the same final total as Checkout.
+
+## Back-office prototype
+
+Open `/admin/signin` and submit the prefilled `admin` demo form. Visiting `/admin/riders` while signed out redirects to sign-in and then returns to the requested page.
+The back office uses the full browser width: mobile rider cards below 1024px and a sortable table on larger screens (the table scrolls horizontally when needed).
+
+- 17 sample riders, search by name/code/phone/vehicle/province, work and account filters, page size and pagination.
+- Mobile navigation opens as a modal drawer with Escape, backdrop dismissal and keyboard focus handling.
+- Sidebar groups expand to show the original admin sitemap; unsupported actions use the shared mockup toast.
+- Active/Block can be changed in page state. Blocking requires a reason and updates the editor and timestamp; reloading resets the sample data.
+- Sign-in is a demonstration using `useSession`, not real authentication. Logout clears the admin session and returns to Landing. Add/edit/delete do not change records.
+- No API or database is connected. Rider records live in `src/data/riders.js`.
+- `DEFAULT_RIDER` exports EA00001 for checkout/tracking; rider dates are generated relative to the current time.
+
+Run commands inside the inner `eatshub` directory containing `package.json`. If your terminal is in the outer directory, run `cd .\eatshub` first.
 
 | Route | Screen |
 |---|---|
@@ -58,6 +84,7 @@ Screens not built yet render `ScreenStub` with buttons to the next step, so the 
 | `/app/cart` | C7 Cart |
 | `/app/checkout` | C8 Checkout |
 | `/app/payment/:method` | C9 Payment (`promptpay` / `paypal`) |
+| `/app/success/:orderId` | Order/payment success (refresh-safe) |
 | `/app/orders/:orderId` | C10 Order tracking |
 | `/app/orders` | C11 Order history |
 | `/app/account` | C12 Account |
@@ -115,7 +142,7 @@ useFavorites() // { favorites, isFavorite(id), toggleFavorite(id) } — restaura
 - **All money comes from `totals`** (`calcTotals` in `src/state/cart.js`): `food`, `delivery`, `storeDiscount`, `couponDiscount`, `total`, `points`, `itemCount`, `minOrder`, `meetsMinOrder`, `couponApplies`. Never recompute amounts in a screen.
 - Restaurant/menu data: `getRestaurant(id)`, `findRestaurants({ q, categoryId, type })`, `toCartRestaurant(r)` from `@/data/restaurants`; `getMenu(id)`, `menusOf(restaurantId)` from `@/data/menus` (see `src/data/README.md`).
 - Coupons live in `src/data/coupons.js` (`EATSHUB20`, `NEWUSER100`).
-- `src/state/fixtures.js` has the spec's sample cart (ราชาอาหาร, 215 ฿ / 9 points) for building screens before the flow is wired up.
+- `src/state/fixtures.js` has the spec's sample cart (ราชาอาหาร, 215 ฿ / 9 points) for tests; shipped screens read the live cart instead.
 - Everything is saved to `localStorage` (keys prefixed `eatshub:`); clear it to reset the demo.
 
 ## Working together (2 people)
