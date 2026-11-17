@@ -2,9 +2,62 @@
 
 Mobile-first clickable mockup of the eatsHub food-delivery platform, deployed to Vercel.
 
-- `brand/` — logo files (primary color `#FCBB18`)
-- `docs/REQUIREMENTS.md` — mockup scope, decisions, and done criteria
-- `docs/specs/` — module specs summarized from the original PDFs (see `docs/specs/README.md`)
+## Run locally
+
+Requires Node 20.19+.
+
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # production build into dist/
+```
+
+Deploys to Vercel as a static Vite site (`vercel.json` rewrites all paths to `index.html` so deep links work).
+
+## Project structure
+
+```
+brand/                  logo files (primary color #FCBB18), imported via @brand/...
+docs/REQUIREMENTS.md    mockup scope, decisions, done criteria (source of truth)
+docs/specs/             module specs summarized from the original PDFs
+src/
+  router.jsx            all routes; screen IDs (C1–C12, A1–A3) match REQUIREMENTS.md
+  index.css             Tailwind + design tokens (bg-brand, bg-admin, status colors, fonts)
+  layouts/
+    PhoneFrame.jsx      customer app shell: full screen on phones, phone frame on desktop
+    TabLayout.jsx       bottom navigation (ร้านอาหาร · ตะกร้า · ออเดอร์ · บัญชี)
+    AdminLayout.jsx     back-office header, sidebar (☰ on mobile), footer
+    adminMenu.js        sidebar items; only items with `to` are in scope
+  pages/
+    Landing.jsx         choose customer app / back office
+    customer/           C1–C12 screens
+    admin/              A1 sign-in, A3 rider list
+  components/           shared UI (Logo, ScreenStub placeholder, ...)
+  data/                 static mock data from the specs (see src/data/README.md)
+  lib/                  helpers (formatBaht, pricing, ...)
+  assets/images/        Unsplash food photos (stored in repo, never hotlinked)
+```
+
+Screens not built yet render `ScreenStub` with buttons to the next step, so the whole flow is clickable from day one. Replace the stub when you build the real screen.
+
+| Route | Screen |
+|---|---|
+| `/` | Landing |
+| `/app/signin` | C1 Sign In |
+| `/app` | C2 Home |
+| `/app/search` | C3 Search / categories |
+| `/app/restaurant/:restaurantId` | C4 Restaurant (+ C6 floating cart bar) |
+| `/app/restaurant/:restaurantId/menu/:menuId` | C5 Menu item |
+| `/app/cart` | C7 Cart |
+| `/app/checkout` | C8 Checkout |
+| `/app/payment/:method` | C9 Payment (`promptpay` / `paypal`) |
+| `/app/orders/:orderId` | C10 Order tracking |
+| `/app/orders` | C11 Order history |
+| `/app/account` | C12 Account |
+| `/admin/signin` | A1 Back-office sign in |
+| `/admin/riders` | A3 Rider list |
+
+Styling: use the tokens (`bg-brand`, `text-brand-dark`, `bg-admin`, `bg-status-online` …) rather than raw hex. Inside the phone frame, use `sticky`/`absolute` instead of `fixed` so bars stay inside the phone on desktop.
 
 ## Working together (2 people)
 
@@ -28,6 +81,6 @@ gh pr create --fill
 ```
 
 Tips to avoid conflicts:
-- Split work by screen/flow (e.g. one person on customer ordering, the other on the back-office rider list).
+- Split work by screen/flow (e.g. one person on customer ordering, the other on the back-office rider list). Shared files (`router.jsx`, `index.css`, `src/data/`) change most often, so keep edits there small.
 - Pull `main` often and keep PRs small.
 - After a PR is merged: `git checkout main && git pull`, then start a new branch.
