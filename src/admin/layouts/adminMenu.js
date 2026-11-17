@@ -2,8 +2,13 @@ import {
   BarChart3,
   Bike,
   ClipboardList,
+  CreditCard,
+  FileText,
   Gift,
+  KeyRound,
   LayoutDashboard,
+  LogOut,
+  Mail,
   MapPin,
   Settings,
   ShieldCheck,
@@ -11,23 +16,60 @@ import {
   Tags,
   Ticket,
   Users,
+  UserPlus,
 } from 'lucide-react'
 
-/**
- * Back-office sidebar, per docs/specs/07b_BOH_Web_Admin.md sitemap.
- * Only items with `to` are in mockup scope; the rest show a "not in scope" toast (A4).
- */
+// Only rider management is in scope; groups expose the original admin sitemap.
 export const adminMenu = [
   { label: 'แดชบอร์ด', icon: LayoutDashboard },
   { label: 'ผู้ดูแลระบบย่อย', icon: ShieldCheck },
-  { label: 'ไรเดอร์', icon: Bike, to: '/admin/riders' },
-  { label: 'ร้านอาหาร', icon: Store },
+  {
+    label: 'ไรเดอร์',
+    icon: Bike,
+    children: [
+      { label: 'จัดการไรเดอร์', to: '/admin/riders' },
+      { label: 'จัดการกระเป๋าเครดิต' },
+      { label: 'จัดการกระเป๋าเงินสด' },
+    ],
+  },
+  {
+    label: 'ตั้งค่า',
+    icon: Settings,
+    children: [
+      { label: 'ตั้งค่าไซต์' },
+      { label: 'แบนเนอร์โปรโมชั่น' },
+      { label: 'ตั้งค่าภาษา' },
+      { label: 'ตั้งค่า Third Party' },
+    ],
+  },
   { label: 'หมวดหมู่อาหาร', icon: Tags },
-  { label: 'คำสั่งซื้อ', icon: ClipboardList },
+  { label: 'ประเภทร้าน', icon: Store },
+  { label: 'จัดการส่วนเสริม', icon: Tags },
+  {
+    label: 'ร้านอาหาร',
+    icon: Store,
+    children: [{ label: 'จัดการร้านอาหาร' }, { label: 'เมนูอาหาร' }, { label: 'ข้อเสนอ' }, { label: 'รีวิว' }],
+  },
+  { label: 'คำสั่งซื้อ', icon: ClipboardList, children: [{ label: 'ออเดอร์เดลิเวอรี่' }] },
   { label: 'คูปองส่วนลด', icon: Ticket },
   { label: 'คะแนนสะสม', icon: Gift },
   { label: 'ลูกค้า', icon: Users },
-  { label: 'สถานที่', icon: MapPin },
+  {
+    label: 'การจัดการ',
+    icon: FileText,
+    children: [
+      { label: 'จดหมายข่าว', icon: Mail },
+      { label: 'CMS', icon: FileText },
+      { label: 'วิธีการชำระเงิน', icon: CreditCard },
+    ],
+  },
+  {
+    label: 'สถานที่',
+    icon: MapPin,
+    children: [{ label: 'จังหวัด' }, { label: 'อำเภอ' }, { label: 'ตำบล / รหัสไปรษณีย์' }],
+  },
   { label: 'รายงาน', icon: BarChart3 },
-  { label: 'ตั้งค่า', icon: Settings },
+  { label: 'เชิญเพื่อน', icon: UserPlus },
+  { label: 'เปลี่ยนรหัสผ่าน', icon: KeyRound },
+  { label: 'ออกจากระบบ', icon: LogOut, action: 'logout' },
 ]

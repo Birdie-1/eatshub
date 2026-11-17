@@ -1,43 +1,52 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { buildOrder } from './orders'
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { buildOrder, getStatus, advanceOrder, nextOrderSequence } from './orders'
+import { createSampleOrders } from '@/data/orders'
 import { load, save } from './storage'
 
 const OrdersContext = createContext(null)
-
-/**
- * Order history store. Storage + createOrder/getOrder are ready to use;
- * getStatus/advance are placeholders for #12 (phanuruk-p) to implement.
- */
 export function OrdersProvider({ children }) {
-  const [orders, setOrders] = useState(() => load('orders', []))
-
-  useEffect(() => save('orders', orders), [orders])
-
+  const [orders, setOrders] = useState(() => {
+    const saved = load('orders', null)
+    const valid = Array.isArray(saved)
+      ? saved.filter(
+          (order) =>
+            order?.id &&
+            order?.totals &&
+            order?.items &&
+            order?.address &&
+            Number.isFinite(Date.parse(order.createdAt)),
+        )
+      : []
+    const seeded = load('history-seeded', false) || valid.some((order) => Object.hasOwn(order, 'rating'))
+    return seeded ? valid : [...valid, ...createSampleOrders()]
+  })
+  const sequence = useRef(load('order-seq', 12))
+  useEffect(() => {
+    save('orders', orders)
+    save('history-seeded', true)
+  }, [orders])
   const value = useMemo(
     () => ({
-      /** Newest first */
-      orders,
-      /** => the new order. Caller should clear the cart afterwards. */
+      orders: [...orders].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)),
       createOrder({ cart, address, payment }) {
-        const order = buildOrder({ cart, address, payment, seq: Math.floor(Math.random() * 90000) + 10000 })
-        setOrders((prev) => [order, ...prev])
+        const seq = nextOrderSequence(orders, sequence.current)
+        const order = buildOrder({ cart, address, payment, seq })
+        sequence.current = seq
+        save('order-seq', seq)
+        setOrders((previous) => [order, ...previous])
         return order
       },
-      getOrder: (id) => orders.find((o) => o.id === id) ?? null,
-      /** TODO(#12): derive 1..6 from order.createdAt (+ any skips from advance). */
-      getStatus: () => 1,
-      /** TODO(#12): demo button — jump the order to its next status. */
-      advance: () => {},
+      getOrder: (id) => orders.find((order) => order.id === id) ?? null,
+      getStatus,
+      advance: (id) =>
+        setOrders((previous) => previous.map((order) => (order.id === id ? advanceOrder(order) : order))),
     }),
     [orders],
   )
-
   return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>
 }
-
-/** { orders, createOrder({ cart, address, payment }), getOrder(id), getStatus(order), advance(id) } */
 export function useOrders() {
-  const ctx = useContext(OrdersContext)
-  if (!ctx) throw new Error('useOrders must be used inside <AppProviders>')
-  return ctx
+  const context = useContext(OrdersContext)
+  if (!context) throw new Error('useOrders must be used inside <AppProviders>')
+  return context
 }

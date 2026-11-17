@@ -65,3 +65,88 @@
     opacity: 0;
   }
 }
+
+/* Back-office components are scoped so the customer flow keeps its own layout. */
+@layer components {
+  .admin-input {
+    @apply min-h-12 w-full rounded-xl border border-neutral-200 bg-white px-3.5 text-base text-neutral-800 outline-none transition placeholder:text-neutral-400 focus:border-brand focus:ring-3 focus:ring-brand/15;
+  }
+  .admin-page {
+    @apply grid size-11 place-items-center rounded-xl border border-neutral-200 text-sm transition hover:border-brand disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-neutral-200;
+  }
+  .rider-table th {
+    @apply bg-neutral-50 px-4 py-2 font-medium text-neutral-500;
+  }
+  .rider-table td {
+    @apply border-t border-neutral-100 px-4 py-4;
+  }
+  .rider-table tbody tr {
+    @apply transition-colors hover:bg-brand-light/20;
+  }
+}
+.admin-shell :is(button, a, summary):focus-visible,
+.admin-signin :is(button, a):focus-visible {
+  outline: 3px solid var(--color-brand-dark);
+  outline-offset: 3px;
+}
+.admin-shell button:not(:disabled),
+.admin-signin button {
+  cursor: pointer;
+}
+.admin-drawer {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.admin-shell input[type='search']::-webkit-search-cancel-button {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell *,
+  .admin-signin * {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.admin-menu-group > summary::-webkit-details-marker {
+  display: none;
+}
+.admin-menu-group[open] > summary .admin-menu-chevron {
+  transform: rotate(180deg);
+}
+.admin-signin {
+  position: relative;
+  isolation: isolate;
+  background-image: none;
+}
+.admin-signin::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url('../brand/logo-transparent.svg');
+  background-size: 120px 120px;
+  opacity: 0.025;
+  pointer-events: none;
+}
+.admin-block-dialog :is(button, textarea):focus-visible {
+  outline: 3px solid var(--color-brand-dark);
+  outline-offset: 3px;
+}
+
+@layer components {
+  .customer-action-bar {
+    @apply sticky bottom-0 z-20 border-t border-neutral-100 bg-white/95 px-4 py-3 backdrop-blur-sm;
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+}
+#phone-frame :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-brand-dark);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  #phone-frame * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

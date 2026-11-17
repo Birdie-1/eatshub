@@ -1,40 +1,75 @@
 import { calcTotals } from './cart'
-
-/**
- * Order domain logic (pure). Owner: phanuruk-p (#11, #12).
- *
- * Order:
- * { id,          // EH-BKK-YYMMDD-NNNNN
- *   createdAt,   // ISO string
- *   restaurant, items,
- *   notes: { noteToStore, noteToRider },
- *   totals,      // calcTotals() snapshot, frozen at checkout
- *   address: { label, detail },
- *   payment,     // 'cod' | 'promptpay' | 'paypal'
- *   rider }
- */
+import { DEFAULT_RIDER } from '@/data/riders'
 
 export const PAYMENT_METHODS = ['cod', 'promptpay', 'paypal']
+export const PAYMENT_LABELS = { cod: 'เก็บเงินปลายทาง', promptpay: 'PromptPay QR', paypal: 'PayPal' }
+export const ORDER_STEP_MS = 8000
+export const ORDER_STEPS = [
+  { label: 'รอรับออเดอร์', message: 'ร้านกำลังยืนยันออเดอร์ของคุณ', minutes: 30 },
+  { label: 'ไปยังร้านค้า', message: 'ไรเดอร์กำลังเดินทางไปที่ร้าน', minutes: 25 },
+  { label: 'ถึงร้านค้า', message: 'ไรเดอร์ถึงร้านแล้ว กำลังรออาหาร', minutes: 15 },
+  { label: 'ส่งอาหาร', message: 'กำลังนำส่งอาหารของคุณ', minutes: 8 },
+  { label: 'จัดส่งเรียบร้อย', message: 'จัดส่งเรียบร้อย ขอให้อร่อยกับมื้อนี้!', minutes: 0 },
+]
 
-/** EH-BKK-251117-00042 */
 export function makeOrderId(date, seq) {
-  const yy = String(date.getFullYear()).slice(-2)
-  const mm = String(date.getMonth() + 1).padStart(2, '0')
-  const dd = String(date.getDate()).padStart(2, '0')
-  return `EH-BKK-${yy}${mm}${dd}-${String(seq).padStart(5, '0')}`
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone: 'Asia/Bangkok',
+  }).formatToParts(date)
+  const part = (type) => parts.find((item) => item.type === type).value
+  return `EH-BKK-${part('year')}${part('month')}${part('day')}-${String(seq).padStart(5, '0')}`
 }
 
-/** Snapshot the cart into an order. Totals are frozen at checkout time. */
-export function buildOrder({ cart, address, payment, rider = null, now = new Date(), seq = 1 }) {
-  return {
+export function buildOrder({ cart, address, payment, rider = DEFAULT_RIDER, now = new Date(), seq = 1 }) {
+  const totals = calcTotals(cart)
+  if (!totals.meetsMinOrder) throw new Error('กรุณาตรวจสอบตะกร้าและยอดสั่งขั้นต่ำ')
+  if (!PAYMENT_METHODS.includes(payment)) throw new Error('วิธีชำระเงินไม่ถูกต้อง')
+  if (!address?.detail) throw new Error('กรุณาเลือกที่อยู่จัดส่ง')
+  return structuredClone({
     id: makeOrderId(now, seq),
     createdAt: now.toISOString(),
     restaurant: cart.restaurant,
     items: cart.items,
     notes: { noteToStore: cart.noteToStore, noteToRider: cart.noteToRider },
-    totals: calcTotals(cart),
+    totals,
     address,
     payment,
-    rider, // TODO(#12): DEFAULT_RIDER from src/data/riders.js (#10)
-  }
+    rider,
+  })
 }
+
+export function getStatus(order, now = Date.now()) {
+  if (order.cancelled) return 6
+  const elapsed = Math.max(0, now - Date.parse(order.createdAt) + (order.offsetMs || 0))
+  return Math.min(5, Math.floor(elapsed / ORDER_STEP_MS) + 1)
+}
+
+export function advanceOrder(order, now = Date.now()) {
+  const status = getStatus(order, now)
+  if (status >= 5) return order
+  return { ...order, offsetMs: (order.offsetMs || 0) + ORDER_STEP_MS }
+}
+
+export function nextOrderSequence(orders, stored = 12) {
+  return (
+    Math.max(
+      12,
+      Number.isSafeInteger(stored) ? stored : 12,
+      ...orders.map((order) => Number(order.id.split('-').at(-1))).filter(Number.isSafeInteger),
+    ) + 1
+  )
+}
+
+export function paymentStatus(order, status) {
+  return order.cancelled ? 'ยกเลิก' : order.payment === 'cod' && status !== 5 ? 'รอชำระปลายทาง' : 'ชำระแล้ว'
+}
+
+export const formatOrderDate = (value) =>
+  new Intl.DateTimeFormat('th-TH', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'Asia/Bangkok',
+  }).format(new Date(value))

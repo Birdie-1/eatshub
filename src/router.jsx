@@ -15,10 +15,13 @@ import Payment from '@/customer/pages/Payment'
 import Tracking from '@/customer/pages/Tracking'
 import Orders from '@/customer/pages/Orders'
 import Account from '@/customer/pages/Account'
+import OrderSuccess from '@/customer/pages/OrderSuccess'
+import RequireCustomer from '@/customer/components/RequireCustomer'
 
 import AdminLayout from '@/admin/layouts/AdminLayout'
 import AdminSignIn from '@/admin/pages/SignIn'
 import Riders from '@/admin/pages/Riders'
+import RequireAdmin from '@/admin/components/RequireAdmin'
 
 /**
  * Route map — screen IDs match docs/REQUIREMENTS.md (C = customer app, A = back office).
@@ -33,21 +36,27 @@ export const router = createBrowserRouter([
     children: [
       { path: 'signin', element: <CustomerSignIn /> }, // C1
       {
-        // Screens that show the bottom navigation
-        element: <TabLayout />,
+        element: <RequireCustomer />,
         children: [
-          { index: true, element: <Home /> }, // C2
-          { path: 'cart', element: <Cart /> }, // C7
-          { path: 'orders', element: <Orders /> }, // C11
-          { path: 'account', element: <Account /> }, // C12
+          {
+            // Screens that show the bottom navigation
+            element: <TabLayout />,
+            children: [
+              { index: true, element: <Home /> }, // C2
+              { path: 'cart', element: <Cart /> }, // C7
+              { path: 'orders', element: <Orders /> }, // C11
+              { path: 'account', element: <Account /> }, // C12
+            ],
+          },
+          { path: 'search', element: <Search /> }, // C3
+          { path: 'restaurant/:restaurantId', element: <Restaurant /> }, // C4 (+ C6 floating cart bar)
+          { path: 'restaurant/:restaurantId/menu/:menuId', element: <MenuItem /> }, // C5
+          { path: 'checkout', element: <Checkout /> }, // C8
+          { path: 'payment/:method', element: <Payment /> }, // C9: promptpay | paypal
+          { path: 'orders/:orderId', element: <Tracking /> }, // C10
+          { path: 'success/:orderId', element: <OrderSuccess /> },
         ],
       },
-      { path: 'search', element: <Search /> }, // C3
-      { path: 'restaurant/:restaurantId', element: <Restaurant /> }, // C4 (+ C6 floating cart bar)
-      { path: 'restaurant/:restaurantId/menu/:menuId', element: <MenuItem /> }, // C5
-      { path: 'checkout', element: <Checkout /> }, // C8
-      { path: 'payment/:method', element: <Payment /> }, // C9: promptpay | paypal
-      { path: 'orders/:orderId', element: <Tracking /> }, // C10
     ],
   },
 
@@ -55,7 +64,11 @@ export const router = createBrowserRouter([
   { path: '/admin/signin', element: <AdminSignIn /> }, // A1
   {
     path: '/admin',
-    element: <AdminLayout />, // A2
+    element: (
+      <RequireAdmin>
+        <AdminLayout />
+      </RequireAdmin>
+    ), // A2
     children: [
       { index: true, element: <Navigate to="riders" replace /> },
       { path: 'riders', element: <Riders /> }, // A3
