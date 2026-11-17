@@ -30,6 +30,8 @@ src/
     layouts/            PhoneFrame (phone frame on desktop, full screen on phones),
                         TabLayout (bottom nav ร้านอาหาร · ตะกร้า · ออเดอร์ · บัญชี)
     pages/              C1–C12 screens
+    components/         customer-only UI: RestaurantCard, CategoryGrid, BannerCarousel,
+                        RestaurantFilterSheet, AddressSheet
   admin/                back office
     layouts/            AdminLayout (header, sidebar with ☰ on mobile, footer), adminMenu.js
     pages/              A1 sign-in, A3 rider list
@@ -101,11 +103,14 @@ useCart()    // { restaurant, items, noteToStore, noteToRider, coupon, totals,
              //   setNotes({ noteToStore, noteToRider }), applyCoupon(code), removeCoupon() }
 useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id), getStatus(order), advance(id) }
 useSession() // { customerSignedIn, adminSignedIn, signIn('customer' | 'admin'), signOut(kind) }
+useAddress() // { address: { id, label, detail }, addresses, setAddress(id) } — picked on C2, default for C8
+useFavorites() // { favorites, isFavorite(id), toggleFavorite(id) } — restaurant ♥
 ```
 
 - Build cart lines with `makeCartItem({ restaurantId, menu, option, addons, note, qty })` (same choices + note → same `key`, so quantities merge).
 - `add()` returns `{ ok: false, reason: 'different-restaurant' }` when the cart has another store's food — show the "clear cart?" dialog, then call `add(item, restaurant, { replace: true })`.
 - **All money comes from `totals`** (`calcTotals` in `src/state/cart.js`): `food`, `delivery`, `storeDiscount`, `couponDiscount`, `total`, `points`, `itemCount`, `minOrder`, `meetsMinOrder`, `couponApplies`. Never recompute amounts in a screen.
+- Restaurant/menu data: `getRestaurant(id)`, `findRestaurants({ q, categoryId, type })`, `toCartRestaurant(r)` from `@/data/restaurants`; `getMenu(id)`, `menusOf(restaurantId)` from `@/data/menus` (see `src/data/README.md`).
 - Coupons live in `src/data/coupons.js` (`EATSHUB20`, `NEWUSER100`).
 - `src/state/fixtures.js` has the spec's sample cart (ราชาอาหาร, 215 ฿ / 9 points) for building screens before the flow is wired up.
 - Everything is saved to `localStorage` (keys prefixed `eatshub:`); clear it to reset the demo.
