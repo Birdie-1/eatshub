@@ -288,7 +288,7 @@ export const menus = [
     id: 'luk-chin-nuea',
     restaurantId: 'mae-pranom',
     name: 'ลูกชิ้นเนื้อ',
-    description: 'ลูกชิ้นเนื้อแท้ 3 ไม้',
+    description: 'ลูกชิ้นเนื้อแท้ เด้งนุ่ม เสิร์ฟพร้อมน้ำจิ้ม',
     price: 35,
     image: beefMeatballs,
     options: dippingSauces,
