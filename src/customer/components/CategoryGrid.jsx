@@ -29,7 +29,7 @@ export default function CategoryGrid() {
               to={`/app/search?cat=${c.id}`}
               className="flex flex-col items-center gap-1.5 rounded-xl text-center active:opacity-70"
             >
-              <span className="grid size-14 place-items-center rounded-2xl bg-brand-light/60">
+              <span className="grid size-14 place-items-center rounded-2xl bg-white">
                 <img src={iconFor(c.id)} alt="" className="size-10" draggable={false} />
               </span>
               <span className="text-xs leading-tight">{c.name}</span>
