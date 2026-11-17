@@ -29,16 +29,16 @@ To add a photo: download `https://images.unsplash.com/photo-<id>?w=800&h=600&fit
 | `meatball-skewers.jpg` | [Bunly Hort](https://unsplash.com/@bunly1998) | [photo-1779939855594-5fae616d0481](https://images.unsplash.com/photo-1779939855594-5fae616d0481) |
 | `beef-meatballs.jpg` | [Bunly Hort](https://unsplash.com/@bunly1998) | [photo-1779939855602-235fff374e16](https://images.unsplash.com/photo-1779939855602-235fff374e16) |
 | `meatball-display.jpg` | [Fenghua](https://unsplash.com/@fenghua1975) | [photo-1763994682737-477d8200dd5d](https://images.unsplash.com/photo-1763994682737-477d8200dd5d) |
-| `red-sausage.jpg` | [jakubeq](https://unsplash.com/@jakubeq) | [photo-1790026988392-ec889e049e38](https://images.unsplash.com/photo-1790026988392-ec889e049e38) |
-| `isan-sausage.jpg` | [Amanda Lim](https://unsplash.com/@mandimelanie) | [photo-1624772398061-bbfa87ec6b5a](https://images.unsplash.com/photo-1624772398061-bbfa87ec6b5a) |
+| `red-sausage.jpg` | Supplied by the team | — |
+| `isan-sausage.jpg` | Supplied by the team | — |
 | `chrysanthemum-drink.jpg` | [by_syeoni](https://unsplash.com/@by_syeoni) | [photo-1605540443725-7e216f615d9f](https://images.unsplash.com/photo-1605540443725-7e216f615d9f) |
 | `moo-thot.jpg` | Supplied by the team | — |
 | `moo-thot-chunks.jpg` | [Amanda Lim](https://unsplash.com/@mandimelanie) | [photo-1625477811233-044633d10dd1](https://images.unsplash.com/photo-1625477811233-044633d10dd1) |
 | `sticky-rice.jpg` | Supplied by the team | — |
-| `som-tam.jpg` | [sirasit gullasu](https://unsplash.com/@birchphotographer_26) | [photo-1648421331147-9fcfab29536e](https://images.unsplash.com/photo-1648421331147-9fcfab29536e) |
-| `som-tam-pu-pla-ra.jpg` | [Jerome Jome](https://unsplash.com/@jomemui) | [photo-1562565652-a0d8f0c59eb4](https://images.unsplash.com/photo-1562565652-a0d8f0c59eb4) |
+| `som-tam.jpg` | Supplied by the team | — |
+| `som-tam-pu-pla-ra.jpg` | Supplied by the team | — |
 | `fried-chicken.jpg` | Supplied by the team | — |
-| `larb.jpg` | [Alexandra Tran](https://unsplash.com/@alexgoesglobal) | [photo-1677366801962-483185852615](https://images.unsplash.com/photo-1677366801962-483185852615) |
+| `larb.jpg` | Supplied by the team | — |
 | `thai-tea.jpg` | [Inc inductgroup](https://unsplash.com/@sofia_induct) | [photo-1788016284567-f612a7383cb2](https://images.unsplash.com/photo-1788016284567-f612a7383cb2) |
 | `chicken-curry.jpg` | [Kalindu Waranga](https://unsplash.com/@varanga22) | [photo-1764304733301-3a9f335f0c67](https://images.unsplash.com/photo-1764304733301-3a9f335f0c67) |
 | `tikka-masala.jpg` | [Raman](https://unsplash.com/@potofgold07) | [photo-1603894584373-5ac82b2ae398](https://images.unsplash.com/photo-1603894584373-5ac82b2ae398) |
