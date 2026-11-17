@@ -1,0 +1,33 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens — use these instead of raw hex values.
+ * Montserrat covers Latin + digits; Thai glyphs fall through to IBM Plex Sans Thai.
+ */
+@theme {
+  --font-sans: 'Montserrat', 'IBM Plex Sans Thai', ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand: #fcbb18;
+  --color-brand-dark: #e0a200;
+  --color-brand-light: #fff4d6;
+
+  /* Back-office chrome (sidebar / sign-in background) */
+  --color-admin: #2f3a45;
+  --color-admin-dark: #232c35;
+
+  /* Status badges (REQUIREMENTS §4) */
+  --color-status-online: #22a559;
+  --color-status-offline: #e5484d;
+  --color-status-delivery: #f08c00;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-neutral-100 font-sans text-neutral-900 antialiased;
+  }
+}
