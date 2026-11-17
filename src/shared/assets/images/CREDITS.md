@@ -17,10 +17,10 @@ To add a photo: download `https://images.unsplash.com/photo-<id>?w=800&h=600&fit
 | `khao-moo-daeng.jpg` | [streets_of_food](https://unsplash.com/@streets_of_food) | [photo-1628372801876-fe027a84e9ef](https://images.unsplash.com/photo-1628372801876-fe027a84e9ef) |
 | `khao-moo-krob.jpg` | [James Lo](https://unsplash.com/@olsemaj) | [photo-1759670332534-21a316c53462](https://images.unsplash.com/photo-1759670332534-21a316c53462) |
 | `duck-rice.jpg` | [Zion C](https://unsplash.com/@jcs_chen) | [photo-1785899578127-f3883106c735](https://images.unsplash.com/photo-1785899578127-f3883106c735) |
-| `boat-noodles-pork.jpg` | [Mae Mu](https://unsplash.com/@picoftasty) | [photo-1555126634-323283e090fa](https://images.unsplash.com/photo-1555126634-323283e090fa) |
-| `boat-noodles-beef.jpg` | [Ēriks Irmejs](https://unsplash.com/@erxxx) | [photo-1565628308934-c731959645f2](https://images.unsplash.com/photo-1565628308934-c731959645f2) |
-| `kao-lao-moo.jpg` | [David Kristianto](https://unsplash.com/@davidkristianto) | [photo-1771573754093-376c871475a6](https://images.unsplash.com/photo-1771573754093-376c871475a6) |
-| `kao-lao-nuea.jpg` | [thanhvy14](https://unsplash.com/@thanhvy14) | [photo-1597345637412-9fd611e758f3](https://images.unsplash.com/photo-1597345637412-9fd611e758f3) |
+| `boat-noodles-pork.jpg` | Supplied by the team | — |
+| `boat-noodles-beef.jpg` | Supplied by the team | — |
+| `kao-lao-moo.jpg` | Supplied by the team | — |
+| `kao-lao-nuea.jpg` | Supplied by the team | — |
 | `noodle-soup-greens.jpg` | [charlesdeluvio](https://unsplash.com/@charlesdeluvio) | [photo-1585417791023-a5a6164b2646](https://images.unsplash.com/photo-1585417791023-a5a6164b2646) |
 | `crispy-pork.jpg` | [Amanda Lim](https://unsplash.com/@mandimelanie) | [photo-1624174782964-e541742299ee](https://images.unsplash.com/photo-1624174782964-e541742299ee) |
 | `fried-wonton.jpg` | [Zayed Ahmed Zadu](https://unsplash.com/@zayed_ahmed_zadu) | [photo-1781332147547-1f0edb2a78a4](https://images.unsplash.com/photo-1781332147547-1f0edb2a78a4) |
@@ -28,7 +28,7 @@ To add a photo: download `https://images.unsplash.com/photo-<id>?w=800&h=600&fit
 | `meatball-skewers-sauce.jpg` | [Bunly Hort](https://unsplash.com/@bunly1998) | [photo-1779939855597-f450f30d012f](https://images.unsplash.com/photo-1779939855597-f450f30d012f) |
 | `meatball-skewers.jpg` | [Bunly Hort](https://unsplash.com/@bunly1998) | [photo-1779939855594-5fae616d0481](https://images.unsplash.com/photo-1779939855594-5fae616d0481) |
 | `beef-meatballs.jpg` | [Bunly Hort](https://unsplash.com/@bunly1998) | [photo-1779939855602-235fff374e16](https://images.unsplash.com/photo-1779939855602-235fff374e16) |
-| `meatball-display.jpg` | [Fenghua](https://unsplash.com/@fenghua1975) | [photo-1763994682737-477d8200dd5d](https://images.unsplash.com/photo-1763994682737-477d8200dd5d) |
+| `meatball-display.jpg` | Supplied by the team | — |
 | `red-sausage.jpg` | Supplied by the team | — |
 | `isan-sausage.jpg` | Supplied by the team | — |
 | `chrysanthemum-drink.jpg` | [by_syeoni](https://unsplash.com/@by_syeoni) | [photo-1605540443725-7e216f615d9f](https://images.unsplash.com/photo-1605540443725-7e216f615d9f) |
@@ -51,7 +51,7 @@ To add a photo: download `https://images.unsplash.com/photo-<id>?w=800&h=600&fit
 | `biryani-platter.jpg` | [Shreyak Singh](https://unsplash.com/@shreyaksingh) | [photo-1589302168068-964664d93dc0](https://images.unsplash.com/photo-1589302168068-964664d93dc0) |
 | `curry-bowl.jpg` | [Rimsha Noor](https://unsplash.com/@rimshaj123) | [photo-1708782344490-9026aaa5eec7](https://images.unsplash.com/photo-1708782344490-9026aaa5eec7) |
 | `moo-ping.jpg` | Supplied by the team | — |
-| `gai-yang.jpg` | [Barun Ghosh](https://unsplash.com/@barunghosh) | [photo-1643886027883-1a23fe41ee2a](https://images.unsplash.com/photo-1643886027883-1a23fe41ee2a) |
+| `gai-yang.jpg` | Supplied by the team | — |
 | `kor-moo-yang.jpg` | Supplied by the team | — |
 | `grilled-wings.jpg` | Supplied by the team | — |
 | `grilled-skewers-fire.jpg` | [Deny Hill](https://unsplash.com/@deny_hill) | [photo-1776766237026-47ced47d3779](https://images.unsplash.com/photo-1776766237026-47ced47d3779) |
