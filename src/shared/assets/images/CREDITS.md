@@ -1,14 +1,15 @@
 # Image credits
 
-All photos are from [Unsplash](https://unsplash.com) under the [Unsplash License](https://unsplash.com/license) (free to use, no permission needed).
+Most photos are from [Unsplash](https://unsplash.com) under the [Unsplash License](https://unsplash.com/license) (free to use, no permission needed).
+Rows marked **Supplied by the team** are real dish photos the team found themselves (stock photos didn't show the right Thai dish); they are center-cropped to 4:3 and their original source isn't recorded here.
 They are downloaded into this folder (cropped to 800 px wide, ≤ 150 KB; `khao-moo-daeng.jpg` is cropped by hand to leave out the hand pouring the gravy) and never hotlinked.
 
 To add a photo: download `https://images.unsplash.com/photo-<id>?w=800&h=600&fit=crop&q=65&fm=jpg`, save it here with a descriptive name, and add a row below.
 
 | File | Photographer | Source image |
 |---|---|---|
-| `suki.jpg` | [getslower](https://unsplash.com/@getslower) | [photo-1774717530911-2ceb99449f7a](https://images.unsplash.com/photo-1774717530911-2ceb99449f7a) |
-| `fried-meatballs.jpg` | [rnphotos](https://unsplash.com/@rnphotos) | [photo-1572075454102-c6539f4113bc](https://images.unsplash.com/photo-1572075454102-c6539f4113bc) |
+| `suki.jpg` | Supplied by the team (watermark on the original: "Mtbeauty Mamm") | — |
+| `fried-meatballs.jpg` | Supplied by the team | — |
 | `takoyaki.jpg` | [sooji min](https://unsplash.com/@_sooji) | [photo-1751094364516-02b351f9c277](https://images.unsplash.com/photo-1751094364516-02b351f9c277) |
 | `bami-moo-daeng.jpg` | [Daniel Lim](https://unsplash.com/@daniellim) | [photo-1574783090420-d2167735fbf4](https://images.unsplash.com/photo-1574783090420-d2167735fbf4) |
 | `bami-ped-yang-yai.jpg` | [Ruben Sukatendel](https://unsplash.com/@rubensukatendel) | [photo-1651899251314-27c273479ade](https://images.unsplash.com/photo-1651899251314-27c273479ade) |
@@ -31,12 +32,12 @@ To add a photo: download `https://images.unsplash.com/photo-<id>?w=800&h=600&fit
 | `red-sausage.jpg` | [jakubeq](https://unsplash.com/@jakubeq) | [photo-1790026988392-ec889e049e38](https://images.unsplash.com/photo-1790026988392-ec889e049e38) |
 | `isan-sausage.jpg` | [Amanda Lim](https://unsplash.com/@mandimelanie) | [photo-1624772398061-bbfa87ec6b5a](https://images.unsplash.com/photo-1624772398061-bbfa87ec6b5a) |
 | `chrysanthemum-drink.jpg` | [by_syeoni](https://unsplash.com/@by_syeoni) | [photo-1605540443725-7e216f615d9f](https://images.unsplash.com/photo-1605540443725-7e216f615d9f) |
-| `moo-thot.jpg` | [Pacharamon Dorego](https://unsplash.com/@ifoodijourney) | [photo-1712189726339-a304fd330cc7](https://images.unsplash.com/photo-1712189726339-a304fd330cc7) |
+| `moo-thot.jpg` | Supplied by the team | — |
 | `moo-thot-chunks.jpg` | [Amanda Lim](https://unsplash.com/@mandimelanie) | [photo-1625477811233-044633d10dd1](https://images.unsplash.com/photo-1625477811233-044633d10dd1) |
-| `sticky-rice.jpg` | [lendy21](https://unsplash.com/@lendy21) | [photo-1729825488397-90ac5b03300c](https://images.unsplash.com/photo-1729825488397-90ac5b03300c) |
+| `sticky-rice.jpg` | Supplied by the team | — |
 | `som-tam.jpg` | [sirasit gullasu](https://unsplash.com/@birchphotographer_26) | [photo-1648421331147-9fcfab29536e](https://images.unsplash.com/photo-1648421331147-9fcfab29536e) |
 | `som-tam-pu-pla-ra.jpg` | [Jerome Jome](https://unsplash.com/@jomemui) | [photo-1562565652-a0d8f0c59eb4](https://images.unsplash.com/photo-1562565652-a0d8f0c59eb4) |
-| `fried-chicken.jpg` | [Kevin kevin](https://unsplash.com/@0x00kevin) | [photo-1569058242253-92a9c755a0ec](https://images.unsplash.com/photo-1569058242253-92a9c755a0ec) |
+| `fried-chicken.jpg` | Supplied by the team | — |
 | `larb.jpg` | [Alexandra Tran](https://unsplash.com/@alexgoesglobal) | [photo-1677366801962-483185852615](https://images.unsplash.com/photo-1677366801962-483185852615) |
 | `thai-tea.jpg` | [Inc inductgroup](https://unsplash.com/@sofia_induct) | [photo-1788016284567-f612a7383cb2](https://images.unsplash.com/photo-1788016284567-f612a7383cb2) |
 | `chicken-curry.jpg` | [Kalindu Waranga](https://unsplash.com/@varanga22) | [photo-1764304733301-3a9f335f0c67](https://images.unsplash.com/photo-1764304733301-3a9f335f0c67) |
@@ -49,10 +50,10 @@ To add a photo: download `https://images.unsplash.com/photo-<id>?w=800&h=600&fit
 | `masala-chai.jpg` | [vdphotography](https://unsplash.com/@vdphotography) | [photo-1630748662359-40a2105640c7](https://images.unsplash.com/photo-1630748662359-40a2105640c7) |
 | `biryani-platter.jpg` | [Shreyak Singh](https://unsplash.com/@shreyaksingh) | [photo-1589302168068-964664d93dc0](https://images.unsplash.com/photo-1589302168068-964664d93dc0) |
 | `curry-bowl.jpg` | [Rimsha Noor](https://unsplash.com/@rimshaj123) | [photo-1708782344490-9026aaa5eec7](https://images.unsplash.com/photo-1708782344490-9026aaa5eec7) |
-| `moo-ping.jpg` | [Markus Winkler](https://unsplash.com/@markuswinkler) | [photo-1568882041008-c0954e91caba](https://images.unsplash.com/photo-1568882041008-c0954e91caba) |
+| `moo-ping.jpg` | Supplied by the team | — |
 | `gai-yang.jpg` | [Barun Ghosh](https://unsplash.com/@barunghosh) | [photo-1643886027883-1a23fe41ee2a](https://images.unsplash.com/photo-1643886027883-1a23fe41ee2a) |
-| `kor-moo-yang.jpg` | [Zion C](https://unsplash.com/@jcs_chen) | [photo-1785735011447-9942c0ba0b13](https://images.unsplash.com/photo-1785735011447-9942c0ba0b13) |
-| `grilled-wings.jpg` | [Ekaterina Novitskaya](https://unsplash.com/@catrionaobrian) | [photo-1588767768269-22800153b449](https://images.unsplash.com/photo-1588767768269-22800153b449) |
+| `kor-moo-yang.jpg` | Supplied by the team | — |
+| `grilled-wings.jpg` | Supplied by the team | — |
 | `grilled-skewers-fire.jpg` | [Deny Hill](https://unsplash.com/@deny_hill) | [photo-1776766237026-47ced47d3779](https://images.unsplash.com/photo-1776766237026-47ced47d3779) |
 | `grill-smoke.jpg` | [Chantal Lim](https://unsplash.com/@chantallim) | [photo-1586058584825-c1e87ed735b4](https://images.unsplash.com/photo-1586058584825-c1e87ed735b4) |
 | `banner-thai-spread.jpg` | [Christopher Chung](https://unsplash.com/@christopher_chung_photography) | [photo-1763647818427-326fa8e6699f](https://images.unsplash.com/photo-1763647818427-326fa8e6699f) |
