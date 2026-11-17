@@ -19,6 +19,13 @@ describe('makeCartItem', () => {
       makeCartItem({ restaurantId: 'r', menu, addons: [b, a] }).key,
     )
   })
+
+  it('a different note makes a separate line', () => {
+    const menu = { id: 'm', name: 'x', price: 10 }
+    expect(makeCartItem({ restaurantId: 'r', menu, note: 'ไม่ใส่ผัก' }).key).not.toBe(
+      makeCartItem({ restaurantId: 'r', menu }).key,
+    )
+  })
 })
 
 describe('calcTotals', () => {

@@ -103,7 +103,7 @@ useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id),
 useSession() // { customerSignedIn, adminSignedIn, signIn('customer' | 'admin'), signOut(kind) }
 ```
 
-- Build cart lines with `makeCartItem({ restaurantId, menu, option, addons, qty })`.
+- Build cart lines with `makeCartItem({ restaurantId, menu, option, addons, note, qty })` (same choices + note → same `key`, so quantities merge).
 - `add()` returns `{ ok: false, reason: 'different-restaurant' }` when the cart has another store's food — show the "clear cart?" dialog, then call `add(item, restaurant, { replace: true })`.
 - **All money comes from `totals`** (`calcTotals` in `src/state/cart.js`): `food`, `delivery`, `storeDiscount`, `couponDiscount`, `total`, `points`, `itemCount`, `minOrder`, `meetsMinOrder`, `couponApplies`. Never recompute amounts in a screen.
 - Coupons live in `src/data/coupons.js` (`EATSHUB20`, `NEWUSER100`).

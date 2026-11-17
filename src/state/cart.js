@@ -16,7 +16,7 @@ import { findCoupon } from '@/data/coupons'
  * CartItem:
  * { key, restaurantId, menuId, name, image,
  *   basePrice, option: { label, price } | null, addons: [{ group, name, price }],
- *   qty, unitPrice, lineTotal }
+ *   note, qty, unitPrice, lineTotal }   // note = per-item "หมายเหตุถึงร้าน" from C5
  */
 
 export const EMPTY_CART = {
@@ -34,9 +34,9 @@ export const round2 = (n) => Math.round((n + Number.EPSILON) * 100) / 100
 
 /**
  * Build a CartItem from a menu item + the customer's choices.
- * Same menu with the same option/add-ons gets the same `key`, so adding it again merges qty.
+ * Same menu with the same option/add-ons/note gets the same `key`, so adding it again merges qty.
  */
-export function makeCartItem({ restaurantId, menu, option = null, addons = [], qty = 1 }) {
+export function makeCartItem({ restaurantId, menu, option = null, addons = [], note = '', qty = 1 }) {
   const unitPrice = round2(menu.price + (option?.price ?? 0) + addons.reduce((sum, a) => sum + a.price, 0))
   const key = [
     menu.id,
@@ -45,6 +45,7 @@ export function makeCartItem({ restaurantId, menu, option = null, addons = [], q
       .map((a) => `${a.group}:${a.name}`)
       .sort()
       .join(','),
+    note.trim(),
   ].join('|')
   return {
     key,
@@ -55,6 +56,7 @@ export function makeCartItem({ restaurantId, menu, option = null, addons = [], q
     basePrice: menu.price,
     option,
     addons,
+    note: note.trim(),
     qty,
     unitPrice,
     lineTotal: round2(unitPrice * qty),
