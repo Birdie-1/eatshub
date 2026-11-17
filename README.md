@@ -3,6 +3,7 @@
 Mobile-first clickable mockup of the eatsHub food-delivery platform, deployed to Vercel.
 
 - `brand/` — logo files (primary color `#FCBB18`)
+- `docs/REQUIREMENTS.md` — mockup scope, decisions, and done criteria
 - `docs/specs/` — module specs summarized from the original PDFs (see `docs/specs/README.md`)
 
 ## Working together (2 people)
