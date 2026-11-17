@@ -31,7 +31,7 @@ src/
                         TabLayout (bottom nav ร้านอาหาร · ตะกร้า · ออเดอร์ · บัญชี)
     pages/              C1–C12 screens
     components/         customer-only UI: RestaurantCard, CategoryGrid, BannerCarousel,
-                        RestaurantFilterSheet, AddressSheet
+                        RestaurantFilterSheet, AddressSheet, MenuCard (C4 items), StarRating
   admin/                back office
     layouts/            AdminLayout (header, sidebar with ☰ on mobile, footer), adminMenu.js
     pages/              A1 sign-in, A3 rider list

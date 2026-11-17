@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { formatAmount, formatBaht } from './format'
+import { formatAmount, formatBaht, formatDate } from './format'
+
+describe('formatDate', () => {
+  it('uses Thai short months and the Buddhist year', () => {
+    expect(formatDate('2026-11-12')).toBe('12 พ.ย. 2569')
+  })
+})
 
 describe('formatBaht', () => {
   it('shows whole baht with the symbol after the number', () => {

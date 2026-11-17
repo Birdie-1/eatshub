@@ -3,9 +3,9 @@ import duckRice from '@/shared/assets/images/duck-rice.jpg'
 import boatNoodlesPork from '@/shared/assets/images/boat-noodles-pork.jpg'
 import noodleSoupGreens from '@/shared/assets/images/noodle-soup-greens.jpg'
 import meatballSkewers from '@/shared/assets/images/meatball-skewers.jpg'
-import skewerStall from '@/shared/assets/images/skewer-stall.jpg'
+import meatballDisplay from '@/shared/assets/images/meatball-display.jpg'
 import mooThot from '@/shared/assets/images/moo-thot.jpg'
-import isanSpread from '@/shared/assets/images/isan-spread.jpg'
+import mooThotChunks from '@/shared/assets/images/moo-thot-chunks.jpg'
 import biryaniPlatter from '@/shared/assets/images/biryani-platter.jpg'
 import curryBowl from '@/shared/assets/images/curry-bowl.jpg'
 import gaiYang from '@/shared/assets/images/gai-yang.jpg'
@@ -153,7 +153,7 @@ export const restaurants = [
     types: ['ฟาสฟู้ด', 'ของว่าง'],
     categoryIds: ['street-food', 'thai'],
     image: meatballSkewers,
-    cover: skewerStall,
+    cover: meatballDisplay,
     rating: 4.4,
     reviewCount: 96,
     minOrder: 60,
@@ -182,7 +182,7 @@ export const restaurants = [
     types: ['ฟาสฟู้ด', 'ของว่าง'],
     categoryIds: ['street-food', 'thai', 'made-to-order'],
     image: mooThot,
-    cover: isanSpread,
+    cover: mooThotChunks,
     rating: 4.8,
     reviewCount: 512,
     minOrder: 80,
