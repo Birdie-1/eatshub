@@ -7,7 +7,9 @@ export default function Riders() {
         <p className="text-sm text-neutral-500">หน้าแรก / ไรเดอร์ / จัดการไรเดอร์</p>
       </div>
       <div className="rounded-xl bg-white p-6 shadow-sm">
-        <span className="rounded-full bg-brand-light px-2.5 py-0.5 text-xs font-semibold text-brand-dark">A3</span>
+        <span className="rounded-full bg-brand-light px-2.5 py-0.5 text-xs font-semibold text-brand-dark">
+          A3
+        </span>
         <p className="mt-3 text-sm text-neutral-500">ยังไม่ได้ทำตารางรายชื่อไรเดอร์</p>
       </div>
     </div>

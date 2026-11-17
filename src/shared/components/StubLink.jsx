@@ -5,7 +5,7 @@ export default function StubLink({ to, children }) {
   return (
     <Link
       to={to}
-      className="rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-neutral-900 hover:bg-brand-dark"
+      className="rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-ink hover:bg-brand-dark"
     >
       {children}
     </Link>

@@ -1,25 +1,20 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { LogOut, Menu, X } from 'lucide-react'
 import Logo from '@/shared/components/Logo'
 import { adminMenu } from '@/admin/layouts/adminMenu'
+import { Toaster, notInScope } from '@/shared/components/Toast'
 
 /**
  * Back-office shell (A2): white header, dark sidebar, yellow footer.
  * Below lg the sidebar collapses behind a ☰ button.
  */
 export default function AdminLayout() {
-  const [open, setOpen] = useState(false)
-  const [toast, setToast] = useState(null)
   const { pathname } = useLocation()
-
-  useEffect(() => setOpen(false), [pathname])
-
-  useEffect(() => {
-    if (!toast) return
-    const id = setTimeout(() => setToast(null), 2000)
-    return () => clearTimeout(id)
-  }, [toast])
+  // Sidebar is open only for the page it was opened on, so navigating closes it.
+  const [openOn, setOpenOn] = useState(null)
+  const open = openOn === pathname
+  const setOpen = (next) => setOpenOn(next ? pathname : null)
 
   return (
     <div className="flex min-h-full flex-col bg-neutral-100">
@@ -28,7 +23,7 @@ export default function AdminLayout() {
           <button
             type="button"
             className="rounded p-1.5 text-neutral-600 hover:bg-neutral-100 lg:hidden"
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => setOpen(!open)}
             aria-label="เมนู"
           >
             {open ? <X className="size-6" /> : <Menu className="size-6" />}
@@ -36,7 +31,7 @@ export default function AdminLayout() {
           <Logo className="size-10 rounded-lg" />
           <span className="text-lg font-bold tracking-tight">eatsHUB</span>
         </div>
-        <Link to="/" className="flex items-center gap-1.5 text-sm text-neutral-600 hover:text-neutral-900">
+        <Link to="/" className="flex items-center gap-1.5 text-sm text-neutral-600 hover:text-ink">
           <LogOut className="size-4" />
           ออกจากระบบ
         </Link>
@@ -62,7 +57,7 @@ export default function AdminLayout() {
                   to={to}
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-5 py-2.5 text-sm ${
-                      isActive ? 'bg-brand font-semibold text-neutral-900' : 'hover:bg-admin-dark'
+                      isActive ? 'bg-brand font-semibold text-ink' : 'hover:bg-admin-dark'
                     }`
                   }
                 >
@@ -72,7 +67,7 @@ export default function AdminLayout() {
                 <button
                   key={label}
                   type="button"
-                  onClick={() => setToast('ไม่อยู่ในขอบเขต Mockup')}
+                  onClick={notInScope}
                   className="flex items-center gap-3 px-5 py-2.5 text-left text-sm hover:bg-admin-dark"
                 >
                   <Icon className="size-5" /> {label}
@@ -91,15 +86,11 @@ export default function AdminLayout() {
         </main>
       </div>
 
-      <footer className="bg-brand px-4 py-3 text-center text-sm text-neutral-900">
+      <footer className="bg-brand px-4 py-3 text-center text-sm text-ink">
         Copyright © 2026 EatsHub. All rights reserved.
       </footer>
 
-      {toast && (
-        <div className="fixed bottom-16 left-1/2 z-30 -translate-x-1/2 rounded-lg bg-neutral-900 px-4 py-2 text-sm text-white shadow-lg">
-          {toast}
-        </div>
-      )}
+      <Toaster fixed />
     </div>
   )
 }
