@@ -57,7 +57,7 @@ Before declaring work done or opening a PR, all of these must pass: `npm run lin
 ## UI text and language
 
 - **All user-facing text is Thai only** (no i18n layer). Keep terminology consistent with the specs and existing screens.
-- Code, identifiers, comments, and `README`/`CLAUDE.md` are in English. `docs/REQUIREMENTS.md`, `QA.md` and `DEMO.md` are Thai.
+- Code, identifiers, comments, and `CLAUDE.md` are in English. `README.md` is bilingual (English first, then a full Thai copy) — when you change one half, update the other in the same change. `docs/REQUIREMENTS.md`, `QA.md` and `DEMO.md` are Thai.
 - Don't render buttons, links or menu items for features that are out of scope — hide them instead of shipping dead controls (no "not in scope" toasts). Static display text is fine.
 
 ## State, money and data rules

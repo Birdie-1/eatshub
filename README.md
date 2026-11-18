@@ -1,5 +1,7 @@
 # eatsHub Mockup
 
+**English** · [ภาษาไทย](#eatshub-mockup-ภาษาไทย)
+
 Mobile-first clickable mockup of the eatsHub food-delivery platform, deployed to Vercel.
 
 ## Run locally
@@ -215,3 +217,225 @@ R5 `/rider/wallet` displays credit/cash balances derived from their ledgers, pen
 The A5 map is now the first dashboard section. Hover/focus shows a province’s **fictional 2025 order count**, click/Enter zooms and highlights it with a short ring animation, and Reset/Escape restores Thailand. The 19 allocated province counts sum to the existing 946-order demo KPI; they are explicitly labeled fictional and are separate from both live checkout orders and the 2022 service-province list. Province zeroes mean no allocation in this demo, not real-world absence of orders.
 
 Below the map, **rider performance · last 30 days** (#43, `RiderPerformance.jsx` + `RushHourChart.jsx`) covers all 17 catalog riders over the same 30 Bangkok days as the R6 day strip: four team figures (completed jobs, job-weighted average delivery time, acceptance rate, job-weighted rating), a Top 10 of active riders (cards below 1024px, table above; blocked riders are excluded from the ranking but counted in the figures) and an hourly rush chart of orders vs online riders per day with the busiest two hours per rider highlighted and an exact-value table. EA00001 reads the shared `useRider()` activity, so its numbers match R6; the other 16 riders are deterministic fictional data. Map animations respect reduced motion.
+
+---
+
+# eatsHub Mockup (ภาษาไทย)
+
+[English](#eatshub-mockup) · **ภาษาไทย**
+
+Mockup แบบคลิกได้ของแพลตฟอร์มสั่งอาหาร eatsHub ออกแบบสำหรับมือถือเป็นหลัก (mobile-first) และ deploy บน Vercel
+
+## รันบนเครื่อง
+
+ต้องใช้ Node 20.19 ขึ้นไป
+
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # build สำหรับ production ลงใน dist/
+npm run lint     # ESLint
+npm test         # Vitest (กฎการคำนวณเงินใน src/state/cart.js)
+npm run format   # Prettier — รันก่อน commit
+```
+
+Deploy บน Vercel เป็น static Vite site (`vercel.json` rewrite ทุก path ไปที่ `index.html` เพื่อให้เปิดลิงก์ตรงไปหน้าใดก็ได้)
+
+## โครงสร้างโปรเจกต์
+
+```
+brand/                  ไฟล์โลโก้ (สีหลัก #FCBB18) import ผ่าน @brand/...
+docs/REQUIREMENTS.md    scope ของ mockup, การตัดสินใจ, เกณฑ์ว่าเสร็จ (แหล่งอ้างอิงหลัก)
+docs/specs/             สเปกแต่ละโมดูล สรุปจาก PDF ต้นฉบับ
+src/
+  main.jsx, router.jsx  จุดเริ่มต้น + route ทั้งหมด; รหัสหน้าจอ (C1–C12, R1–R7, A1–A5) ตรงกับ REQUIREMENTS.md
+  index.css             Tailwind + design tokens (ดู "การจัดสไตล์" ด้านล่าง)
+  customer/             แอปลูกค้า
+    layouts/            TabLayout (bottom nav ร้านอาหาร · ตะกร้า · ออเดอร์ · บัญชี)
+    pages/              หน้าจอ C1–C12
+    components/         UI เฉพาะแอปลูกค้า: RestaurantCard, CategoryGrid, BannerCarousel,
+                        RestaurantFilterSheet, AddressSheet, MenuCard (รายการใน C4), StarRating,
+                        FloatingCartBar (C6)
+  rider/                แอปไรเดอร์ (R1–R7, scope ใน REQUIREMENTS §4.1; issue #34–#38)
+    layouts/            RiderTabLayout (bottom nav สีเข้ม หน้าแรก · กระเป๋าเงิน · รายได้ · บัญชี)
+    pages/              R1 sign in, R2 หน้าแรก (+ popup R3), R4 งาน + สรุปรายได้; R5–R7 เป็น placeholder จนถึง #37–#38
+    components/         RequireRider (route guard แบบ demo), Switch, StatsSheet (sheet ดึงขึ้นใน R2),
+                        JobOfferDialog (R3), SignaturePad (R4)
+    useRiderSummary.js  ยอดกระเป๋าเงิน + ตัวเลขของวันนี้ ใช้ร่วมกันใน R2 และ R5
+  admin/                ระบบหลังบ้าน
+    layouts/            AdminLayout (header, sidebar พร้อมปุ่ม ☰ บนมือถือ, footer), adminMenu.js
+    pages/              A1 sign in, A3 รายชื่อไรเดอร์
+  shared/               ใช้ร่วมกันมากกว่าหนึ่งแอป
+    pages/Landing.jsx   เลือกแอปลูกค้า / แอปไรเดอร์ / ระบบหลังบ้าน
+    components/         UI ที่ใช้ร่วมกัน (ดู "ชิ้นส่วนที่ใช้ร่วมกัน" ด้านล่าง)
+    lib/format.js       formatBaht / formatAmount
+    assets/images/      รูปอาหารจาก Unsplash + rider-map.svg (เก็บใน repo ไม่ hotlink)
+  data/                 mock data แบบ static จากสเปก (ดู src/data/README.md), coupons.js
+  state/                ตะกร้า, ออเดอร์, session (React Context + localStorage) และ fixtures
+```
+
+flow demo ของแอปลูกค้าและระบบหลังบ้านทำเสร็จแล้ว ดู[สคริปต์เดโม 5 นาที](docs/DEMO.md) และ[ผล QA แบบ integration](docs/QA.md)
+
+Production: **https://eatshub-red.vercel.app** โปรเจกต์ Vercel เชื่อมกับ repo นี้ ทุกครั้งที่ merge เข้า `main` จะ deploy production อัตโนมัติ และทุก PR จะได้ preview URL ของตัวเอง
+
+## เดโมการสั่งอาหาร (แอปลูกค้า)
+
+- หน้า Landing มีทางเข้าแยกสำหรับลูกค้า ไรเดอร์ และระบบหลังบ้าน (3 คอลัมน์ตั้งแต่ขนาด `md` ขึ้นไป) route ของลูกค้าต้องมี demo session และหลัง sign in จะกลับไปหน้าที่ขอไว้
+- Checkout อ่านจากตะกร้าจริง ที่อยู่ และผลลัพธ์ของ `calcTotals` การชำระแบบ COD, QR PromptPay ตัวอย่าง และหน้ายืนยัน PayPal เป็นการจำลองทั้งหมด ไม่มีการเก็บข้อมูลทางการเงินใด ๆ
+- ทุกออเดอร์จะ freeze รายการอาหาร หมายเหตุ ที่อยู่ ยอดเงิน และ `DEFAULT_RIDER` ไว้ ณ ตอนสร้าง เลขออเดอร์ใช้ลำดับที่บันทึกไว้ เริ่มต่อจากออเดอร์ตัวอย่าง 00012
+- การติดตามออเดอร์เดินไปทีละขั้นทุก 8 วินาที (รวมประมาณ 32 วินาที) ปุ่มข้ามสำหรับเดโมยังอยู่แม้ refresh หน้า ออเดอร์ COD จะเปลี่ยนเป็นชำระแล้วเมื่อจัดส่งเรียบร้อยเท่านั้น
+- ถ้าแอปไรเดอร์ sign in และ online อยู่ตอนสั่งอาหาร ออเดอร์จะถูกเสนอให้ไรเดอร์แทน โดยรออยู่ที่ขั้นที่ 1 ได้นานสุด 45 วินาที (popup R3 หรือรับทันทีถ้าเปิดรับงานอัตโนมัติ) เมื่อรับงานแล้ว จะเดินขั้นได้เฉพาะจากปุ่มของไรเดอร์ใน R4 (ไม่มีปุ่มข้ามใน C10) ถ้าไม่มีใครรับ ระบบเวลาจะเดินต่อตั้งแต่ขั้นที่ 2 ถ้าแอปไรเดอร์ sign out หรือ offline การติดตามจะเดินตามเวลาเหมือนเดิม
+- ออเดอร์แชร์ผ่าน `localStorage` และทุกแท็บฟังการเปลี่ยนแปลง จึงเปิดแอปลูกค้าและแอปไรเดอร์คู่กันสองหน้าต่าง (หรือสลับแอปในแท็บเดียว) แล้วเห็นความคืบหน้าตรงกันได้
+- เมื่อจัดส่งเรียบร้อย ลูกค้าให้คะแนนออเดอร์ได้ครั้งเดียวผ่าน `rate(id, { rider, restaurant, review })` แบบ Grab/LINE MAN: ดาวไรเดอร์ (1–5) บังคับ ส่วนดาวร้านค้าและรีวิว (ไม่เกิน 200 ตัวอักษร) ไม่บังคับ มีปุ่มกลับหน้าแรกทั้งก่อนและหลังให้คะแนน ปุ่ม "เขียนรีวิว" ในแท็บประวัติจะเปิด sheet เดียวกัน
+- ประวัติออเดอร์ใส่ออเดอร์ตัวอย่าง 4 รายการครั้งแรกครั้งเดียว ออเดอร์ใหม่ยังอยู่หลัง refresh และ logout และรองรับกรณีที่ประวัติถูกบันทึกว่าว่างจริง ๆ
+- Logout จะล้างตะกร้าและ session ของลูกค้า แต่เก็บประวัติออเดอร์ไว้ แถบตะกร้าลอยแสดงยอดรวมสุดท้ายตัวเดียวกับหน้า Checkout
+
+## ต้นแบบระบบหลังบ้าน
+
+เปิด `/admin/signin` แล้วกดส่งฟอร์ม demo `admin` ที่กรอกไว้แล้ว ถ้าเข้า `/admin/riders` ตอนยังไม่ได้ sign in จะถูกพาไปหน้า sign in แล้วกลับมาหน้าที่ขอไว้
+ระบบหลังบ้านใช้ความกว้างเต็มเบราว์เซอร์: ต่ำกว่า 1024px แสดงรายชื่อไรเดอร์เป็นการ์ด ส่วนจอใหญ่กว่านั้นเป็นตารางที่เรียงลำดับได้ (ตารางเลื่อนแนวนอนได้เมื่อจำเป็น)
+
+- ไรเดอร์ตัวอย่าง 17 คน ค้นหาด้วยชื่อ/รหัส/เบอร์โทร/ทะเบียนรถ/จังหวัด กรองสถานะงานและสถานะบัญชี เลือกจำนวนต่อหน้าและแบ่งหน้า
+- เมนูบนมือถือเปิดเป็น drawer แบบ modal ปิดได้ด้วย Escape หรือกดพื้นหลัง และจัดการ focus ของคีย์บอร์ด
+- Sidebar แสดงเฉพาะหน้าที่มีอยู่จริง (แดชบอร์ด, จัดการไรเดอร์, ออกจากระบบ) หน้าหลังบ้านที่ยังไม่ได้ทำจะถูกซ่อน ไม่แสดงเป็นลิงก์ที่กดไม่ได้
+- เปลี่ยน Active/Block ได้ใน state ของหน้า การ Block ต้องใส่เหตุผล และจะอัปเดตผู้แก้ไขกับเวลา เมื่อ reload ข้อมูลตัวอย่างจะกลับเป็นค่าเริ่มต้น
+- Sign in เป็นการสาธิตผ่าน `useSession` ไม่ใช่การยืนยันตัวตนจริง Logout จะล้าง session ของแอดมินแล้วกลับไปหน้า Landing
+- ไม่มี API หรือฐานข้อมูล ข้อมูลไรเดอร์อยู่ใน `src/data/riders.js`
+- `DEFAULT_RIDER` export ไรเดอร์ EA00001 ไว้ใช้ใน checkout/ติดตามออเดอร์ วันที่ของไรเดอร์สร้างขึ้นโดยอิงจากเวลาปัจจุบัน
+
+ให้รันคำสั่งในโฟลเดอร์ `eatshub` ด้านในที่มี `package.json` ถ้า terminal อยู่ที่โฟลเดอร์ด้านนอก ให้รัน `cd .\eatshub` ก่อน
+
+| Route | หน้าจอ |
+|---|---|
+| `/` | Landing |
+| `/app/signin` | C1 Sign In |
+| `/app` | C2 หน้าแรก |
+| `/app/search` | C3 ค้นหา / หมวดอาหาร |
+| `/app/restaurant/:restaurantId` | C4 ร้านอาหาร (+ C6 แถบตะกร้าลอย) |
+| `/app/restaurant/:restaurantId/menu/:menuId` | C5 รายละเอียดเมนู |
+| `/app/cart` | C7 ตะกร้า |
+| `/app/checkout` | C8 Checkout |
+| `/app/payment/:method` | C9 ชำระเงิน (`promptpay` / `paypal`) |
+| `/app/success/:orderId` | สั่งซื้อ/ชำระเงินสำเร็จ (refresh ได้) |
+| `/app/orders/:orderId` | C10 ติดตามออเดอร์ |
+| `/app/orders` | C11 ประวัติออเดอร์ |
+| `/app/account` | C12 บัญชี |
+| `/app/account/favorites` | หน้าย่อย C12: ร้านค้าที่ถูกใจ |
+| `/rider/signin` | R1 ไรเดอร์ Sign In |
+| `/rider` | R2 หน้าแรกไรเดอร์ (+ R3 popup งานใหม่) |
+| `/rider/jobs/:orderId` | R4 ระหว่างส่ง + สรุปรายได้ |
+| `/rider/wallet` | R5 กระเป๋าเงิน |
+| `/rider/income` | R6 รายได้ |
+| `/rider/account` | R7 บัญชี |
+| `/admin/signin` | A1 Sign In ระบบหลังบ้าน |
+| `/admin` | A5 แดชบอร์ด (หน้าแรกหลังแอดมิน sign in) |
+| `/admin/riders` | A3 รายชื่อไรเดอร์ |
+
+## การจัดสไตล์
+
+ใช้ token ใน `src/index.css` ห้ามเขียนค่า hex ตรง ๆ:
+
+| Token | ใช้กับ |
+|---|---|
+| `brand` / `brand-dark` / `brand-light` | ปุ่มหลัก, แท็บที่เลือก, แถบตะกร้าลอย, footer ระบบหลังบ้าน |
+| `ink` / `muted` | ข้อความหลัก / ข้อความรอง |
+| `surface` | พื้นหลังเนื้อหาระบบหลังบ้าน, เส้นแบ่ง section ในแอป |
+| `admin` / `admin-dark` | sidebar ระบบหลังบ้านและพื้นหลังหน้า sign in |
+| `success` · `danger` · `warning` · `info` (+ `-light`) | badge และสีสถานะ |
+| `status-online` · `status-offline` · `status-delivery` | สถานะไรเดอร์ (alias ของสีด้านบน) |
+
+รูปทรง: การ์ด `rounded-2xl` ปุ่ม `rounded-xl` ฟอนต์: Montserrat สำหรับอักษรละติน/ตัวเลข และ IBM Plex Sans Thai สำหรับภาษาไทย (ตั้งไว้ใน `font-sans` แล้ว)
+
+ภายในกรอบโทรศัพท์ ให้ใช้ `sticky`/`absolute` แทน `fixed` เพื่อให้แถบต่าง ๆ อยู่ในกรอบโทรศัพท์เมื่อเปิดบน desktop
+
+## ชิ้นส่วนที่ใช้ร่วมกัน
+
+**Components** (`src/shared/components/`):
+
+| Component | หมายเหตุ |
+|---|---|
+| `Button` | `variant="primary" \| "secondary" \| "ghost"`, `size="sm" \| "md" \| "lg"`, `block`, `to="/path"` จะ render เป็น Link |
+| `Card` | กล่องขาว `rounded-2xl`; ใช้ `padded={false}` กับรูปหรือรายการ |
+| `Badge` | `tone="success" \| "danger" \| "warning" \| "info" \| "brand" \| "neutral"`, `solid` สำหรับแบบทึบ |
+| `TopBar` | ปุ่มย้อนกลับแบบ sticky + ชื่อหน้า; `backTo`, `right`, `transparent` (วางทับรูปปก) |
+| `BottomSheet` | `open`, `onClose`, `title`, `footer`; อยู่ในกรอบโทรศัพท์ |
+| `ConfirmDialog` | dialog ใช่/ไม่ใช่ กลางจอ: `open`, `title`, `confirmLabel`, `onConfirm`, `onCancel`; อยู่ในกรอบโทรศัพท์ |
+| `toast(msg)` | จาก `Toast.jsx`; แสดงข้อความสั้น ๆ ใน `<Toaster />` ที่ใกล้ที่สุด |
+
+**เงิน**: `formatBaht(215)` → `215 ฿` สำหรับราคาในรายการ; `formatAmount(215)` → `215.00` สำหรับสรุปออเดอร์
+
+**State** — `import { useCart, useOrders, useSession, useRiderStatus } from '@/state'`:
+
+```js
+useCart()    // { restaurant, items, noteToStore, noteToRider, coupon, totals,
+             //   add(item, restaurant, { replace }), updateQty(key, qty), remove(key), clear(),
+             //   setNotes({ noteToStore, noteToRider }), applyCoupon(code), removeCoupon() }
+useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id), getStatus(order), advance(id), rate(id, { rider, restaurant, review }),
+             //   acceptJob(id, { auto }), advanceJob(id, fromStage) } — ฝั่งไรเดอร์ (R3–R4)
+useSession() // { customerSignedIn, adminSignedIn, riderSignedIn, signIn('customer' | 'admin' | 'rider'), signOut(kind) }
+useAddress() // { address: { id, label, detail }, addresses, setAddress(id) } — เลือกใน C2 และเป็นค่าเริ่มต้นใน C8
+useFavorites() // { favorites, isFavorite(id), toggleFavorite(id) } — ร้านที่กด ♥
+useRiderStatus() // { online, autoAccept, setOnline(bool), setAutoAccept(bool) } — สวิตช์ของไรเดอร์ (R2, R7); ค่าเริ่มต้นเปิดทั้งคู่
+```
+
+- สร้างรายการในตะกร้าด้วย `makeCartItem({ restaurantId, menu, option, addons, note, qty })` (ตัวเลือกและหมายเหตุเหมือนกัน → `key` เดียวกัน จำนวนจึงรวมกัน)
+- แสดงตัวเลือกของรายการด้วย `formatChoices(item)` → `สุกี้น้ำ, กุ้ง(15), ลูกชิ้นปลา(10)` (จาก `@/state`)
+- `add()` คืนค่า `{ ok: false, reason: 'different-restaurant' }` เมื่อตะกร้ามีอาหารจากร้านอื่นอยู่ ให้แสดง dialog "ล้างตะกร้า?" แล้วเรียก `add(item, restaurant, { replace: true })`
+- **ยอดเงินทั้งหมดมาจาก `totals`** (`calcTotals` ใน `src/state/cart.js`): `food`, `delivery`, `storeDiscount`, `couponDiscount`, `total`, `points`, `itemCount`, `minOrder`, `meetsMinOrder`, `couponApplies` ห้ามคำนวณยอดเงินใหม่ในหน้าจอ
+- ข้อมูลร้าน/เมนู: `getRestaurant(id)`, `findRestaurants({ q, categoryId, type })`, `toCartRestaurant(r)` จาก `@/data/restaurants`; `getMenu(id)`, `menusOf(restaurantId)` จาก `@/data/menus` (ดู `src/data/README.md`)
+- คูปองอยู่ใน `src/data/coupons.js` (`EATSHUB20`, `NEWUSER100`)
+- `src/state/fixtures.js` มีตะกร้าตัวอย่างตามสเปก (ราชาอาหาร, 215 ฿ / 9 คะแนน) สำหรับใช้ในเทสต์เท่านั้น หน้าจอจริงอ่านจากตะกร้าจริง
+- งานไรเดอร์ (`src/state/orders.js`): `canAcceptJob(order)`, `acceptJob`, `advanceJob` และ `stepTimes(order)` (เวลาที่ถึงแต่ละขั้น ใช้ใน C10) ออเดอร์ที่ถูกเสนอจะมี `jobOfferExpiresAt` ออเดอร์ที่รับแล้วจะมี `riderJob: { step, times, auto? }` ส่วนอื่นของ snapshot ออเดอร์ไม่เปลี่ยน `isRiderOnDuty()` (`src/state/preferences.js`) เป็นตัวตัดสินว่าจะเสนอออเดอร์ใหม่ให้ไรเดอร์หรือไม่
+- ทุกอย่างบันทึกใน `localStorage` (key ขึ้นต้นด้วย `eatshub:`) ล้างออกเพื่อรีเซ็ตเดโม `subscribe(key, callback)` ใน `src/state/storage.js` ส่งต่อการเปลี่ยนแปลงที่เกิดจากแท็บอื่น
+
+## การทำงานร่วมกัน (2 คน)
+
+`main` คือ branch ที่พร้อม deploy — ห้าม push เข้าไปตรง ๆ ให้ทำงานบน branch แล้วเปิด Pull Request
+
+```bash
+# 1. เริ่มจาก main ล่าสุด
+git checkout main
+git pull
+
+# 2. สร้าง branch สำหรับ issue: feature/<เลข issue>-<ชื่อสั้น ๆ>
+git checkout -b feature/3-home
+
+# 3. commit และ push งาน
+git add .
+git commit -m "Add restaurant list screen"
+git push -u origin feature/3-home
+
+# 4. เปิด PR โดยใส่ "Closes #3" ใน description ขอให้อีกคนรีวิว แล้ว squash merge
+gh pr create --fill
+```
+
+ก่อนเปิด PR: `npm run lint && npm run format:check && npm test && npm run build`
+
+GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) รันการตรวจทั้ง 4 อย่างนี้กับทุก PR และทุกครั้งที่ push เข้า `main` repo ส่วนตัวแบบฟรีไม่มี branch protection ดังนั้นถ้าตรวจไม่ผ่านก็ยังกดปุ่ม merge ได้ — อย่า merge PR ที่ขึ้น ❌ สีแดง
+
+เคล็ดลับลด conflict:
+- แบ่งงานตามหน้าจอ/flow (เช่น คนหนึ่งทำการสั่งอาหารฝั่งลูกค้า อีกคนทำรายชื่อไรเดอร์ในระบบหลังบ้าน) ไฟล์ที่ใช้ร่วมกัน (`router.jsx`, `index.css`, `src/shared/`, `src/data/`) เปลี่ยนบ่อยที่สุด จึงควรแก้ให้น้อย
+- pull `main` บ่อย ๆ และทำ PR ให้เล็ก
+- หลัง PR ถูก merge: `git checkout main && git pull` แล้วค่อยเริ่ม branch ใหม่
+
+## แดชบอร์ดแอดมิน (A5)
+
+`/admin` แสดงรายงานประจำปีตัวอย่างของปี 2025 (ปีที่จบแล้ว): ยอดขาย **177,321 บาท**, **946 ออเดอร์** และจำนวนในแคตตาล็อกจาก `menus.length` / `riders.length` (ปัจจุบัน 45 / 17) ยอดขาย/ออเดอร์รายเดือนรวมแล้วตรงกับตัวเลขสรุป อันดับ Top 5 แต่ละชุดเป็นสัดส่วนของยอดนั้น (แสดงเป็น % ของยอดขาย) กราฟร้านอาหารเป็นจำนวนสะสมบนแพลตฟอร์ม ลูกค้าใหม่เป็นยอดลงทะเบียนรายเดือน ชื่อในอันดับทั้งหมดเป็น mock data โดยใช้รูปและที่อยู่ร้านจากแคตตาล็อก
+
+สรุปไรเดอร์คำนวณจาก `src/data/riders.js` ออเดอร์ล่าสุดแสดง 5 รายการใหม่สุดจาก `useOrders()` รวมออเดอร์ที่ถูกยกเลิก สถานะอัปเดตด้วย `src/shared/hooks/useOrderClock.js` ที่ใช้ร่วมกัน ออเดอร์จาก checkout เดโมเหล่านี้แยกจากรายงานตัวอย่างประจำปีที่ตายตัว
+
+กราฟรองรับ focus, ปุ่มลูกศร, Home/End, ปุ่มเดือนก่อน/ถัดไป และตารางที่กางออกดูค่าจริงได้ ที่ความกว้าง 360px KPI แสดง 2 คอลัมน์ ส่วนอื่นเรียงต่อกันแนวตั้ง ไม่ได้เพิ่ม chart library หรือ backend
+
+## พื้นที่ให้บริการในอดีต และหน้ากระเป๋าเงิน/บัญชีของไรเดอร์
+
+A5 แสดงแผนที่ SVG 77 จังหวัด (เก็บในเครื่อง มีระบุที่มา) ไฮไลต์ 19 จังหวัดที่ให้บริการตามข่าวประชาสัมพันธ์ช่วง **พ.ค.–พ.ย. 2565** (รวมชุมพร) และ 3 จังหวัดที่มีการใช้งานสูงสุด แยกจากรายงานตัวอย่างปี 2025 ตัวเลขสรุปจากข่าวถูกเอาออกใน #43 `coverage.js` เป็นเจ้าของชื่อจังหวัดและจับคู่ทุกจังหวัดกับ id ใน SVG ไม่ได้เพิ่ม dependency สำหรับแผนที่/กราฟ
+
+R5 `/rider/wallet` แสดงยอดเครดิต/เงินสดที่คำนวณจาก ledger ของแต่ละกระเป๋า รายการถอนเงินสดที่รอดำเนินการ ประวัติพร้อมเครื่องหมาย +/− และช่องทางเติมเครดิต (แสดงข้อมูลอย่างเดียว) R6 `/rider/income` มีรายงานรายวัน/รายเดือนตามปฏิทินเวลากรุงเทพฯ แถบเลือกวันแบบเลื่อนได้ กราฟ/ตารางรายเดือนพร้อมค่าจริง KPI ของช่วงเวลา และประวัติงาน เดือนในอนาคตจะว่าง R7 `/rider/account` แสดงโปรไฟล์เดโมและการกระจายคะแนนที่ใช้ร่วมกัน สวิตช์ online/รับงานอัตโนมัติ และรายละเอียดแบบอ่านอย่างเดียวที่ `/rider/account/profile`, `/rider/account/banks`, `/rider/account/vehicle`
+
+`useRider()` จาก `@/state` ให้ snapshot กิจกรรม/ledger ชุดเดียวที่ใช้ร่วมกันใน R2/R5/R6/R7 หน้าแรก R2 ฉบับเต็มจาก #40 อ่านผ่าน `useRiderSummary` ส่วน R7 ใช้ store `useRiderStatus()` เดิมจาก R2 สำหรับสวิตช์ทั้งสองที่บันทึกไว้ Logout ของไรเดอร์ล้างเฉพาะ session ของไรเดอร์ `riderReports.js` จัดกลุ่มข้อมูลกิจกรรมที่มีอยู่โดยไม่ทำยอดรวมซ้ำ ออเดอร์ที่ไรเดอร์ส่งเสร็จจาก R3–R4 จะเข้าไปในรายได้วันนี้และ ledger เงินสดโดยตรงจาก snapshot ของออเดอร์ ครั้งเดียวต่อเลขออเดอร์ การส่งของลูกค้าที่เดินตามเวลาไม่นับรวม และไม่มีการบันทึกรายได้ซ้ำ
+
+## สำรวจแผนที่ในหน้าแอดมิน และรายได้ไรเดอร์
+
+แผนที่ใน A5 เป็น section แรกของแดชบอร์ด hover/focus จะแสดง**จำนวนออเดอร์สมมติปี 2025** ของจังหวัดนั้น คลิก/Enter จะซูมและไฮไลต์จังหวัดพร้อม animation วงแหวนสั้น ๆ ส่วน Reset/Escape จะกลับมาแสดงทั้งประเทศไทย ยอดที่จัดสรรให้ 19 จังหวัดรวมกันเท่ากับ KPI เดโม 946 ออเดอร์ มีป้ายระบุชัดว่าเป็นข้อมูลสมมติ และแยกจากทั้งออเดอร์ checkout จริงและรายชื่อจังหวัดที่ให้บริการปี 2565 จังหวัดที่เป็นศูนย์หมายถึงไม่ได้จัดสรรในเดโมนี้ ไม่ได้แปลว่าไม่มีออเดอร์จริง
+
+ใต้แผนที่คือ **ประสิทธิภาพไรเดอร์ · 30 วันล่าสุด** (#43, `RiderPerformance.jsx` + `RushHourChart.jsx`) ครอบคลุมไรเดอร์ทั้ง 17 คนในแคตตาล็อก ในช่วง 30 วันตามเวลากรุงเทพฯ เดียวกับแถบเลือกวันของ R6 ประกอบด้วยตัวเลขของทีม 4 ช่อง (งานที่ส่งสำเร็จ, เวลาส่งเฉลี่ยถ่วงน้ำหนักตามจำนวนงาน, อัตรารับงาน, คะแนนถ่วงน้ำหนักตามจำนวนงาน), Top 10 ไรเดอร์ที่ active (การ์ดเมื่อต่ำกว่า 1024px, ตารางเมื่อกว้างกว่า; ไรเดอร์ที่ถูก block ไม่ติดอันดับแต่ยังนับในตัวเลขรวม) และกราฟช่วงเวลาเร่งด่วนรายชั่วโมงของออเดอร์เทียบกับไรเดอร์ที่ online ต่อวัน ไฮไลต์ 2 ชั่วโมงที่ยุ่งที่สุดต่อไรเดอร์ พร้อมตารางค่าจริง EA00001 อ่านจากกิจกรรม `useRider()` ที่ใช้ร่วมกัน ตัวเลขจึงตรงกับ R6 ส่วนไรเดอร์อีก 16 คนเป็นข้อมูลสมมติที่สร้างแบบกำหนดแน่นอน (deterministic) แผนที่ไม่เล่น animation เมื่อผู้ใช้ตั้งค่าลดการเคลื่อนไหว (reduced motion)
