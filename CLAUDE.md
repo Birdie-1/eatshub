@@ -23,7 +23,7 @@ Before declaring work done or opening a PR, all of these must pass: `npm run lin
 
 ## Source of truth
 
-- **Scope** → `docs/REQUIREMENTS.md`. If a change alters scope (new screen, new flow, something moving in/out of scope), update that doc in the same PR. Screen IDs (C1–C12, A1–A5) are used in `router.jsx` and docs — keep them consistent.
+- **Scope** → `docs/REQUIREMENTS.md`. If a change alters scope (new screen, new flow, something moving in/out of scope), update that doc in the same PR. Screen IDs (C1–C12, R1–R7, A1–A5) are used in `router.jsx` and docs — keep them consistent.
 - **Original product behaviour** → `docs/specs/*.md` (summaries of the original PDFs). Deliberate deviations from the specs are listed in REQUIREMENTS §6; add to that table when you fix a spec inconsistency.
 - **Mock data shapes** → the header comment of each file in `src/data/`, plus `src/data/README.md`.
 - When behaviour or structure changes, update README (and `src/data/README.md` for data files) so they stay accurate.
@@ -39,9 +39,9 @@ Before declaring work done or opening a PR, all of these must pass: `npm run lin
 **Components**: function components + hooks, one component per file, `PascalCase.jsx`. Non-component modules are `camelCase.js`. Hooks are named `useX`.
 
 **Folder boundaries** — keep the dependency direction one-way:
-- `src/customer/` and `src/admin/` may import from `src/shared/`, `src/state/`, `src/data/`; avoid importing from each other. Code both apps need belongs in `shared/` or `state/`. (Known exception: `admin/pages/Dashboard.jsx` imports `useOrderClock` from `customer/` — move that hook to `shared/` or `state/` if you touch it.)
-- `src/shared/` must not import from `customer/` or `admin/`.
-- Put a component in `shared/components/` only when both apps (or 2+ screens) use it; otherwise keep it next to its screen.
+- `src/customer/`, `src/rider/` and `src/admin/` may import from `src/shared/`, `src/state/`, `src/data/`; avoid importing from each other. Code two or more apps need belongs in `shared/` or `state/`. (Known exception: `admin/pages/Dashboard.jsx` imports `useOrderClock` from `customer/` — move that hook to `shared/` or `state/` if you touch it.)
+- `src/shared/` must not import from `customer/`, `rider/` or `admin/`.
+- Put a component in `shared/components/` only when two or more apps (or 2+ screens) use it; otherwise keep it next to its screen.
 - Reuse the shared building blocks (`Button`, `Card`, `Badge`, `TopBar`, `BottomSheet`, `ConfirmDialog`, `toast`) before writing new ones.
 
 **Keep it simple**: this is a mockup. Don't add abstractions, config layers, or dependencies the current screens don't need. New npm dependencies need a clear reason — mention it in the PR.

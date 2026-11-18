@@ -10,6 +10,7 @@ All data is static and comes from the specs (`docs/specs/04_Mobile_Order.md`, `d
 | `coupons.js` | Coupon codes (`EATSHUB20`, `NEWUSER100`) |
 | `orders.js` | `createSampleOrders()` seeds four historical orders from real restaurant/menu data; rider identity comes from `DEFAULT_RIDER` |
 | `riders.js` | 17 back-office riders (`EA00001`–`EA00017`), `createRiders()` with relative dates, and `DEFAULT_RIDER` for checkout/tracking |
+| `riderProfile.js` | Rider app data for `DEFAULT_RIDER` (EA00001): `riderProfile` (partner level, vehicle, masked fictional bank accounts, rating breakdown), `createRiderActivity(now)` (a year of completed jobs + missed offers), credit/cash wallet histories and summary helpers |
 
 Shapes are documented at the top of each file. `restaurants.test.js` checks the data against the spec
 (ราชาอาหาร prices, ranges, every menu listed in a section, popular categories not empty).
@@ -19,6 +20,14 @@ Shapes are documented at the top of each file. `restaurants.test.js` checks the 
 - When adding to the cart, pass `toCartRestaurant(restaurant)`, not the full object.
 
 Images live in `src/shared/assets/images/` (downloaded from Unsplash, never hotlinked) — credits in `CREDITS.md` there.
+
+## Rider app data
+
+`riderProfile.js` extends `DEFAULT_RIDER`, so name, code, plate and the 4.5 rating match A3 and C10.
+
+- Nothing derived is stored: `walletSummary(history)` sums balances and pending withdrawals, `riderToday(activity, now)` counts today's income/offers/accepted jobs, and `acceptRate(activity)` divides accepted jobs by offers.
+- `createRiderActivity(now)` generates a deterministic year of jobs (60 baht each, real restaurants, `EH-BKK-…` ids from sequence 1000 up) between 10:00 and about 21:00 Bangkok time, never after `now`. `startOfBangkokDay`, `jobsBetween` and `summarizeJobs` group them by day or month.
+- The cash wallet pays income for today's and yesterday's jobs; the e-mail and bank accounts are fictional and masked. `riderProfile.test.js` checks these rules.
 
 ## A5 dashboard report
 
