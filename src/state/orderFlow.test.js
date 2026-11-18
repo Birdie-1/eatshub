@@ -7,6 +7,8 @@ import {
   nextOrderSequence,
   ORDER_STEP_MS,
   paymentStatus,
+  isRated,
+  rateOrder,
 } from './orders'
 import { sampleCart } from './fixtures'
 import { DEFAULT_RIDER } from '@/data/riders'
@@ -107,5 +109,46 @@ describe('tracking clock', () => {
     expect(samples.every((order) => Date.parse(order.createdAt) < now.getTime())).toBe(true)
     expect(samples.map((order) => order.id.slice(-5))).toEqual(['00009', '00010', '00011', '00012'])
     expect(new Set(samples.map((order) => order.restaurant.id)).size).toBeGreaterThan(1)
+  })
+})
+
+describe('rating a delivered order', () => {
+  const delivered = () => ({ ...create(), offsetMs: 4 * ORDER_STEP_MS })
+  const at = now.getTime()
+  it('stores restaurant stars as rating, rider stars and a trimmed review', () =>
+    expect(rateOrder(delivered(), { rider: 4, restaurant: 5, review: '  อร่อยมาก  ' }, at)).toMatchObject({
+      rating: 5,
+      riderRating: 4,
+      review: 'อร่อยมาก',
+    }))
+  it('lets the customer skip the restaurant (rider stars only)', () => {
+    const rated = rateOrder(delivered(), { rider: 5 }, at)
+    expect(rated).toMatchObject({ rating: null, riderRating: 5, review: '' })
+    expect(isRated(rated)).toBe(true)
+  })
+  it('caps the review at 200 characters', () =>
+    expect(
+      rateOrder(delivered(), { rider: 5, restaurant: 5, review: 'ก'.repeat(300) }, at).review,
+    ).toHaveLength(200))
+  it('ignores orders that are not delivered, cancelled or already rated', () => {
+    const stars = { rider: 5, restaurant: 5 }
+    const inProgress = create()
+    const cancelled = { ...delivered(), cancelled: true }
+    const legacyRated = { ...delivered(), rating: 3 }
+    const riderOnly = { ...delivered(), rating: null, riderRating: 4 }
+    for (const order of [inProgress, cancelled, legacyRated, riderOnly])
+      expect(rateOrder(order, stars, at)).toBe(order)
+    expect(isRated(delivered())).toBe(false)
+  })
+  it('requires whole rider stars from 1 to 5; restaurant stars, when given, must be valid too', () => {
+    const order = delivered()
+    for (const stars of [
+      { restaurant: 5 },
+      { rider: 0, restaurant: 5 },
+      { rider: 4.5 },
+      { rider: 5, restaurant: 6 },
+      { rider: 5, restaurant: 2.5 },
+    ])
+      expect(rateOrder(order, stars, at)).toBe(order)
   })
 })

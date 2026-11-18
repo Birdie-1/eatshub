@@ -55,6 +55,7 @@ Production deployment is on hold at the user's request. No production URL has be
 - Checkout reads the real cart, addresses and `calcTotals` output. COD, PromptPay sample QR and PayPal confirmation are simulations; no financial credentials are collected.
 - Every order freezes its items, notes, address, totals and `DEFAULT_RIDER`. Order IDs use a persisted sequence beginning after sample order 00012.
 - Tracking advances every 8 seconds (about 32 seconds total); the demo skip button survives refresh. COD becomes paid only on delivery.
+- Once delivered, the customer rates the order once via `rate(id, { rider, restaurant, review })`, Grab/LINE MAN style: rider stars (1–5) are required, restaurant stars and a review (≤ 200 chars) are optional. A back-to-home button is shown before and after rating. The history tab's "เขียนรีวิว" opens the same sheet.
 - History seeds four sample orders once, preserves new orders across refresh and logout, and supports an explicitly empty saved history.
 - Logout clears the customer's cart and session while retaining order history. The floating cart bar uses the same final total as Checkout.
 
@@ -132,7 +133,7 @@ Inside the phone frame, use `sticky`/`absolute` instead of `fixed` so bars stay 
 useCart()    // { restaurant, items, noteToStore, noteToRider, coupon, totals,
              //   add(item, restaurant, { replace }), updateQty(key, qty), remove(key), clear(),
              //   setNotes({ noteToStore, noteToRider }), applyCoupon(code), removeCoupon() }
-useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id), getStatus(order), advance(id) }
+useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id), getStatus(order), advance(id), rate(id, { rider, restaurant, review }) }
 useSession() // { customerSignedIn, adminSignedIn, signIn('customer' | 'admin'), signOut(kind) }
 useAddress() // { address: { id, label, detail }, addresses, setAddress(id) } — picked on C2, default for C8
 useFavorites() // { favorites, isFavorite(id), toggleFavorite(id) } — restaurant ♥

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams } from 'react-router'
+import { useLocation, useParams } from 'react-router'
 import {
   Bike,
   Check,
@@ -19,13 +19,16 @@ import Button from '@/shared/components/Button'
 import Card from '@/shared/components/Card'
 import Badge from '@/shared/components/Badge'
 import BottomSheet from '@/shared/components/BottomSheet'
-import { notInScope } from '@/shared/components/Toast'
+import { notInScope, toast } from '@/shared/components/Toast'
 import OrderSummary from '@/customer/components/OrderSummary'
+import RatingSheet from '@/customer/components/RatingSheet'
+import StarRating from '@/customer/components/StarRating'
 import { useOrders } from '@/state'
 import { useOrderClock } from '@/shared/hooks/useOrderClock'
 import {
   formatOrderDate,
   getStatus,
+  isRated,
   ORDER_STEPS,
   ORDER_STEP_MS,
   PAYMENT_LABELS,
@@ -43,9 +46,12 @@ const time = (value) =>
 
 export default function Tracking() {
   const { orderId } = useParams()
-  const { getOrder, advance } = useOrders()
+  const { getOrder, advance, rate } = useOrders()
   const now = useOrderClock()
+  const location = useLocation()
   const [contact, setContact] = useState(false)
+  // The order history's "เขียนรีวิว" link opens the rating sheet straight away.
+  const [rating, setRating] = useState(Boolean(location.state?.rate))
   const order = getOrder(orderId)
   if (!order)
     return (
@@ -207,14 +213,51 @@ export default function Tracking() {
             <p className="mt-2 text-xs leading-6 text-neutral-500">{order.address.detail}</p>
           </div>
         </Card>
+        {complete && isRated(order) && (
+          <Card className="space-y-3 border border-neutral-100 shadow-none">
+            <h2 className="font-semibold">คะแนนของคุณ</h2>
+            <dl className="space-y-3 text-xs">
+              {[
+                ['ไรเดอร์', order.riderRating],
+                ['ร้านค้า', order.rating],
+              ]
+                .filter(([, value]) => value)
+                .map(([label, value]) => (
+                  <div key={label} className="flex items-center justify-between gap-4">
+                    <dt className="text-neutral-500">{label}</dt>
+                    <dd className="flex items-center gap-2">
+                      <StarRating value={value} />
+                      <span className="font-medium">{value}/5</span>
+                    </dd>
+                  </div>
+                ))}
+            </dl>
+            {order.review && (
+              <p className="rounded-xl bg-surface p-3 text-xs leading-6 text-neutral-600">“{order.review}”</p>
+            )}
+          </Card>
+        )}
         {complete && (
           <div className="space-y-2">
-            <Button block onClick={notInScope}>
-              ให้คะแนน
-            </Button>
-            <Button block variant="secondary" to={`/app/restaurant/${order.restaurant.id}`}>
-              สั่งอีกครั้ง
-            </Button>
+            {isRated(order) ? (
+              <Button block to="/app">
+                กลับหน้าแรก
+              </Button>
+            ) : (
+              <Button block onClick={() => setRating(true)}>
+                ให้คะแนน
+              </Button>
+            )}
+            <div className={isRated(order) ? '' : 'grid grid-cols-2 gap-2'}>
+              {!isRated(order) && (
+                <Button block variant="secondary" to="/app">
+                  กลับหน้าแรก
+                </Button>
+              )}
+              <Button block variant="secondary" to={`/app/restaurant/${order.restaurant.id}`}>
+                สั่งอีกครั้ง
+              </Button>
+            </div>
           </div>
         )}
         {!complete && !cancelled && (
@@ -226,6 +269,16 @@ export default function Tracking() {
           สถานะและเวลาจัดส่งเป็นการจำลองสำหรับนำเสนอ
         </p>
       </div>
+      <RatingSheet
+        open={rating && complete && !isRated(order)}
+        order={order}
+        onClose={() => setRating(false)}
+        onSubmit={(stars) => {
+          rate(order.id, stars)
+          setRating(false)
+          toast('ขอบคุณสำหรับคะแนน')
+        }}
+      />
       <BottomSheet
         open={contact && !complete && !cancelled}
         onClose={() => setContact(false)}
