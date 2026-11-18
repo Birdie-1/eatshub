@@ -22,10 +22,10 @@ Images live in `src/shared/assets/images/` (downloaded from Unsplash, never hotl
 
 ## A5 dashboard report
 
-`dashboard.js` exports `dashboardTotals`, `monthlyDashboard`, `topRestaurants`, `topCustomers`, `riderSummary`, `dashboardYear`, and `getRecentOrders(orders)`.
+`dashboard.js` exports `dashboardTotals`, `monthlyDashboard`, `topRestaurants`, `topCustomers`, `summarizeTop(rows)`, `riderSummary`, `dashboardYear`, and `getRecentOrders(orders)`.
 
-- Report revenue/orders are fixed sample totals: 177,321 baht / 946 orders. Each monthly series and each Top-5 ranking sums to those totals (`dashboard.test.js`).
-- Monthly rows contain `{ month, name, shortName, sales, orders, restaurants, customers }`. Restaurants/customers mean new registrations; their annual totals are 6 catalog restaurants / 295 sample customers.
+- Report revenue/orders are fixed sample totals: 177,321 baht / 946 orders. The monthly sales/orders series sum to those totals (`dashboard.test.js`). `dashboardYear` is 2025 — a completed year, so no future month shows data.
+- Monthly rows contain `{ month, name, shortName, sales, orders, restaurants, customers }`. `restaurants` is the running count of catalog restaurants on the platform (non-decreasing, ends at 6); `customers` means new registrations (295 for the year).
 - Menu/rider counts and rider work states derive from the shared arrays. Blocked accounts overlap the work states, rather than increasing the rider count.
-- Top restaurants reuse real catalog records; customer names are fictional. The sample assumes the five listed restaurants/customers cover the report totals.
+- Top restaurants reuse real catalog records; customer names are fictional. Each Top 5 is a share of the report totals, not all of it: whatever is left must fit under the fifth row for everyone outside the list (one more restaurant, 290 more customers). `summarizeTop` gives a list's sales, orders and % of report sales.
 - `getRecentOrders` returns up to five valid records, newest first, without mutating the input. Recent demo checkout records are separate from the static report and do not change its KPIs.
