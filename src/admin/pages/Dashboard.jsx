@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { lazy, Suspense, useMemo } from 'react'
 import {
   ArrowRight,
   Bike,
@@ -27,6 +27,8 @@ import {
 } from '@/data/dashboard'
 import MonthlyChart from '@/admin/components/MonthlyChart'
 import RecentOrders from '@/admin/components/RecentOrders'
+
+const ServiceCoverage = lazy(() => import('@/admin/components/ServiceCoverage'))
 
 const count = new Intl.NumberFormat('th-TH')
 const topRestaurantsSummary = summarizeTop(topRestaurants)
@@ -265,6 +267,15 @@ export default function Dashboard() {
         </Card>
         <RecentOrders orders={recent} />
       </div>
+      <Suspense
+        fallback={
+          <Card>
+            <p className="text-sm text-neutral-500">กำลังโหลดพื้นที่ให้บริการ…</p>
+          </Card>
+        }
+      >
+        <ServiceCoverage />
+      </Suspense>
     </div>
   )
 }
