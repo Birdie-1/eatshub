@@ -22,7 +22,7 @@ import BottomSheet from '@/shared/components/BottomSheet'
 import { notInScope } from '@/shared/components/Toast'
 import OrderSummary from '@/customer/components/OrderSummary'
 import { useOrders } from '@/state'
-import { useOrderClock } from '@/customer/useOrderClock'
+import { useOrderClock } from '@/shared/hooks/useOrderClock'
 import {
   formatOrderDate,
   getStatus,

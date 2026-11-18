@@ -19,9 +19,9 @@ import {
   UserPlus,
 } from 'lucide-react'
 
-// Only rider management is in scope; groups expose the original admin sitemap.
+// Dashboard and rider management are in scope; groups expose the original admin sitemap.
 export const adminMenu = [
-  { label: 'แดชบอร์ด', icon: LayoutDashboard },
+  { label: 'แดชบอร์ด', to: '/admin', end: true, icon: LayoutDashboard },
   { label: 'ผู้ดูแลระบบย่อย', icon: ShieldCheck },
   {
     label: 'ไรเดอร์',
