@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import { ClipboardList, Star } from 'lucide-react'
 import { useOrders } from '@/state'
-import { useOrderClock } from '@/customer/useOrderClock'
+import { useOrderClock } from '@/shared/hooks/useOrderClock'
 import { formatOrderDate, getStatus, ORDER_STEPS, PAYMENT_LABELS } from '@/state/orders'
 import { formatAmount } from '@/shared/lib/format'
 import TopBar from '@/shared/components/TopBar'

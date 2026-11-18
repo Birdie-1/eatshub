@@ -62,7 +62,7 @@ export default function AdminLayout() {
         เมนูจัดการระบบ
       </p>
       <nav aria-label={mobile ? 'เมนูหลังบ้านบนมือถือ' : 'เมนูหลังบ้าน'} className="flex flex-col gap-1 px-3 pb-6">
-        {adminMenu.map(({ label, icon: Icon, children, action }) =>
+        {adminMenu.map(({ label, icon: Icon, children, action, to, end }) =>
           children ? (
             <details key={label} open={label === 'ไรเดอร์' || undefined} className="admin-menu-group">
               <summary className="flex min-h-11 cursor-pointer list-none items-center gap-3 rounded-xl px-3 text-sm text-neutral-200 hover:bg-white/5">
@@ -96,6 +96,19 @@ export default function AdminLayout() {
                 )}
               </div>
             </details>
+          ) : to ? (
+            <NavLink
+              key={label}
+              to={to}
+              end={end}
+              onClick={closeMenu}
+              className={({ isActive }) =>
+                `flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm ${isActive ? 'bg-brand font-semibold text-ink' : 'text-neutral-300 hover:bg-white/5'}`
+              }
+            >
+              <Icon className="size-[18px] shrink-0" />
+              {label}
+            </NavLink>
           ) : (
             <button
               key={label}

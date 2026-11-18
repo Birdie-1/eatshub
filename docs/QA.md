@@ -57,3 +57,18 @@ Lighthouse 13.6.0, form factor mobile, simulated throttling, fresh Chrome profil
 - [ ] Deploy production และตรวจ deep links จาก URL จริง — **พักไว้ตามคำสั่งผู้ใช้**
 
 ยังไม่ปิด issue #13 เพราะเกณฑ์อุปกรณ์จริงและ production ยังไม่ครบ
+
+## A5 — แดชบอร์ดหลังบ้าน (#23)
+
+ตรวจเมื่อ 18 พฤศจิกายน 2026 บน `feature/23-admin-dashboard` จาก main `48f38b0`
+
+- โค้ด: `lint`, `format:check`, tests **81 ข้อ / 8 ไฟล์**, `build` ผ่านทั้งหมด มีคำเตือนขนาด JS chunk เกิน 500 kB จาก Vite (ประมาณ 511 kB ก่อน gzip) แต่ build สำเร็จ
+- ทดสอบ invariant ใหม่ 9 ข้อ: ยอดขาย/ออเดอร์รายเดือนและ Top 5 ตรง KPI, จำนวนเมนู/ร้าน/ไรเดอร์จาก catalog, สถานะไรเดอร์, ล่าสุด 5 รายการ รวมการยกเลิก/ข้อมูลว่างโดยไม่แก้ input
+- Browser emulation: 360×800, 1280×900 และ 1440×1000 ไม่มี horizontal page overflow; 360px KPI 2 คอลัมน์ ส่วนอื่น 1 คอลัมน์ ออเดอร์เป็นการ์ด; desktop เป็นตาราง รูปร้านทั้ง 5 โหลดครบ
+- Admin ที่ยังไม่เข้าใช้ถูกส่งไป Sign In; เข้าตามปกติไป `/admin`, ขอ `/admin/riders` โดยตรงแล้วเข้าสู่ระบบกลับไปหน้าเดิม; refresh เก็บ session และ dashboard เมนู active เฉพาะ `/admin`
+- Drawer มือถือไปไรเดอร์และกลับแดชบอร์ดได้ ปิดเองหลังเลือกเมนู
+- กราฟ: ArrowRight และ End เลือกเดือนและแสดงค่าเต็มถูกต้อง ปุ่มเดือนก่อนหน้าและตารางค่ารายเดือนทำงาน
+- สั่ง COD จากแอปลูกค้าได้ `EH-BKK-261118-00024` บะหมี่หมูแดง 2 รายการ ยอด **186.00 บาท** แสดงบนสุดในออเดอร์ล่าสุดหลังเปิดหลังบ้าน โดยรวมไม่เกิน 5 รายการ สถานะเปลี่ยนอัตโนมัติจนจัดส่งเรียบร้อย รายงานตัวอย่างยังแสดง 177,321 บาท / 946 ออเดอร์
+- Empty state ของ `RecentOrders` ตรวจด้วย server rendering โดยส่ง `orders: []` ผ่าน Vite SSR (ไม่ได้ล้างประวัติใน browser ของผู้ใช้) ไม่ใช่การตรวจ empty state ใน browser
+- ไม่พบ console error/warning ใน browser ระหว่าง flow นี้
+- ยังไม่ได้ตรวจบน iPhone/Android จริง และยังไม่ deploy production ตามคำสั่งผู้ใช้
