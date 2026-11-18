@@ -1,11 +1,15 @@
-import { Link } from 'react-router'
-import { Banknote, ChevronRight, CreditCard, Navigation, Zap } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router'
+import { Banknote, Bike, ChevronRight, CreditCard, Navigation, Zap } from 'lucide-react'
 import mapImage from '@/shared/assets/images/rider-map.svg'
 import Card from '@/shared/components/Card'
 import { formatBaht } from '@/shared/lib/format'
 import { riderProfile } from '@/data/riderProfile'
-import { useRiderStatus } from '@/state'
+import { useOrders, useRiderStatus } from '@/state'
+import { canAcceptJob, getStatus, ORDER_STEPS } from '@/state/orders'
+import { useOrderClock } from '@/shared/hooks/useOrderClock'
 import Switch from '@/rider/components/Switch'
+import JobOfferDialog from '@/rider/components/JobOfferDialog'
 import StatsSheet from '@/rider/components/StatsSheet'
 import { useRiderSummary } from '@/rider/useRiderSummary'
 
@@ -18,10 +22,31 @@ function Stat({ label, value }) {
   )
 }
 
-/** R2 — rider home: online switch over a static map, wallet balances, auto-accept and a stats sheet. */
+/**
+ * R2 — rider home: online switch over a static map, wallet balances, auto-accept and a stats sheet.
+ * R3 — while online, a new order offered to the rider opens the job popup here (or is taken straight
+ * away with auto-accept). A job already in progress shows as a card linking back to R4 instead.
+ */
 export default function Home() {
   const { online, autoAccept, setOnline, setAutoAccept } = useRiderStatus()
   const { today, acceptRate, credit, cash } = useRiderSummary()
+  const { orders, acceptJob } = useOrders()
+  const now = useOrderClock()
+  const navigate = useNavigate()
+  const [closedId, setClosedId] = useState(null)
+  const activeJob = orders.find((order) => order.riderJob && getStatus(order, now) < 5)
+  const offer = online && !activeJob ? orders.find((order) => canAcceptJob(order, now)) : undefined
+  const autoOffer = autoAccept ? offer : undefined
+  useEffect(() => {
+    if (autoOffer) acceptJob(autoOffer.id, { auto: true })
+  }, [autoOffer, acceptJob])
+  // Auto-accepted jobs announce themselves once, until the rider starts or closes the popup.
+  const announce = activeJob?.riderJob.auto && activeJob.riderJob.step === 2 ? activeJob : undefined
+  const popup = announce ?? (autoAccept ? undefined : offer)
+  const startJob = (order) => {
+    if (!order.riderJob) acceptJob(order.id)
+    navigate(`/rider/jobs/${order.id}`)
+  }
   const wallets = [
     { label: 'ยอดเครดิต', amount: credit.balance, icon: CreditCard },
     { label: 'กระเป๋าเงินสด', amount: cash.balance, icon: Banknote },
@@ -59,6 +84,38 @@ export default function Home() {
           <Switch checked={online} onChange={setOnline} label="ออนไลน์รับงาน" />
         </Card>
 
+        {activeJob && (
+          <Card
+            as={Link}
+            to={`/rider/jobs/${activeJob.id}`}
+            className="flex items-center gap-3 ring-2 ring-brand transition hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin"
+          >
+            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-ink">
+              <Bike className="size-5" aria-hidden="true" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-semibold">
+                งานที่กำลังทำ · {ORDER_STEPS[activeJob.riderJob.step - 1].label}
+              </span>
+              <span className="block truncate text-xs text-neutral-500">
+                {activeJob.restaurant.name} · {activeJob.id}
+              </span>
+            </span>
+            <ChevronRight className="size-5 shrink-0 text-neutral-400" aria-hidden="true" />
+          </Card>
+        )}
+        {popup && closedId === popup.id && !popup.riderJob && (
+          <button
+            type="button"
+            onClick={() => setClosedId(null)}
+            className="flex w-full items-center gap-3 rounded-2xl bg-brand p-4 text-left font-semibold shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin"
+          >
+            <Bike className="size-5" aria-hidden="true" />
+            มีงานใหม่รอรับ · {popup.restaurant.name}
+            <ChevronRight className="ml-auto size-5" aria-hidden="true" />
+          </button>
+        )}
+
         <div className="grid grid-cols-2 gap-3">
           {wallets.map(({ label, amount, icon: Icon }) => (
             <Card
@@ -89,7 +146,15 @@ export default function Home() {
         </Card>
       </div>
 
-      {/* R3 (#36): while online, the new-job popup opens over this screen. */}
+      {popup && closedId !== popup.id && (
+        <JobOfferDialog
+          order={popup}
+          now={now}
+          auto={Boolean(popup.riderJob)}
+          onAccept={() => startJob(popup)}
+          onDismiss={() => setClosedId(popup.id)}
+        />
+      )}
 
       <StatsSheet
         title="ข้อมูลของฉัน"

@@ -34,8 +34,9 @@ src/
                         FloatingCartBar (C6)
   rider/                rider app (R1–R7, scope in REQUIREMENTS §4.1; issues #34–#38)
     layouts/            RiderTabLayout (dark bottom nav หน้าแรก · กระเป๋าเงิน · รายได้ · บัญชี)
-    pages/              R1 sign-in, R2 home; R4–R7 are placeholders until #36–#38
-    components/         RequireRider (demo route guard), Switch, StatsSheet (R2 pull-up sheet)
+    pages/              R1 sign-in, R2 home (+ R3 popup), R4 job + earnings summary; R5–R7 are placeholders until #37–#38
+    components/         RequireRider (demo route guard), Switch, StatsSheet (R2 pull-up sheet),
+                        JobOfferDialog (R3), SignaturePad (R4)
     useRiderSummary.js  wallet balances + today's numbers shared by R2 and R5
   admin/                back office
     layouts/            AdminLayout (header, sidebar with ☰ on mobile, footer), adminMenu.js
@@ -59,6 +60,8 @@ Production: **https://eatshub-red.vercel.app**. The Vercel project is linked to 
 - Checkout reads the real cart, addresses and `calcTotals` output. COD, PromptPay sample QR and PayPal confirmation are simulations; no financial credentials are collected.
 - Every order freezes its items, notes, address, totals and `DEFAULT_RIDER`. Order IDs use a persisted sequence beginning after sample order 00012.
 - Tracking advances every 8 seconds (about 32 seconds total); the demo skip button survives refresh. COD becomes paid only on delivery.
+- If the rider app is signed in and online when the order is placed, the order is offered to the rider instead: it waits at stage 1 for up to 45 seconds (R3 popup, or taken at once with auto-accept). Once accepted, only the rider's buttons on R4 move it (no skip button on C10); if nobody accepts, the clock takes over from stage 2. With the rider app signed out or offline, tracking runs on the clock as before.
+- Orders are shared through `localStorage` and every tab listens for changes, so the customer app and rider app can run side by side in two windows (or by switching apps in one tab) and follow each other.
 - Once delivered, the customer rates the order once via `rate(id, { rider, restaurant, review })`, Grab/LINE MAN style: rider stars (1–5) are required, restaurant stars and a review (≤ 200 chars) are optional. A back-to-home button is shown before and after rating. The history tab's "เขียนรีวิว" opens the same sheet.
 - History seeds four sample orders once, preserves new orders across refresh and logout, and supports an explicitly empty saved history.
 - Logout clears the customer's cart and session while retaining order history. The floating cart bar uses the same final total as Checkout.
@@ -143,7 +146,8 @@ Inside the phone frame, use `sticky`/`absolute` instead of `fixed` so bars stay 
 useCart()    // { restaurant, items, noteToStore, noteToRider, coupon, totals,
              //   add(item, restaurant, { replace }), updateQty(key, qty), remove(key), clear(),
              //   setNotes({ noteToStore, noteToRider }), applyCoupon(code), removeCoupon() }
-useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id), getStatus(order), advance(id), rate(id, { rider, restaurant, review }) }
+useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id), getStatus(order), advance(id), rate(id, { rider, restaurant, review }),
+             //   acceptJob(id, { auto }), advanceJob(id, fromStage) } — rider side (R3–R4)
 useSession() // { customerSignedIn, adminSignedIn, riderSignedIn, signIn('customer' | 'admin' | 'rider'), signOut(kind) }
 useAddress() // { address: { id, label, detail }, addresses, setAddress(id) } — picked on C2, default for C8
 useFavorites() // { favorites, isFavorite(id), toggleFavorite(id) } — restaurant ♥
@@ -157,7 +161,8 @@ useRiderStatus() // { online, autoAccept, setOnline(bool), setAutoAccept(bool) }
 - Restaurant/menu data: `getRestaurant(id)`, `findRestaurants({ q, categoryId, type })`, `toCartRestaurant(r)` from `@/data/restaurants`; `getMenu(id)`, `menusOf(restaurantId)` from `@/data/menus` (see `src/data/README.md`).
 - Coupons live in `src/data/coupons.js` (`EATSHUB20`, `NEWUSER100`).
 - `src/state/fixtures.js` has the spec's sample cart (ราชาอาหาร, 215 ฿ / 9 points) for tests; shipped screens read the live cart instead.
-- Everything is saved to `localStorage` (keys prefixed `eatshub:`); clear it to reset the demo.
+- Rider jobs (`src/state/orders.js`): `canAcceptJob(order)`, `acceptJob`, `advanceJob` and `stepTimes(order)` (when each stage was reached, for C10). An offered order carries `jobOfferExpiresAt`; an accepted one carries `riderJob: { step, times, auto? }`. Nothing else in the order snapshot changes. `isRiderOnDuty()` (`src/state/preferences.js`) decides whether a new order is offered.
+- Everything is saved to `localStorage` (keys prefixed `eatshub:`); clear it to reset the demo. `subscribe(key, callback)` in `src/state/storage.js` delivers changes made by other tabs.
 
 ## Working together (2 people)
 

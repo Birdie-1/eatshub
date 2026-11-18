@@ -4,6 +4,8 @@ import { DEFAULT_RIDER } from '@/data/riders'
 export const PAYMENT_METHODS = ['cod', 'promptpay', 'paypal']
 export const PAYMENT_LABELS = { cod: 'เก็บเงินปลายทาง', promptpay: 'PromptPay QR', paypal: 'PayPal' }
 export const ORDER_STEP_MS = 8000
+/** How long a new order waits at stage 1 for the rider (R3 countdown) before the clock takes over. */
+export const JOB_OFFER_MS = 45000
 export const ORDER_STEPS = [
   { label: 'รอรับออเดอร์', message: 'ร้านกำลังยืนยันออเดอร์ของคุณ', minutes: 30 },
   { label: 'ไปยังร้านค้า', message: 'ไรเดอร์กำลังเดินทางไปที่ร้าน', minutes: 25 },
@@ -23,7 +25,19 @@ export function makeOrderId(date, seq) {
   return `EH-BKK-${part('year')}${part('month')}${part('day')}-${String(seq).padStart(5, '0')}`
 }
 
-export function buildOrder({ cart, address, payment, rider = DEFAULT_RIDER, now = new Date(), seq = 1 }) {
+/**
+ * Freezes the cart into an order. `offerToRider` (the rider app is signed in and online) makes the order
+ * wait at stage 1 for up to JOB_OFFER_MS so the rider can accept it (R3); otherwise the clock runs.
+ */
+export function buildOrder({
+  cart,
+  address,
+  payment,
+  rider = DEFAULT_RIDER,
+  now = new Date(),
+  seq = 1,
+  offerToRider = false,
+}) {
   const totals = calcTotals(cart)
   if (!totals.meetsMinOrder) throw new Error('กรุณาตรวจสอบตะกร้าและยอดสั่งขั้นต่ำ')
   if (!PAYMENT_METHODS.includes(payment)) throw new Error('วิธีชำระเงินไม่ถูกต้อง')
@@ -38,19 +52,80 @@ export function buildOrder({ cart, address, payment, rider = DEFAULT_RIDER, now 
     address,
     payment,
     rider,
+    ...(offerToRider && { jobOfferExpiresAt: new Date(now.getTime() + JOB_OFFER_MS).toISOString() }),
   })
 }
 
+/**
+ * When the clock's stage 1 began. An offered order sits at stage 1 until the offer ends, then the clock
+ * continues from there (stage 2 at expiry), so an unanswered offer never makes the order jump ahead.
+ */
+function clockStart(order) {
+  return order.jobOfferExpiresAt
+    ? Date.parse(order.jobOfferExpiresAt) - ORDER_STEP_MS
+    : Date.parse(order.createdAt)
+}
+
+/**
+ * Order stage 1–5 (ORDER_STEPS), or 6 when cancelled. Orders the rider accepted (`riderJob`) are at
+ * whatever stage the rider has reached; every other order follows the clock.
+ */
 export function getStatus(order, now = Date.now()) {
   if (order.cancelled) return 6
-  const elapsed = Math.max(0, now - Date.parse(order.createdAt) + (order.offsetMs || 0))
+  if (order.riderJob) return order.riderJob.step
+  const elapsed = Math.max(0, now - clockStart(order) + (order.offsetMs || 0))
   return Math.min(5, Math.floor(elapsed / ORDER_STEP_MS) + 1)
 }
 
+/**
+ * Customer demo skip (C10). On an order still offered to the rider it ends the offer (stage 2 now);
+ * rider-driven orders only move from the rider app.
+ */
 export function advanceOrder(order, now = Date.now()) {
   const status = getStatus(order, now)
-  if (status >= 5) return order
+  if (status >= 5 || order.riderJob) return order
+  if (canAcceptJob(order, now)) return { ...order, jobOfferExpiresAt: new Date(now).toISOString() }
   return { ...order, offsetMs: (order.offsetMs || 0) + ORDER_STEP_MS }
+}
+
+/** An order offered to the rider, still waiting at stage 1 and not yet accepted. */
+export const canAcceptJob = (order, now = Date.now()) =>
+  Boolean(order.jobOfferExpiresAt) && !order.riderJob && getStatus(order, now) === 1
+
+/**
+ * Rider accepts (R3): the order moves to stage 2 and from now on only the rider moves it.
+ * `riderJob: { step: 2–5, times: [ISO time each stage from 2 was reached], auto?: true (auto-accept) }`.
+ * Unchanged when the order can't be accepted.
+ */
+export function acceptJob(order, now = Date.now(), { auto = false } = {}) {
+  if (!canAcceptJob(order, now)) return order
+  return {
+    ...order,
+    riderJob: { step: 2, times: [new Date(now).toISOString()], ...(auto && { auto: true }) },
+  }
+}
+
+/**
+ * Rider button on R4 (ถึงร้านค้าแล้ว → รับอาหารแล้ว → ส่งอาหารแล้ว). `from` is the stage the button was
+ * shown for, so a stale or repeated click can't skip or repeat a stage. Unchanged when it doesn't apply.
+ */
+export function advanceJob(order, from, now = Date.now()) {
+  const job = order.riderJob
+  if (!job || order.cancelled || job.step !== from || job.step >= 5) return order
+  return {
+    ...order,
+    riderJob: { ...job, step: job.step + 1, times: [...job.times, new Date(now).toISOString()] },
+  }
+}
+
+/** Timestamp (ms) at which each of the 5 stages was reached, or null for stages still ahead. */
+export function stepTimes(order, now = Date.now()) {
+  const status = getStatus(order, now)
+  const created = Date.parse(order.createdAt)
+  if (order.riderJob)
+    return [created, ...[0, 1, 2, 3].map((i) => Date.parse(order.riderJob.times[i]) || null)]
+  const start = clockStart(order) - (order.offsetMs || 0)
+  return [0, 1, 2, 3, 4].map((i) => (i >= status ? null : i === 0 ? created : start + i * ORDER_STEP_MS))
 }
 
 const isStars = (value) => Number.isInteger(value) && value >= 1 && value <= 5
