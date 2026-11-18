@@ -15,6 +15,15 @@ describe('rider demo data contract', () => {
     expect(data.filter((rider) => rider.riderStatus === 'block')).toHaveLength(3)
     for (const rider of data) expect(rider.isLoggedIn).toBe(rider.workStatus !== 'offline')
   })
+  it('credits edits to fictional admins only, not the staff name in the original screenshots', () => {
+    const editors = new Set(createRiders(now).map((rider) => rider.editedBy))
+    expect([...editors].sort()).toEqual(['ชูใจ ใฝ่ดี', 'มานะ ใจดี'].sort())
+  })
+  it('uses unique phone numbers on the unallocated 010 prefix so no real person can be reached', () => {
+    const phones = createRiders(now).map((rider) => rider.phone)
+    for (const phone of phones) expect(phone).toMatch(/^010 \d{3} \d{4}$/)
+    expect(new Set(phones).size).toBe(phones.length)
+  })
   it('keeps dates recent relative to the time the demo opens', () => {
     for (const rider of createRiders(now)) {
       const age = now.getTime() - Date.parse(rider.lastActiveAt)
@@ -27,7 +36,7 @@ describe('rider demo data contract', () => {
     expect(DEFAULT_RIDER).toMatchObject({
       code: 'EA00001',
       name: 'นาย สมชาย ตั้งกันไจ',
-      phone: '090 971 6354',
+      phone: '010 971 6354',
       rating: 4.5,
     })
   })

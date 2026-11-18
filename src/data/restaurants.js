@@ -104,7 +104,7 @@ export const restaurants = [
     offer: { percent: 15, minFood: 200, maxDiscount: 50 },
     recommended: true,
     address: 'ซอยวัชรพล 3 แขวงท่าแร้ง เขตบางเขน กรุงเทพฯ',
-    phone: '02 123 4567',
+    phone: '010 410 4567',
     hours: everyday(['10:00–12:00', '14:00–19:00']),
     reviews: [
       { name: 'กรรณ***', rating: 5, text: 'สุกี้อร่อยมาก น้ำจิ้มเข้มข้น ส่งไวค่ะ', date: '2026-11-12' },
@@ -134,7 +134,7 @@ export const restaurants = [
     offer: null,
     recommended: false,
     address: '45/2 ถนนพหลโยธิน แขวงอนุสาวรีย์ เขตบางเขน กรุงเทพฯ',
-    phone: '089 456 7812',
+    phone: '010 456 7812',
     hours: everyday(['09:00–16:00']),
     reviews: [
       { name: 'สมศ***', rating: 5, text: 'น้ำซุปเข้มข้นเหมือนกินที่ริมคลอง', date: '2026-11-14' },
@@ -163,7 +163,7 @@ export const restaurants = [
     offer: null,
     recommended: false,
     address: '12 ซอยรามอินทรา 5 แขวงอนุสาวรีย์ เขตบางเขน กรุงเทพฯ',
-    phone: '086 234 9910',
+    phone: '010 234 9910',
     hours: everyday(['15:00–22:00']),
     reviews: [
       { name: 'อรุณ***', rating: 5, text: 'น้ำจิ้มมะขามคือที่สุด', date: '2026-11-10' },
@@ -192,7 +192,7 @@ export const restaurants = [
     offer: null, // promo is display-only (#3)
     recommended: true,
     address: '88 ถนนสุขาภิบาล 5 แขวงออเงิน เขตสายไหม กรุงเทพฯ',
-    phone: '081 777 2025',
+    phone: '010 777 2025',
     hours: everyday(['06:00–14:00']),
     reviews: [
       { name: 'จิร***', rating: 5, text: 'หมูทอดกรอบนอกนุ่มใน กินกับข้าวเหนียวฟินมาก', date: '2026-11-15' },
@@ -222,7 +222,7 @@ export const restaurants = [
     offer: null,
     recommended: false,
     address: '1029 ถนนเจริญนคร แขวงบางลำภูล่าง เขตคลองสาน กรุงเทพฯ',
-    phone: '02 438 5566',
+    phone: '010 438 5566',
     hours: everyday(['11:00–21:30']),
     reviews: [
       { name: 'Raj***', rating: 5, text: 'นานเนยกระเทียมหอมมาก แกงรสชาติแท้', date: '2026-11-09' },
@@ -251,7 +251,7 @@ export const restaurants = [
     offer: null,
     recommended: false,
     address: '230 ถนนวัชรพล แขวงท่าแร้ง เขตบางเขน กรุงเทพฯ',
-    phone: '092 515 3030',
+    phone: '010 515 3030',
     hours: everyday(['06:00–10:00', '16:00–21:00']),
     reviews: [
       { name: 'ศักดิ์***', rating: 4, text: 'หมูปิ้งนุ่ม หอมนมสด เหมาะกับมื้อเช้า', date: '2026-11-13' },
