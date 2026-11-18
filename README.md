@@ -24,20 +24,23 @@ brand/                  logo files (primary color #FCBB18), imported via @brand/
 docs/REQUIREMENTS.md    mockup scope, decisions, done criteria (source of truth)
 docs/specs/             module specs summarized from the original PDFs
 src/
-  main.jsx, router.jsx  entry + all routes; screen IDs (C1–C12, A1–A3) match REQUIREMENTS.md
+  main.jsx, router.jsx  entry + all routes; screen IDs (C1–C12, R1–R7, A1–A5) match REQUIREMENTS.md
   index.css             Tailwind + design tokens (see "Styling" below)
   customer/             customer app
-    layouts/            PhoneFrame (phone frame on desktop, full screen on phones),
-                        TabLayout (bottom nav ร้านอาหาร · ตะกร้า · ออเดอร์ · บัญชี)
+    layouts/            TabLayout (bottom nav ร้านอาหาร · ตะกร้า · ออเดอร์ · บัญชี)
     pages/              C1–C12 screens
     components/         customer-only UI: RestaurantCard, CategoryGrid, BannerCarousel,
                         RestaurantFilterSheet, AddressSheet, MenuCard (C4 items), StarRating,
                         FloatingCartBar (C6)
+  rider/                rider app (R1–R7, scope in REQUIREMENTS §4.1; issues #34–#38)
+    layouts/            RiderTabLayout (dark bottom nav หน้าแรก · กระเป๋าเงิน · รายได้ · บัญชี)
+    pages/              R1 sign-in; R2, R4–R7 are placeholders until #35–#38
+    components/         RequireRider (demo route guard)
   admin/                back office
     layouts/            AdminLayout (header, sidebar with ☰ on mobile, footer), adminMenu.js
     pages/              A1 sign-in, A3 rider list
-  shared/               used by both apps
-    pages/Landing.jsx   choose customer app / back office
+  shared/               used by more than one app
+    pages/Landing.jsx   choose customer app / back office (rider entry added with #35)
     components/         shared UI (see "Shared building blocks" below)
     lib/format.js       formatBaht / formatAmount
     assets/images/      Unsplash food photos (stored in repo, never hotlinked)
@@ -51,7 +54,7 @@ Production: **https://eatshub-red.vercel.app**. The Vercel project is linked to 
 
 ## Customer ordering demo
 
-- Landing has separate customer/back-office entrances. Customer routes require the demo session and return to the requested page after sign-in.
+- Landing has separate customer/back-office entrances. The rider app (`/rider`) is reachable by URL only until its home screen (#35) is built. Customer routes require the demo session and return to the requested page after sign-in.
 - Checkout reads the real cart, addresses and `calcTotals` output. COD, PromptPay sample QR and PayPal confirmation are simulations; no financial credentials are collected.
 - Every order freezes its items, notes, address, totals and `DEFAULT_RIDER`. Order IDs use a persisted sequence beginning after sample order 00012.
 - Tracking advances every 8 seconds (about 32 seconds total); the demo skip button survives refresh. COD becomes paid only on delivery.
@@ -90,6 +93,12 @@ Run commands inside the inner `eatshub` directory containing `package.json`. If 
 | `/app/orders` | C11 Order history |
 | `/app/account` | C12 Account |
 | `/app/account/favorites` | C12 sub-page: favorite restaurants |
+| `/rider/signin` | R1 Rider sign in |
+| `/rider` | R2 Rider home (+ R3 new-job popup) |
+| `/rider/jobs/:orderId` | R4 Delivery in progress + earnings summary |
+| `/rider/wallet` | R5 Wallets |
+| `/rider/income` | R6 Income |
+| `/rider/account` | R7 Account |
 | `/admin/signin` | A1 Back-office sign in |
 | `/admin` | A5 Dashboard (default after admin sign-in) |
 | `/admin/riders` | A3 Rider list |
@@ -134,7 +143,7 @@ useCart()    // { restaurant, items, noteToStore, noteToRider, coupon, totals,
              //   add(item, restaurant, { replace }), updateQty(key, qty), remove(key), clear(),
              //   setNotes({ noteToStore, noteToRider }), applyCoupon(code), removeCoupon() }
 useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id), getStatus(order), advance(id), rate(id, { rider, restaurant, review }) }
-useSession() // { customerSignedIn, adminSignedIn, signIn('customer' | 'admin'), signOut(kind) }
+useSession() // { customerSignedIn, adminSignedIn, riderSignedIn, signIn('customer' | 'admin' | 'rider'), signOut(kind) }
 useAddress() // { address: { id, label, detail }, addresses, setAddress(id) } — picked on C2, default for C8
 useFavorites() // { favorites, isFavorite(id), toggleFavorite(id) } — restaurant ♥
 ```

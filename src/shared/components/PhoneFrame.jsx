@@ -2,7 +2,7 @@ import { Outlet } from 'react-router'
 import { Toaster } from '@/shared/components/Toast'
 
 /**
- * Customer app shell.
+ * Phone shell for the customer app and the rider app.
  * Phones (< md): full screen. Desktop: app centered inside a phone-shaped frame.
  * Screens render into a scrollable column; fixed UI (bottom nav, floating cart bar)
  * should use `sticky`/`absolute` inside this frame, never `fixed`, so it stays in the phone.
