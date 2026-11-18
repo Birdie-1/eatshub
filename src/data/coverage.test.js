@@ -1,3 +1,5 @@
+import { provinceOrderRows, provinceOrderTotal, provinceOrderReport } from './coverage'
+import { dashboardTotals } from './dashboard'
 import { describe, expect, it } from 'vitest'
 import { coverageProvinces, coverageTop, provinceShapes, coverageMetrics, provinceNames } from './coverage'
 
@@ -21,5 +23,23 @@ describe('historical service coverage', () => {
   it('retains all four historical metrics and labels the economic estimate', () => {
     expect(coverageMetrics.map((m) => m.value)).toEqual(['600,000+', '10,000,000+', '25,000+', '~500'])
     expect(coverageMetrics[3].unit).toContain('คาดการณ์')
+  })
+})
+
+describe('fictional province orders', () => {
+  it('reconciles the allocation with the annual demo KPI', () => {
+    expect(provinceOrderRows).toHaveLength(19)
+    expect(provinceOrderTotal).toBe(dashboardTotals.orders)
+    expect(provinceOrderRows.every((row) => Number.isInteger(row.orders) && row.orders > 0)).toBe(true)
+  })
+  it('keeps Chumphon first and shows explicit zero for other map provinces', () => {
+    expect(
+      [...provinceOrderRows]
+        .sort((a, b) => b.orders - a.orders)
+        .slice(0, 3)
+        .map((p) => p.id),
+    ).toEqual(['th-86', 'th-76', 'th-14'])
+    expect(provinceOrderReport('th-86')).toMatchObject({ orders: 150, share: 15.9 })
+    expect(provinceOrderReport('th-11')).toMatchObject({ name: 'สมุทรปราการ', orders: 0, share: 0 })
   })
 })

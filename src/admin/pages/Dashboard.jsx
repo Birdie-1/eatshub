@@ -1,3 +1,4 @@
+import RiderEarnings from '@/admin/components/RiderEarnings'
 import { lazy, Suspense, useMemo } from 'react'
 import {
   ArrowRight,
@@ -97,6 +98,17 @@ export default function Dashboard() {
           <Badge tone="brand">ข้อมูลตัวอย่าง</Badge>
         </div>
       </div>
+      <Suspense
+        fallback={
+          <Card>
+            <p className="text-sm text-neutral-500">กำลังโหลดพื้นที่ให้บริการ…</p>
+          </Card>
+        }
+      >
+        <ServiceCoverage />
+      </Suspense>
+      <RiderEarnings />
+      <h2 className="pt-3 text-xl font-bold">รายงานแพลตฟอร์มตัวอย่างปี {dashboardYear + 543}</h2>
       <section aria-label="ตัวเลขภาพรวม" className="grid grid-cols-2 gap-3 xl:grid-cols-4 xl:gap-4">
         {metrics.map(({ label, value, note, icon: Icon, tone, border }) => (
           <Card
@@ -267,15 +279,6 @@ export default function Dashboard() {
         </Card>
         <RecentOrders orders={recent} />
       </div>
-      <Suspense
-        fallback={
-          <Card>
-            <p className="text-sm text-neutral-500">กำลังโหลดพื้นที่ให้บริการ…</p>
-          </Card>
-        }
-      >
-        <ServiceCoverage />
-      </Suspense>
     </div>
   )
 }

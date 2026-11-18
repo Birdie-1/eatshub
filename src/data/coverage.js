@@ -123,3 +123,24 @@ export const provinceNames = Object.fromEntries(
     ['96', 'นราธิวาส'],
   ].map(([id, name]) => [`th-${id}`, name]),
 )
+
+/** Fictional annual province order counts, explicitly requested for the interactive admin map.
+ * Separate from historical 2022 news metrics; sums to the 2025 demo KPI (946 orders).
+ * Provinces outside this demo allocation show zero; no claim about actual province activity.
+ */
+const demoOrderCounts = [83, 97, 54, 30, 25, 29, 113, 41, 37, 32, 47, 19, 23, 40, 49, 31, 26, 20, 150]
+export const provinceOrderRows = coverageProvinces.map((province, index) => ({
+  ...province,
+  orders: demoOrderCounts[index],
+}))
+export const provinceOrderTotal = provinceOrderRows.reduce((sum, row) => sum + row.orders, 0)
+export function provinceOrderReport(id) {
+  const row = provinceOrderRows.find((province) => province.id === id)
+  return {
+    id,
+    name: provinceNames[id],
+    rank: row?.rank,
+    orders: row?.orders ?? 0,
+    share: row ? Math.round((row.orders / provinceOrderTotal) * 1000) / 10 : 0,
+  }
+}
