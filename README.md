@@ -66,9 +66,9 @@ The back office uses the full browser width: mobile rider cards below 1024px and
 
 - 17 sample riders, search by name/code/phone/vehicle/province, work and account filters, page size and pagination.
 - Mobile navigation opens as a modal drawer with Escape, backdrop dismissal and keyboard focus handling.
-- Sidebar groups expand to show the original admin sitemap; unsupported actions use the shared mockup toast.
+- The sidebar lists only the screens that exist (dashboard, rider management, logout); unbuilt admin pages are hidden rather than shown as dead links.
 - Active/Block can be changed in page state. Blocking requires a reason and updates the editor and timestamp; reloading resets the sample data.
-- Sign-in is a demonstration using `useSession`, not real authentication. Logout clears the admin session and returns to Landing. Add/edit/delete do not change records.
+- Sign-in is a demonstration using `useSession`, not real authentication. Logout clears the admin session and returns to Landing.
 - No API or database is connected. Rider records live in `src/data/riders.js`.
 - `DEFAULT_RIDER` exports EA00001 for checkout/tracking; rider dates are generated relative to the current time.
 
@@ -123,7 +123,7 @@ Inside the phone frame, use `sticky`/`absolute` instead of `fixed` so bars stay 
 | `TopBar` | sticky back button + title; `backTo`, `right`, `transparent` (over a cover image) |
 | `BottomSheet` | `open`, `onClose`, `title`, `footer`; stays inside the phone frame |
 | `ConfirmDialog` | centered yes/no dialog: `open`, `title`, `confirmLabel`, `onConfirm`, `onCancel`; stays inside the phone frame |
-| `toast(msg)` / `notInScope()` | from `Toast.jsx`; `notInScope()` shows "ไม่อยู่ในขอบเขต Mockup" for buttons that go nowhere |
+| `toast(msg)` | from `Toast.jsx`; shows a short message in the nearest `<Toaster />` |
 
 **Money**: `formatBaht(215)` → `215 ฿` for prices in lists; `formatAmount(215)` → `215.00` for order summaries.
 

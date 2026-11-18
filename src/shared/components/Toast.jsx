@@ -5,8 +5,6 @@ import { useEffect, useSyncExternalStore } from 'react'
  * the nearest mounted <Toaster /> shows it for 2 seconds.
  * PhoneFrame and AdminLayout each mount one, so it stays inside the phone on desktop.
  */
-export const OUT_OF_SCOPE = 'ไม่อยู่ในขอบเขต Mockup'
-
 let current = null
 const listeners = new Set()
 
@@ -17,11 +15,6 @@ function emit(next) {
 
 export function toast(message) {
   emit({ id: Date.now(), message })
-}
-
-/** Use on buttons that intentionally go nowhere in the mockup. */
-export function notInScope() {
-  toast(OUT_OF_SCOPE)
 }
 
 function subscribe(listener) {

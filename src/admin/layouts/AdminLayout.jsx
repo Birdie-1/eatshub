@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router'
-import { ChevronDown, LogOut, Menu, X, ShieldCheck } from 'lucide-react'
+import { LogOut, Menu, X, ShieldCheck } from 'lucide-react'
 import Logo from '@/shared/components/Logo'
-import { Toaster, notInScope } from '@/shared/components/Toast'
+import { Toaster } from '@/shared/components/Toast'
 import { useSession } from '@/state'
 import { adminMenu } from '@/admin/layouts/adminMenu'
 
@@ -19,10 +19,6 @@ export default function AdminLayout() {
     // Leave the guarded route before clearing its session to avoid competing redirects.
     navigate('/', { replace: true, flushSync: true })
     signOut('admin')
-  }
-  const unavailable = () => {
-    notInScope()
-    closeMenu()
   }
 
   useEffect(() => {
@@ -62,41 +58,8 @@ export default function AdminLayout() {
         เมนูจัดการระบบ
       </p>
       <nav aria-label={mobile ? 'เมนูหลังบ้านบนมือถือ' : 'เมนูหลังบ้าน'} className="flex flex-col gap-1 px-3 pb-6">
-        {adminMenu.map(({ label, icon: Icon, children, action, to, end }) =>
-          children ? (
-            <details key={label} open={label === 'ไรเดอร์' || undefined} className="admin-menu-group">
-              <summary className="flex min-h-11 cursor-pointer list-none items-center gap-3 rounded-xl px-3 text-sm text-neutral-200 hover:bg-white/5">
-                <Icon className="size-[18px] shrink-0" />
-                {label}
-                <ChevronDown className="admin-menu-chevron ml-auto size-4 transition-transform" />
-              </summary>
-              <div className="ml-5 mt-1 flex flex-col gap-1 border-l border-white/10 pl-2">
-                {children.map((child) =>
-                  child.to ? (
-                    <NavLink
-                      key={child.label}
-                      to={child.to}
-                      onClick={closeMenu}
-                      className={({ isActive }) =>
-                        `flex min-h-11 items-center rounded-xl px-3 text-sm ${isActive ? 'bg-brand font-semibold text-ink' : 'text-neutral-300 hover:bg-white/5'}`
-                      }
-                    >
-                      {child.label}
-                    </NavLink>
-                  ) : (
-                    <button
-                      key={child.label}
-                      type="button"
-                      onClick={unavailable}
-                      className="min-h-11 rounded-xl px-3 text-left text-sm text-neutral-300 hover:bg-white/5"
-                    >
-                      {child.label}
-                    </button>
-                  ),
-                )}
-              </div>
-            </details>
-          ) : to ? (
+        {adminMenu.map(({ label, icon: Icon, to, end }) =>
+          to ? (
             <NavLink
               key={label}
               to={to}
@@ -113,7 +76,7 @@ export default function AdminLayout() {
             <button
               key={label}
               type="button"
-              onClick={action === 'logout' ? logout : unavailable}
+              onClick={logout}
               className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-left text-sm text-neutral-300 hover:bg-white/5"
             >
               <Icon className="size-[18px] shrink-0" />

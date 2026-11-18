@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router'
-import { Banknote, CreditCard, MapPin, Plus, QrCode, ShieldCheck } from 'lucide-react'
+import { Banknote, CreditCard, MapPin, QrCode, ShieldCheck } from 'lucide-react'
 import Button from '@/shared/components/Button'
 import Card from '@/shared/components/Card'
 import TopBar from '@/shared/components/TopBar'
-import { notInScope } from '@/shared/components/Toast'
 import OrderSummary from '@/customer/components/OrderSummary'
 import { useCart, useAddress } from '@/state'
 import { formatAmount } from '@/shared/lib/format'
@@ -49,14 +48,6 @@ export default function Checkout() {
                 </label>
               ))}
             </div>
-            <button
-              type="button"
-              onClick={notInScope}
-              className="mt-3 flex min-h-11 items-center gap-2 text-sm text-brand-dark"
-            >
-              <Plus className="size-4" />
-              เพิ่มที่อยู่
-            </button>
           </fieldset>
         </Card>
         <Card className="border border-neutral-100 shadow-none">
