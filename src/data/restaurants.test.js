@@ -6,6 +6,11 @@ import { rachaAhan } from '@/state/fixtures'
 const names = (list) => list.map((r) => r.name)
 
 describe('restaurant data', () => {
+  it('uses unique phone numbers on the unallocated 010 prefix so no real shop can be reached', () => {
+    const phones = restaurants.map((r) => r.phone)
+    for (const phone of phones) expect(phone).toMatch(/^010 \d{3} \d{4}$/)
+    expect(new Set(phones).size).toBe(phones.length)
+  })
   it('has the 6 restaurants from spec 04', () => {
     expect(names(restaurants)).toEqual([
       'ราชาอาหาร',

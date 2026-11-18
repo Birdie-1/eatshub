@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { buildOrder, getStatus, advanceOrder, nextOrderSequence } from './orders'
+import { buildOrder, getStatus, advanceOrder, nextOrderSequence, rateOrder } from './orders'
 import { createSampleOrders } from '@/data/orders'
 import { load, save } from './storage'
 
@@ -40,6 +40,8 @@ export function OrdersProvider({ children }) {
       getStatus,
       advance: (id) =>
         setOrders((previous) => previous.map((order) => (order.id === id ? advanceOrder(order) : order))),
+      rate: (id, stars) =>
+        setOrders((previous) => previous.map((order) => (order.id === id ? rateOrder(order, stars) : order))),
     }),
     [orders],
   )

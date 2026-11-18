@@ -23,7 +23,7 @@ Before declaring work done or opening a PR, all of these must pass: `npm run lin
 
 ## Source of truth
 
-- **Scope** → `docs/REQUIREMENTS.md`. If a change alters scope (new screen, new flow, something moving in/out of scope), update that doc in the same PR. Screen IDs (C1–C12, A1–A5) are used in `router.jsx` and docs — keep them consistent.
+- **Scope** → `docs/REQUIREMENTS.md`. If a change alters scope (new screen, new flow, something moving in/out of scope), update that doc in the same PR. Screen IDs (C1–C12, R1–R7, A1–A5) are used in `router.jsx` and docs — keep them consistent.
 - **Original product behaviour** → `docs/specs/*.md` (summaries of the original PDFs). Deliberate deviations from the specs are listed in REQUIREMENTS §6; add to that table when you fix a spec inconsistency.
 - **Mock data shapes** → the header comment of each file in `src/data/`, plus `src/data/README.md`.
 - When behaviour or structure changes, update README (and `src/data/README.md` for data files) so they stay accurate.
@@ -39,9 +39,9 @@ Before declaring work done or opening a PR, all of these must pass: `npm run lin
 **Components**: function components + hooks, one component per file, `PascalCase.jsx`. Non-component modules are `camelCase.js`. Hooks are named `useX`.
 
 **Folder boundaries** — keep the dependency direction one-way:
-- `src/customer/` and `src/admin/` may import from `src/shared/`, `src/state/`, `src/data/`; avoid importing from each other. Code both apps need belongs in `shared/` or `state/`. (Known exception: `admin/pages/Dashboard.jsx` imports `useOrderClock` from `customer/` — move that hook to `shared/` or `state/` if you touch it.)
-- `src/shared/` must not import from `customer/` or `admin/`.
-- Put a component in `shared/components/` only when both apps (or 2+ screens) use it; otherwise keep it next to its screen.
+- `src/customer/`, `src/rider/` and `src/admin/` may import from `src/shared/`, `src/state/`, `src/data/`; avoid importing from each other. Code two or more apps need belongs in `shared/` or `state/`. (Known exception: `admin/pages/Dashboard.jsx` imports `useOrderClock` from `customer/` — move that hook to `shared/` or `state/` if you touch it.)
+- `src/shared/` must not import from `customer/`, `rider/` or `admin/`.
+- Put a component in `shared/components/` only when two or more apps (or 2+ screens) use it; otherwise keep it next to its screen.
 - Reuse the shared building blocks (`Button`, `Card`, `Badge`, `TopBar`, `BottomSheet`, `ConfirmDialog`, `toast`) before writing new ones.
 
 **Keep it simple**: this is a mockup. Don't add abstractions, config layers, or dependencies the current screens don't need. New npm dependencies need a clear reason — mention it in the PR.
@@ -58,7 +58,7 @@ Before declaring work done or opening a PR, all of these must pass: `npm run lin
 
 - **All user-facing text is Thai only** (no i18n layer). Keep terminology consistent with the specs and existing screens.
 - Code, identifiers, comments, and `README`/`CLAUDE.md` are in English. `docs/REQUIREMENTS.md`, `QA.md` and `DEMO.md` are Thai.
-- Buttons for features that are intentionally out of scope call `notInScope()` (toast "ไม่อยู่ในขอบเขต Mockup") instead of silently doing nothing.
+- Don't render buttons, links or menu items for features that are out of scope — hide them instead of shipping dead controls (no "not in scope" toasts). Static display text is fine.
 
 ## State, money and data rules
 
@@ -99,7 +99,9 @@ To reduce merge conflicts: split work by screen/flow, keep edits to the frequent
 
 ## Deployment
 
-Vercel static Vite site (`vercel.json` rewrites every path to `index.html` so deep links work). **Production deployment is currently on hold at the user's request** — do not deploy, publish a production URL, or claim one exists unless the user explicitly asks.
+Vercel static Vite site (`vercel.json` rewrites every path to `index.html` so deep links work). Production is live at **https://eatshub-red.vercel.app** (Vercel team `birdie-1s-projects`, project `eatshub`).
+
+The project is linked to this GitHub repo: **every merge to `main` deploys production automatically**, and each PR gets its own preview URL (deployment-specific URLs are behind Vercel login; the production domain is public). So merging to `main` ships straight to the URL executives see — run the full check first. Don't change Vercel project settings, domains or deployment protection unless the user asks.
 
 ## Working agreements for Claude
 

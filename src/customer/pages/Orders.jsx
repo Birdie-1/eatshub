@@ -1,14 +1,14 @@
 import { Link } from 'react-router'
-import { ClipboardList, Star } from 'lucide-react'
+import { ClipboardList } from 'lucide-react'
 import { useOrders } from '@/state'
 import { useOrderClock } from '@/shared/hooks/useOrderClock'
-import { formatOrderDate, getStatus, ORDER_STEPS, PAYMENT_LABELS } from '@/state/orders'
+import { formatOrderDate, getStatus, isRated, ORDER_STEPS, PAYMENT_LABELS } from '@/state/orders'
 import { formatAmount } from '@/shared/lib/format'
 import TopBar from '@/shared/components/TopBar'
 import Card from '@/shared/components/Card'
 import Badge from '@/shared/components/Badge'
 import Button from '@/shared/components/Button'
-import { notInScope } from '@/shared/components/Toast'
+import StarRating from '@/customer/components/StarRating'
 
 export default function Orders() {
   const { orders } = useOrders()
@@ -44,17 +44,22 @@ export default function Orders() {
                       ติดตามคำสั่งซื้อ
                     </Button>
                   ) : status === 5 ? (
-                    order.rating ? (
-                      <p className="mt-4 flex items-center gap-1 text-brand-dark">
-                        {Array.from({ length: 5 }, (_, i) => (
-                          <Star key={i} className="size-4 fill-brand text-brand" />
-                        ))}
-                        <span className="ml-2 text-xs text-neutral-500">ให้คะแนนแล้ว</span>
+                    isRated(order) ? (
+                      <p className="mt-4 flex items-center gap-1">
+                        <StarRating value={order.rating || order.riderRating} />
+                        <span className="ml-2 text-xs text-neutral-500">
+                          {order.rating ? 'ให้คะแนนร้านแล้ว' : 'ให้คะแนนไรเดอร์แล้ว'}{' '}
+                          {order.rating || order.riderRating}/5
+                        </span>
                       </p>
                     ) : (
-                      <button onClick={notInScope} className="mt-3 min-h-11 text-sm text-brand-dark">
+                      <Link
+                        to={`/app/orders/${order.id}`}
+                        state={{ rate: true }}
+                        className="mt-3 inline-flex min-h-11 items-center text-sm text-brand-dark"
+                      >
                         เขียนรีวิว
-                      </button>
+                      </Link>
                     )
                   ) : null}
                 </Card>

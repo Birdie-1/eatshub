@@ -1,44 +1,11 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
-import {
-  Bell,
-  ChevronRight,
-  Gift,
-  Heart,
-  HelpCircle,
-  Info,
-  KeyRound,
-  LogOut,
-  MapPin,
-  Phone,
-  ShieldCheck,
-  Star,
-  User,
-  UserPlus,
-} from 'lucide-react'
+import { Link, useNavigate } from 'react-router'
+import { ChevronRight, Gift, Heart, LogOut, User } from 'lucide-react'
 import { useCart, useSession } from '@/state'
 import TopBar from '@/shared/components/TopBar'
 import Card from '@/shared/components/Card'
 import ConfirmDialog from '@/shared/components/ConfirmDialog'
-import { notInScope } from '@/shared/components/Toast'
 
-const groups = [
-  [
-    ['ข้อมูลส่วนตัว', User],
-    ['การแจ้งเตือน', Bell],
-    ['บันทึกที่อยู่', MapPin],
-    ['ร้านค้าที่ถูกใจ', Heart, '/app/account/favorites'],
-    ['เปลี่ยนรหัสผ่าน', KeyRound],
-    ['คะแนนสะสม', Star],
-    ['แนะนำเพื่อน', UserPlus],
-  ],
-  [
-    ['เงื่อนไขและข้อตกลง', ShieldCheck],
-    ['เกี่ยวกับเรา', Info],
-    ['FAQ', HelpCircle],
-    ['โทรหา Call Center', Phone],
-  ],
-]
 export default function Account() {
   const [confirm, setConfirm] = useState(false)
   const { signOut } = useSession()
@@ -69,21 +36,13 @@ export default function Account() {
             คะแนนสะสม <strong className="ml-auto">59</strong>
           </p>
         </Card>
-        {groups.map((items, index) => (
-          <Card key={index} className="divide-y divide-neutral-100 border border-neutral-100 shadow-none">
-            {items.map(([label, Icon, to]) => (
-              <button
-                key={label}
-                onClick={to ? () => navigate(to) : notInScope}
-                className="flex min-h-14 w-full items-center gap-3 text-left text-sm"
-              >
-                <Icon className="size-5 text-neutral-400" />
-                {label}
-                <ChevronRight className="ml-auto size-4 text-neutral-400" />
-              </button>
-            ))}
-          </Card>
-        ))}
+        <Card className="border border-neutral-100 shadow-none">
+          <Link to="/app/account/favorites" className="flex min-h-14 w-full items-center gap-3 text-sm">
+            <Heart className="size-5 text-neutral-400" />
+            ร้านค้าที่ถูกใจ
+            <ChevronRight className="ml-auto size-4 text-neutral-400" />
+          </Link>
+        </Card>
         <Card className="border border-neutral-100 shadow-none">
           <button
             onClick={() => setConfirm(true)}

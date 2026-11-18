@@ -3,7 +3,7 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router'
 import { ArrowLeft, ArrowRight, Eye, EyeOff, LockKeyhole, UserRound } from 'lucide-react'
 import Logo from '@/shared/components/Logo'
 import Button from '@/shared/components/Button'
-import { Toaster, notInScope } from '@/shared/components/Toast'
+import { Toaster } from '@/shared/components/Toast'
 import { useSession } from '@/state'
 
 // Demo only: no credentials are sent or authenticated.
@@ -95,13 +95,6 @@ export default function AdminSignIn() {
                 </button>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={notInScope}
-              className="min-h-11 text-sm text-neutral-500 underline underline-offset-4"
-            >
-              ลืมรหัสผ่าน?
-            </button>
             <Button type="submit" size="lg" block disabled={!username.trim()}>
               เข้าสู่ระบบ
               <ArrowRight className="size-4" />

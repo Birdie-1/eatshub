@@ -24,20 +24,23 @@ brand/                  logo files (primary color #FCBB18), imported via @brand/
 docs/REQUIREMENTS.md    mockup scope, decisions, done criteria (source of truth)
 docs/specs/             module specs summarized from the original PDFs
 src/
-  main.jsx, router.jsx  entry + all routes; screen IDs (C1–C12, A1–A3) match REQUIREMENTS.md
+  main.jsx, router.jsx  entry + all routes; screen IDs (C1–C12, R1–R7, A1–A5) match REQUIREMENTS.md
   index.css             Tailwind + design tokens (see "Styling" below)
   customer/             customer app
-    layouts/            PhoneFrame (phone frame on desktop, full screen on phones),
-                        TabLayout (bottom nav ร้านอาหาร · ตะกร้า · ออเดอร์ · บัญชี)
+    layouts/            TabLayout (bottom nav ร้านอาหาร · ตะกร้า · ออเดอร์ · บัญชี)
     pages/              C1–C12 screens
     components/         customer-only UI: RestaurantCard, CategoryGrid, BannerCarousel,
                         RestaurantFilterSheet, AddressSheet, MenuCard (C4 items), StarRating,
                         FloatingCartBar (C6)
+  rider/                rider app (R1–R7, scope in REQUIREMENTS §4.1; issues #34–#38)
+    layouts/            RiderTabLayout (dark bottom nav หน้าแรก · กระเป๋าเงิน · รายได้ · บัญชี)
+    pages/              R1 sign-in; R2, R4–R7 are placeholders until #35–#38
+    components/         RequireRider (demo route guard)
   admin/                back office
     layouts/            AdminLayout (header, sidebar with ☰ on mobile, footer), adminMenu.js
     pages/              A1 sign-in, A3 rider list
-  shared/               used by both apps
-    pages/Landing.jsx   choose customer app / back office
+  shared/               used by more than one app
+    pages/Landing.jsx   choose customer app / back office (rider entry added with #35)
     components/         shared UI (see "Shared building blocks" below)
     lib/format.js       formatBaht / formatAmount
     assets/images/      Unsplash food photos (stored in repo, never hotlinked)
@@ -47,14 +50,15 @@ src/
 
 Customer and back-office demo flows are implemented. See [the five-minute demo script](docs/DEMO.md) and [integration QA results](docs/QA.md).
 
-Production deployment is on hold at the user's request. No production URL has been published by this work.
+Production: **https://eatshub-red.vercel.app**. The Vercel project is linked to this repo, so every merge to `main` deploys production automatically and each PR gets a preview URL.
 
 ## Customer ordering demo
 
-- Landing has separate customer/back-office entrances. Customer routes require the demo session and return to the requested page after sign-in.
+- Landing has separate customer/back-office entrances. The rider app (`/rider`) is reachable by URL only until its home screen (#35) is built. Customer routes require the demo session and return to the requested page after sign-in.
 - Checkout reads the real cart, addresses and `calcTotals` output. COD, PromptPay sample QR and PayPal confirmation are simulations; no financial credentials are collected.
 - Every order freezes its items, notes, address, totals and `DEFAULT_RIDER`. Order IDs use a persisted sequence beginning after sample order 00012.
 - Tracking advances every 8 seconds (about 32 seconds total); the demo skip button survives refresh. COD becomes paid only on delivery.
+- Once delivered, the customer rates the order once via `rate(id, { rider, restaurant, review })`, Grab/LINE MAN style: rider stars (1–5) are required, restaurant stars and a review (≤ 200 chars) are optional. A back-to-home button is shown before and after rating. The history tab's "เขียนรีวิว" opens the same sheet.
 - History seeds four sample orders once, preserves new orders across refresh and logout, and supports an explicitly empty saved history.
 - Logout clears the customer's cart and session while retaining order history. The floating cart bar uses the same final total as Checkout.
 
@@ -65,9 +69,9 @@ The back office uses the full browser width: mobile rider cards below 1024px and
 
 - 17 sample riders, search by name/code/phone/vehicle/province, work and account filters, page size and pagination.
 - Mobile navigation opens as a modal drawer with Escape, backdrop dismissal and keyboard focus handling.
-- Sidebar groups expand to show the original admin sitemap; unsupported actions use the shared mockup toast.
+- The sidebar lists only the screens that exist (dashboard, rider management, logout); unbuilt admin pages are hidden rather than shown as dead links.
 - Active/Block can be changed in page state. Blocking requires a reason and updates the editor and timestamp; reloading resets the sample data.
-- Sign-in is a demonstration using `useSession`, not real authentication. Logout clears the admin session and returns to Landing. Add/edit/delete do not change records.
+- Sign-in is a demonstration using `useSession`, not real authentication. Logout clears the admin session and returns to Landing.
 - No API or database is connected. Rider records live in `src/data/riders.js`.
 - `DEFAULT_RIDER` exports EA00001 for checkout/tracking; rider dates are generated relative to the current time.
 
@@ -89,6 +93,12 @@ Run commands inside the inner `eatshub` directory containing `package.json`. If 
 | `/app/orders` | C11 Order history |
 | `/app/account` | C12 Account |
 | `/app/account/favorites` | C12 sub-page: favorite restaurants |
+| `/rider/signin` | R1 Rider sign in |
+| `/rider` | R2 Rider home (+ R3 new-job popup) |
+| `/rider/jobs/:orderId` | R4 Delivery in progress + earnings summary |
+| `/rider/wallet` | R5 Wallets |
+| `/rider/income` | R6 Income |
+| `/rider/account` | R7 Account |
 | `/admin/signin` | A1 Back-office sign in |
 | `/admin` | A5 Dashboard (default after admin sign-in) |
 | `/admin/riders` | A3 Rider list |
@@ -122,7 +132,7 @@ Inside the phone frame, use `sticky`/`absolute` instead of `fixed` so bars stay 
 | `TopBar` | sticky back button + title; `backTo`, `right`, `transparent` (over a cover image) |
 | `BottomSheet` | `open`, `onClose`, `title`, `footer`; stays inside the phone frame |
 | `ConfirmDialog` | centered yes/no dialog: `open`, `title`, `confirmLabel`, `onConfirm`, `onCancel`; stays inside the phone frame |
-| `toast(msg)` / `notInScope()` | from `Toast.jsx`; `notInScope()` shows "ไม่อยู่ในขอบเขต Mockup" for buttons that go nowhere |
+| `toast(msg)` | from `Toast.jsx`; shows a short message in the nearest `<Toaster />` |
 
 **Money**: `formatBaht(215)` → `215 ฿` for prices in lists; `formatAmount(215)` → `215.00` for order summaries.
 
@@ -132,8 +142,8 @@ Inside the phone frame, use `sticky`/`absolute` instead of `fixed` so bars stay 
 useCart()    // { restaurant, items, noteToStore, noteToRider, coupon, totals,
              //   add(item, restaurant, { replace }), updateQty(key, qty), remove(key), clear(),
              //   setNotes({ noteToStore, noteToRider }), applyCoupon(code), removeCoupon() }
-useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id), getStatus(order), advance(id) }
-useSession() // { customerSignedIn, adminSignedIn, signIn('customer' | 'admin'), signOut(kind) }
+useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id), getStatus(order), advance(id), rate(id, { rider, restaurant, review }) }
+useSession() // { customerSignedIn, adminSignedIn, riderSignedIn, signIn('customer' | 'admin' | 'rider'), signOut(kind) }
 useAddress() // { address: { id, label, detail }, addresses, setAddress(id) } — picked on C2, default for C8
 useFavorites() // { favorites, isFavorite(id), toggleFavorite(id) } — restaurant ♥
 ```
@@ -168,7 +178,9 @@ git push -u origin feature/3-home
 gh pr create --fill
 ```
 
-Before opening a PR: `npm run lint && npm test && npm run build`.
+Before opening a PR: `npm run lint && npm run format:check && npm test && npm run build`.
+
+GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs the same four checks on every PR and on each push to `main`. The free private repo has no branch protection, so a failing check doesn't block the merge button — don't merge a PR with a red ❌.
 
 Tips to avoid conflicts:
 - Split work by screen/flow (e.g. one person on customer ordering, the other on the back-office rider list). Shared files (`router.jsx`, `index.css`, `src/shared/`, `src/data/`) change most often, so keep edits there small.
@@ -177,7 +189,7 @@ Tips to avoid conflicts:
 
 ## Admin dashboard (A5)
 
-`/admin` shows a sample annual report for 2026: sales **177,321 baht**, **946 orders**, and catalog counts from `menus.length` / `riders.length` (currently 45 / 17). The monthly series and each Top-5 ranking reconcile with the headline totals. New restaurants/customers are monthly registrations, not cumulative counts. All ranking identities are mock data, with restaurant photos and addresses reused from the catalog.
+`/admin` shows a sample annual report for 2025 (a completed year): sales **177,321 baht**, **946 orders**, and catalog counts from `menus.length` / `riders.length` (currently 45 / 17). The monthly sales/orders series reconcile with the headline totals; each Top-5 ranking is a share of them (shown as % of sales). The restaurant chart is the running count on the platform; new customers are monthly registrations. All ranking identities are mock data, with restaurant photos and addresses reused from the catalog.
 
 The rider summary derives from `src/data/riders.js`. Recent orders show the five newest records from `useOrders()`, including cancelled orders; their statuses update with the shared `src/shared/hooks/useOrderClock.js`. These demo checkout records are separate from the fixed annual sample report.
 

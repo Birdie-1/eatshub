@@ -21,6 +21,7 @@ import {
   dashboardYear,
   getRecentOrders,
   riderSummary,
+  summarizeTop,
   topCustomers,
   topRestaurants,
 } from '@/data/dashboard'
@@ -28,6 +29,8 @@ import MonthlyChart from '@/admin/components/MonthlyChart'
 import RecentOrders from '@/admin/components/RecentOrders'
 
 const count = new Intl.NumberFormat('th-TH')
+const topRestaurantsSummary = summarizeTop(topRestaurants)
+const topCustomersSummary = summarizeTop(topCustomers)
 const metrics = [
   {
     label: 'ยอดขายทั้งหมด',
@@ -120,10 +123,10 @@ export default function Dashboard() {
           totalLabel="รวมทั้งปี"
         />
         <MonthlyChart
-          title="ร้านอาหารเพิ่มรายเดือน"
+          title="ร้านอาหารในระบบ"
           series="restaurants"
           total={dashboardTotals.restaurants}
-          totalLabel="ร้านในระบบ"
+          totalLabel="ร้าน ณ สิ้นปี"
         />
         <MonthlyChart
           title="ลูกค้าใหม่รายเดือน"
@@ -176,9 +179,10 @@ export default function Dashboard() {
           </ol>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-surface px-3 py-3 text-xs">
             <span className="text-neutral-500">
-              รวม {topRestaurants.length} ร้าน · {count.format(dashboardTotals.orders)} ออเดอร์
+              รวม {topRestaurants.length} ร้าน · {count.format(topRestaurantsSummary.orders)} ออเดอร์ ·{' '}
+              {topRestaurantsSummary.share}% ของยอดขาย
             </span>
-            <strong>{formatBaht(dashboardTotals.sales)}</strong>
+            <strong>{formatBaht(topRestaurantsSummary.sales)}</strong>
           </div>
         </Card>
         <Card
@@ -218,9 +222,10 @@ export default function Dashboard() {
           </ol>
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-surface px-3 py-3 text-xs">
             <span className="text-neutral-500">
-              รวม {topCustomers.length} คน · {count.format(dashboardTotals.orders)} ออเดอร์
+              รวม {topCustomers.length} คน · {count.format(topCustomersSummary.orders)} ออเดอร์ ·{' '}
+              {topCustomersSummary.share}% ของยอดขาย
             </span>
-            <strong>{formatBaht(dashboardTotals.sales)}</strong>
+            <strong>{formatBaht(topCustomersSummary.sales)}</strong>
           </div>
         </Card>
       </div>

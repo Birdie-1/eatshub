@@ -1,7 +1,7 @@
 # Integration QA — issues #8–#13
 
 ตรวจเมื่อ 17 พฤศจิกายน 2026 บน branch `eatshub_tong` โดยรวม main ถึง `d7354c5` (แก้รูปเมนู #21)
-Production: **พักไว้ตามคำสั่งผู้ใช้ ไม่ได้ deploy และไม่ได้ merge เข้า main**
+Production: ตอนตรวจรอบนี้ยังไม่ได้ deploy — deploy แล้วเมื่อ 18 พ.ย. 2026 ที่ https://eatshub-red.vercel.app (ดูหัวข้อ Production deploy ด้านล่าง)
 
 ## ตรวจด้วยโค้ด
 
@@ -51,10 +51,10 @@ Lighthouse 13.6.0, form factor mobile, simulated throttling, fresh Chrome profil
 - [ ] Safari บน iPhone จริง และ Chrome บน Android จริง รวม keyboard/safe area ของอุปกรณ์
 - [ ] วน flow 3 วิธีชำระบนอุปกรณ์จริงและตรวจใน Incognito จริง (ทดสอบ fresh/blocked storage ใน unit tests แล้ว)
 - [ ] QR หมดอายุครบ10นาทีและสร้างใหม่บนอุปกรณ์จริง (มี UI/ตรรกะแล้ว ยังไม่ได้รอครบ10นาทีด้วยมือ)
-- [ ] เลือกบัญชี/ทีม/โปรเจกต์ Vercel และโดเมน
+- [x] เลือกบัญชี/ทีม/โปรเจกต์ Vercel และโดเมน — ทีม `birdie-1s-projects` โปรเจกต์ `eatshub` โดเมน `eatshub-red.vercel.app`
 - [ ] ตั้ง og:image เป็น absolute URL ของโดเมนจริง แล้วทดสอบ LINE preview
 - [ ] ตรวจ review/merge ของงานใน branch และ production branch main
-- [ ] Deploy production และตรวจ deep links จาก URL จริง — **พักไว้ตามคำสั่งผู้ใช้**
+- [x] Deploy production และตรวจ deep links จาก URL จริง (18 พ.ย. 2026)
 
 ยังไม่ปิด issue #13 เพราะเกณฑ์อุปกรณ์จริงและ production ยังไม่ครบ
 
@@ -72,3 +72,13 @@ Lighthouse 13.6.0, form factor mobile, simulated throttling, fresh Chrome profil
 - Empty state ของ `RecentOrders` ตรวจด้วย server rendering โดยส่ง `orders: []` ผ่าน Vite SSR (ไม่ได้ล้างประวัติใน browser ของผู้ใช้) ไม่ใช่การตรวจ empty state ใน browser
 - ไม่พบ console error/warning ใน browser ระหว่าง flow นี้
 - ยังไม่ได้ตรวจบน iPhone/Android จริง และยังไม่ deploy production ตามคำสั่งผู้ใช้
+
+## Production deploy
+
+Deploy เมื่อ 18 พฤศจิกายน 2026 จาก main `0415da0` (รวม C10 #28)
+
+- Vercel ทีม `birdie-1s-projects` โปรเจกต์ `eatshub` ผูกกับ GitHub `Birdie-1/eatshub` แล้ว merge เข้า main จะ deploy production อัตโนมัติ และแต่ละ PR ได้ preview URL
+- Production URL: https://eatshub-red.vercel.app เปิดได้สาธารณะ (URL เฉพาะ deployment ต้องล็อกอิน Vercel)
+- ก่อน deploy: `lint`, `format:check`, tests **89 ข้อ / 8 ไฟล์**, `build` ผ่าน build บน Vercel ผ่านใน 7 วินาที ยังมีคำเตือน JS chunk เกิน 500 kB
+- จาก URL จริง: `/`, `/admin` และ deep link ตอบ HTTP 200; ที่ 375×812 หน้า Sign In → เข้าสู่ระบบ → หน้าแรกทำงาน ไม่มีรูปเสีย; `/admin` พาไป Sign In หลังบ้านบน desktop; ไม่มี console error
+- ยังไม่ได้ตรวจบน iPhone/Android จริง และ og:image ยังเป็น path relative (`/og-image.png`) จึงยังไม่ได้ทดสอบ LINE preview

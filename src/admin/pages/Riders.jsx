@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import SharedBadge from '@/shared/components/Badge'
-import { notInScope, toast } from '@/shared/components/Toast'
+import { toast } from '@/shared/components/Toast'
 import BlockRiderDialog from '@/admin/components/BlockRiderDialog'
 import {
   ArrowDown,
@@ -13,13 +13,10 @@ import {
   Clock3,
   Filter,
   MapPin,
-  Pencil,
   Phone,
-  Plus,
   Search,
   ShieldCheck,
   Smartphone,
-  Trash2,
   Truck,
   Users,
   X,
@@ -50,29 +47,6 @@ function Avatar({ small = false }) {
     </span>
   )
 }
-function Actions({ rider }) {
-  return (
-    <div className="flex items-center gap-1">
-      <button
-        type="button"
-        onClick={notInScope}
-        aria-label={`แก้ไข ${rider.code}`}
-        className="grid size-11 place-items-center rounded-xl text-neutral-500 hover:bg-neutral-100"
-      >
-        <Pencil className="size-4" />
-      </button>
-      <button
-        type="button"
-        onClick={notInScope}
-        aria-label={`ลบ ${rider.code}`}
-        className="grid size-11 place-items-center rounded-xl text-red-600 hover:bg-red-50"
-      >
-        <Trash2 className="size-4" />
-      </button>
-    </div>
-  )
-}
-
 function RiderStatus({ rider, onChange }) {
   return (
     <div className="max-w-48">
@@ -209,14 +183,6 @@ export default function Riders() {
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">จัดการไรเดอร์</h1>
           <p className="mt-2 text-sm leading-6 text-neutral-500">ดูแลรายชื่อและสถานะไรเดอร์ทั้งหมดของคุณ</p>
         </div>
-        <button
-          type="button"
-          onClick={notInScope}
-          className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-status-online px-4 text-sm font-semibold text-white shadow-sm hover:bg-green-700"
-        >
-          <Plus className="size-4" />
-          เพิ่มรายการ
-        </button>
       </div>
       <section aria-label="ภาพรวมไรเดอร์" className="grid grid-cols-2 gap-3 xl:grid-cols-4 xl:gap-4">
         {[
@@ -427,14 +393,11 @@ export default function Riders() {
                       </p>
                     </div>
                   </div>
-                  <div className="mt-3 flex items-center justify-between gap-2">
-                    <p className="text-[11px] leading-5 text-neutral-400">
-                      ใช้งานล่าสุด
-                      <br />
-                      <span className="text-neutral-600">{formatRiderDate(rider.lastActiveAt)}</span>
-                    </p>
-                    <Actions rider={rider} />
-                  </div>
+                  <p className="mt-3 text-[11px] leading-5 text-neutral-400">
+                    ใช้งานล่าสุด
+                    <br />
+                    <span className="text-neutral-600">{formatRiderDate(rider.lastActiveAt)}</span>
+                  </p>
                   <details className="mt-1 text-xs text-neutral-500">
                     <summary className="min-h-11 cursor-pointer py-3">ข้อมูลการแก้ไข</summary>
                     <p className="pb-2 leading-6">
@@ -460,7 +423,6 @@ export default function Riders() {
                     {sortHeading('workStatus', 'สถานะงาน')}
                     {sortHeading('riderStatus', 'สถานะไรเดอร์')}
                     <th scope="col">ผู้แก้ไข / วันที่</th>
-                    <th scope="col">จัดการ</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -502,9 +464,6 @@ export default function Riders() {
                         <p className="mt-1.5 text-[11px] text-neutral-400">
                           {formatRiderDate(rider.editedAt)}
                         </p>
-                      </td>
-                      <td>
-                        <Actions rider={rider} />
                       </td>
                     </tr>
                   ))}
