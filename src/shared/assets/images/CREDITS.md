@@ -59,6 +59,10 @@ To add a photo: download `https://images.unsplash.com/photo-<id>?w=800&h=600&fit
 | `banner-thai-spread.jpg` | [Christopher Chung](https://unsplash.com/@christopher_chung_photography) | [photo-1763647818427-326fa8e6699f](https://images.unsplash.com/photo-1763647818427-326fa8e6699f) |
 | `banner-kraphao.jpg` | [Vicky Ng](https://unsplash.com/@vickyng) | [photo-1627308595186-e6bb36712645](https://images.unsplash.com/photo-1627308595186-e6bb36712645) |
 
+## Rider map
+
+`rider-map.svg` (R2 home background) is an original stylized street map drawn for this mockup. It contains no real map data, so no third-party credit is needed.
+
 ## Category icons
 
 `src/shared/assets/icons/categories/*.png` are [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (3D style, resized to 128 px),

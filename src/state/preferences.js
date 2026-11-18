@@ -6,8 +6,8 @@ import { load, save } from './storage'
  * Small persisted values that several screens read (no Provider needed).
  * Each store keeps its value in localStorage and re-renders every subscribed component on change.
  */
-function createStore(key, fallback) {
-  let value = load(key, fallback)
+function createStore(key, fallback, restore = (saved) => saved) {
+  let value = restore(load(key, fallback))
   const listeners = new Set()
   return {
     get: () => value,
@@ -26,6 +26,16 @@ function createStore(key, fallback) {
 const addressStore = createStore('address', DEFAULT_ADDRESS_ID)
 const favoritesStore = createStore('favorites', [])
 
+export const DEFAULT_RIDER_STATUS = { online: true, autoAccept: true }
+/** Keeps only boolean switch values from storage; anything else falls back to the default. */
+export function restoreRiderStatus(saved) {
+  const status = { ...DEFAULT_RIDER_STATUS }
+  if (saved && typeof saved === 'object')
+    for (const key of Object.keys(status)) if (typeof saved[key] === 'boolean') status[key] = saved[key]
+  return status
+}
+const riderStatusStore = createStore('rider-status', DEFAULT_RIDER_STATUS, restoreRiderStatus)
+
 /**
  * Delivery address picked in the home header (บ้าน / ออฟฟิศ). C8 uses it as the default.
  * => { address: { id, label, detail }, addresses, setAddress(id) }
@@ -43,5 +53,18 @@ export function useFavorites() {
     isFavorite: (id) => favorites.includes(id),
     toggleFavorite: (id) =>
       favoritesStore.set((list) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id])),
+  }
+}
+
+/**
+ * Rider app switches (R2 home, later R7 settings): online = เปิดรับงาน, autoAccept = รับงานอัตโนมัติ.
+ * => { online, autoAccept, setOnline(boolean), setAutoAccept(boolean) }
+ */
+export function useRiderStatus() {
+  const status = useSyncExternalStore(riderStatusStore.subscribe, riderStatusStore.get)
+  return {
+    ...status,
+    setOnline: (online) => riderStatusStore.set((s) => ({ ...s, online })),
+    setAutoAccept: (autoAccept) => riderStatusStore.set((s) => ({ ...s, autoAccept })),
   }
 }
