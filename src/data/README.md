@@ -10,6 +10,7 @@ All data is static and comes from the specs (`docs/specs/04_Mobile_Order.md`, `d
 | `coupons.js` | Coupon codes (`EATSHUB20`, `NEWUSER100`) |
 | `orders.js` | `createSampleOrders()` seeds four historical orders from real restaurant/menu data; rider identity comes from `DEFAULT_RIDER` |
 | `riders.js` | 17 back-office riders (`EA00001`–`EA00017`), `createRiders()` with relative dates, and `DEFAULT_RIDER` for checkout/tracking |
+| `riderPerformance.js` | A5 rider performance over the last 30 Bangkok days for all 17 riders: `riderPerformance(activity, now)`, `rankRiders(rows)`, `fleetShifts(activity, now)`, `PERFORMANCE_DAYS` |
 | `riderProfile.js` | Rider app data for `DEFAULT_RIDER` (EA00001): `riderProfile` (partner level, vehicle, masked fictional bank accounts, rating breakdown), `createRiderActivity(now)` (a year of completed jobs + missed offers), credit/cash wallet histories and summary helpers |
 
 Shapes are documented at the top of each file. `restaurants.test.js` checks the data against the spec
@@ -41,7 +42,7 @@ Images live in `src/shared/assets/images/` (downloaded from Unsplash, never hotl
 
 ## Historical coverage (#33)
 
-`coverage.js` exports `coverageMetrics`, `coverageProvinces` (`{id,name,rank?}`), `coverageTop`, `coverageSource`, `provinceNames`, and `provinceShapes` (`{id,d}` parsed from the repository-owned SVG). The press-release period is May–November 2022; economic value is an estimate. Chumphon is included because it ranks first despite omission from the release's 18-name list, yielding 19 provinces. No provincial totals are invented. The SVG retains all 77 geometries under CC BY 3.0; see asset credits. Tests assert complete shape/name coverage, unique service ids and ranking membership/order.
+`coverage.js` exports `coverageProvinces` (`{id,name,rank?}`), `coverageTop`, `provinceNames`, and `provinceShapes` (`{id,d}` parsed from the repository-owned SVG). The provinces and ranking come from the May–November 2022 press release; its headline figures are no longer shown (#43). Chumphon is included because it ranks first despite omission from the release's 18-name list, yielding 19 provinces. No provincial totals are invented. The SVG retains all 77 geometries under CC BY 3.0; see asset credits. Tests assert complete shape/name coverage, unique service ids and ranking membership/order.
 
 ## Rider reports (#37–#38)
 
@@ -51,8 +52,15 @@ Images live in `src/shared/assets/images/` (downloaded from Unsplash, never hotl
 
 `completedRiderJobs(orders, now)` derives earned jobs only from non-cancelled EA00001 orders with `riderJob.step === 5` and valid, non-future completion timestamps. IDs are deduplicated; the provider combines these with the sample history and uses the same jobs for R2/R5/R6. Each earns `RIDER_EARNING` (60 baht); minutes use actual stage timestamps rounded to tenths, distance uses the same catalog `distanceKm` as the offer. Distance totals retain two decimal places so per-job figures reconcile. Income is never persisted separately.
 
-## Admin rider earnings and province-order demo
+## Province-order demo
 
-`adminInsights.js` exports `riderEarningsInsights(jobs, now)`: rolling 365 Bangkok-day daily/monthly aggregates (`{period, earning, count}`), today/current-month records, peaks and date bounds. Duplicate ids, invalid/negative earnings, future and out-of-window jobs are excluded. Tied maxima choose the latest period; empty peaks are null. It reads the shared completed-job history and does not estimate other riders' earnings.
+`coverage.js` additionally exports `provinceOrderRows`, `provinceOrderTotal` and `provinceOrderReport(id)`. The user authorized fictional province order counts for the interactive map: 19 rows sum to 946 (the 2025 demo KPI), with Chumphon/Phetchaburi/Ayutthaya leading. Other map provinces return zero. These figures are not inferred from the 2022 release or live checkout orders. Tests reconcile the allocation with the KPI and check that other provinces are zero.
 
-`coverage.js` additionally exports `provinceOrderRows`, `provinceOrderTotal` and `provinceOrderReport(id)`. The user authorized fictional province order counts for the interactive map: 19 rows sum to 946 (the 2025 demo KPI), with Chumphon/Phetchaburi/Ayutthaya leading. Other map provinces return zero. These figures are not inferred from the 2022 release or live checkout orders. Tests reconcile allocations and verify Bangkok-period maxima, ties, clipping, invalid data and deduplication.
+## Rider performance (#43)
+
+`riderPerformance(activity, now)` returns `{ from, until, riders, summary, top, hours, peak }` for the 30 Bangkok days of the R6 day strip (midnight 29 days ago up to `now`). Shapes are in the file header.
+
+- EA00001 reads the activity passed in (the dashboard passes `useRider().activity`, so demo jobs finished in R3–R4 count) plus its missed offers and the shared 4.5 rating. The other 16 riders get fixed shifts, paces, ratings and miss rates from the `fleet` table and jobs generated per online hour from a lunch/dinner demand curve; one day off a week. Same `now` → same numbers; nothing is after `now`.
+- Nothing derived is stored: earnings are `jobs × RIDER_EARNING`, the summary sums the 17 rows (blocked riders included), minutes and rating are weighted by jobs, and acceptance is jobs ÷ offers.
+- `hours` covers 10:00–22:00, widened if a job falls outside, so hourly orders always add up to the completed jobs. `peak` is the two consecutive hours with the most orders per online rider-hour (earliest wins a tie).
+- `rankRiders` keeps active riders only and sorts by jobs, then rating, then code. `riderPerformance.test.js` checks these invariants, the EA00001 match with R6 and the absence of future data.

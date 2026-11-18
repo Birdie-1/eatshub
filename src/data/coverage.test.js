@@ -1,7 +1,7 @@
 import { provinceOrderRows, provinceOrderTotal, provinceOrderReport } from './coverage'
 import { dashboardTotals } from './dashboard'
 import { describe, expect, it } from 'vitest'
-import { coverageProvinces, coverageTop, provinceShapes, coverageMetrics, provinceNames } from './coverage'
+import { coverageProvinces, coverageTop, provinceShapes, provinceNames } from './coverage'
 
 describe('historical service coverage', () => {
   it('contains 19 unique provinces and explicitly includes Chumphon', () => {
@@ -19,10 +19,6 @@ describe('historical service coverage', () => {
     expect(new Set(provinceShapes.map((p) => p.id)).size).toBe(77)
     for (const province of coverageProvinces)
       expect(provinceShapes.find((p) => p.id === province.id)?.d.length).toBeGreaterThan(10)
-  })
-  it('retains all four historical metrics and labels the economic estimate', () => {
-    expect(coverageMetrics.map((m) => m.value)).toEqual(['600,000+', '10,000,000+', '25,000+', '~500'])
-    expect(coverageMetrics[3].unit).toContain('คาดการณ์')
   })
 })
 

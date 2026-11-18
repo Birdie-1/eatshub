@@ -1,4 +1,3 @@
-import RiderEarnings from '@/admin/components/RiderEarnings'
 import { lazy, Suspense, useMemo } from 'react'
 import {
   ArrowRight,
@@ -28,6 +27,7 @@ import {
 } from '@/data/dashboard'
 import MonthlyChart from '@/admin/components/MonthlyChart'
 import RecentOrders from '@/admin/components/RecentOrders'
+import RiderPerformance from '@/admin/components/RiderPerformance'
 
 const ServiceCoverage = lazy(() => import('@/admin/components/ServiceCoverage'))
 
@@ -107,7 +107,7 @@ export default function Dashboard() {
       >
         <ServiceCoverage />
       </Suspense>
-      <RiderEarnings />
+      <RiderPerformance />
       <h2 className="pt-3 text-xl font-bold">รายงานแพลตฟอร์มตัวอย่างปี {dashboardYear + 543}</h2>
       <section aria-label="ตัวเลขภาพรวม" className="grid grid-cols-2 gap-3 xl:grid-cols-4 xl:gap-4">
         {metrics.map(({ label, value, note, icon: Icon, tone, border }) => (

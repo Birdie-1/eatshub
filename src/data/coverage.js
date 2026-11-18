@@ -1,18 +1,11 @@
 import mapSvg from '@/shared/assets/images/thailand-provinces.svg?raw'
 
-/** Historical press-release figures, May–November 2022, as agreed in issue #33.
+/** Service provinces and usage ranking from the May–November 2022 press release (issue #33).
  * Provinces: { id: SVG province id, name: Thai name, rank?: usage rank }.
  * The release lists 18 provinces but ranks Chumphon first; this report includes it (19).
- * No provincial totals are inferred. Economic value is explicitly an estimate.
+ * The release's headline figures are no longer shown (#43).
  * Geometry: NordNordWest / Paul_012, CC BY 3.0; see assets/images/CREDITS.md.
  */
-export const coverageSource = 'https://www.thailandsmartcontent.com/2022/11/eatshub.html'
-export const coverageMetrics = [
-  { label: 'ผู้ลงทะเบียน', value: '600,000+', unit: 'ราย' },
-  { label: 'ยอดเข้าใช้งาน', value: '10,000,000+', unit: 'ครั้ง' },
-  { label: 'ร้านค้าบนแพลตฟอร์ม', value: '25,000+', unit: 'แห่ง' },
-  { label: 'มูลค่าทางเศรษฐกิจ', value: '~500', unit: 'ล้านบาท · คาดการณ์' },
-]
 export const coverageProvinces = [
   ['10', 'กรุงเทพมหานคร'],
   ['14', 'พระนครศรีอยุธยา', 3],
@@ -125,7 +118,7 @@ export const provinceNames = Object.fromEntries(
 )
 
 /** Fictional annual province order counts, explicitly requested for the interactive admin map.
- * Separate from historical 2022 news metrics; sums to the 2025 demo KPI (946 orders).
+ * Separate from the 2022 service-province list; sums to the 2025 demo KPI (946 orders).
  * Provinces outside this demo allocation show zero; no claim about actual province activity.
  */
 const demoOrderCounts = [83, 97, 54, 30, 25, 29, 113, 41, 37, 32, 47, 19, 23, 40, 49, 31, 26, 20, 150]
