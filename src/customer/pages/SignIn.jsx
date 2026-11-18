@@ -3,7 +3,6 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router'
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react'
 import Logo from '@/shared/components/Logo'
 import Button from '@/shared/components/Button'
-import { notInScope } from '@/shared/components/Toast'
 import { useSession } from '@/state'
 
 export default function SignIn() {
@@ -29,13 +28,10 @@ export default function SignIn() {
   }
   return (
     <div className="flex min-h-full flex-col px-6 py-5">
-      <div className="flex items-center justify-between text-sm">
-        <Link to="/" className="min-h-11 py-3 text-neutral-500">
+      <div className="text-sm">
+        <Link to="/" className="inline-block min-h-11 py-3 text-neutral-500">
           กลับหน้าหลัก
         </Link>
-        <button onClick={notInScope} className="min-h-11 text-brand-dark">
-          ลงทะเบียน
-        </button>
       </div>
       <div className="mb-8 mt-6 text-center">
         <Logo className="mx-auto size-20 rounded-2xl" />
@@ -88,15 +84,10 @@ export default function SignIn() {
             </button>
           </div>
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-          <label className="flex min-h-11 items-center gap-2">
-            <input type="checkbox" defaultChecked className="size-4 accent-brand" />
-            จดจำฉัน
-          </label>
-          <button type="button" onClick={notInScope} className="min-h-11 text-neutral-500">
-            ลืมรหัสผ่าน?
-          </button>
-        </div>
+        <label className="flex min-h-11 w-fit items-center gap-2 text-xs">
+          <input type="checkbox" defaultChecked className="size-4 accent-brand" />
+          จดจำฉัน
+        </label>
         <Button type="submit" size="lg" block disabled={!email.trim() || busy}>
           {busy ? 'กำลังเข้าสู่ระบบ…' : 'เข้าสู่ระบบ'}
           <ArrowRight className="size-4" />

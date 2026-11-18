@@ -58,7 +58,7 @@ Before declaring work done or opening a PR, all of these must pass: `npm run lin
 
 - **All user-facing text is Thai only** (no i18n layer). Keep terminology consistent with the specs and existing screens.
 - Code, identifiers, comments, and `README`/`CLAUDE.md` are in English. `docs/REQUIREMENTS.md`, `QA.md` and `DEMO.md` are Thai.
-- Buttons for features that are intentionally out of scope call `notInScope()` (toast "ไม่อยู่ในขอบเขต Mockup") instead of silently doing nothing.
+- Don't render buttons, links or menu items for features that are out of scope — hide them instead of shipping dead controls (no "not in scope" toasts). Static display text is fine.
 
 ## State, money and data rules
 

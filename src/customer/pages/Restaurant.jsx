@@ -6,7 +6,6 @@ import { getMenu } from '@/data/menus'
 import Button from '@/shared/components/Button'
 import Card from '@/shared/components/Card'
 import TopBar from '@/shared/components/TopBar'
-import { notInScope } from '@/shared/components/Toast'
 import { formatBaht, formatDate } from '@/shared/lib/format'
 import { useCart, useFavorites } from '@/state'
 import { FeaturedMenuCard, MenuRow } from '@/customer/components/MenuCard'
@@ -280,9 +279,6 @@ function ReviewsTab({ restaurant: r }) {
           <StarRating value={r.rating} className="size-5" />
           <span className="text-sm text-muted">จาก {r.reviewCount} รีวิว</span>
         </div>
-        <Button size="sm" variant="secondary" onClick={notInScope}>
-          เขียนรีวิว
-        </Button>
       </div>
 
       <ul className="flex flex-col divide-y divide-neutral-100">

@@ -6,9 +6,7 @@ import {
   CheckCheck,
   Clock3,
   MapPin,
-  MessageCircle,
   PackageCheck,
-  Phone,
   ReceiptText,
   Star,
   Store,
@@ -18,8 +16,7 @@ import TopBar from '@/shared/components/TopBar'
 import Button from '@/shared/components/Button'
 import Card from '@/shared/components/Card'
 import Badge from '@/shared/components/Badge'
-import BottomSheet from '@/shared/components/BottomSheet'
-import { notInScope, toast } from '@/shared/components/Toast'
+import { toast } from '@/shared/components/Toast'
 import OrderSummary from '@/customer/components/OrderSummary'
 import RatingSheet from '@/customer/components/RatingSheet'
 import StarRating from '@/customer/components/StarRating'
@@ -49,7 +46,6 @@ export default function Tracking() {
   const { getOrder, advance, rate } = useOrders()
   const now = useOrderClock()
   const location = useLocation()
-  const [contact, setContact] = useState(false)
   // The order history's "เขียนรีวิว" link opens the rating sheet straight away.
   const [rating, setRating] = useState(Boolean(location.state?.rate))
   const order = getOrder(orderId)
@@ -163,18 +159,6 @@ export default function Tracking() {
                 </p>
               </div>
             </div>
-            {!complete && (
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <Button variant="ghost" className="border border-neutral-200" onClick={notInScope}>
-                  <Phone className="size-4" />
-                  โทร
-                </Button>
-                <Button variant="secondary" onClick={() => setContact(true)}>
-                  <MessageCircle className="size-4" />
-                  ติดต่อ
-                </Button>
-              </div>
-            )}
           </Card>
         )}
         <Card className="space-y-3 border border-neutral-100 shadow-none">
@@ -260,11 +244,6 @@ export default function Tracking() {
             </div>
           </div>
         )}
-        {!complete && !cancelled && (
-          <Button block variant="secondary" onClick={() => setContact(true)}>
-            ติดต่อร้านค้า / ไรเดอร์
-          </Button>
-        )}
         <p className="pb-3 text-center text-[11px] text-neutral-400">
           สถานะและเวลาจัดส่งเป็นการจำลองสำหรับนำเสนอ
         </p>
@@ -279,33 +258,6 @@ export default function Tracking() {
           toast('ขอบคุณสำหรับคะแนน')
         }}
       />
-      <BottomSheet
-        open={contact && !complete && !cancelled}
-        onClose={() => setContact(false)}
-        title="ติดต่อเกี่ยวกับออเดอร์"
-      >
-        <div className="space-y-3">
-          {[
-            ['ไรเดอร์', order.rider?.name],
-            ['ร้านค้า', order.restaurant.name],
-          ].map(([label, name]) => (
-            <div key={label} className="rounded-xl border border-neutral-200 p-4">
-              <p className="text-sm font-semibold">{label}</p>
-              <p className="mt-1 text-xs text-neutral-500">{name}</p>
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                <Button variant="ghost" onClick={notInScope}>
-                  <Phone className="size-4" />
-                  โทร
-                </Button>
-                <Button variant="secondary" onClick={notInScope}>
-                  <MessageCircle className="size-4" />
-                  แชท
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </BottomSheet>
     </div>
   )
 }
