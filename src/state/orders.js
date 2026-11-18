@@ -53,6 +53,22 @@ export function advanceOrder(order, now = Date.now()) {
   return { ...order, offsetMs: (order.offsetMs || 0) + ORDER_STEP_MS }
 }
 
+const isStars = (value) => Number.isInteger(value) && value >= 1 && value <= 5
+
+/** Rated once the rider has stars; older sample orders only carry the restaurant `rating`. */
+export const isRated = (order) => Boolean(order.riderRating || order.rating)
+
+/**
+ * Rate a delivered order once, Grab/LINE MAN style: rider stars are required, the restaurant is optional.
+ * `rating` holds the restaurant stars (or null when skipped), `riderRating` the rider stars,
+ * `review` an optional note to the restaurant (≤ 200 chars). Returns the order unchanged when it can't be rated.
+ */
+export function rateOrder(order, { rider, restaurant = null, review = '' }, now = Date.now()) {
+  if (getStatus(order, now) !== 5 || isRated(order) || !isStars(rider)) return order
+  if (restaurant != null && !isStars(restaurant)) return order
+  return { ...order, rating: restaurant, riderRating: rider, review: String(review).trim().slice(0, 200) }
+}
+
 export function nextOrderSequence(orders, stored = 12) {
   return (
     Math.max(
