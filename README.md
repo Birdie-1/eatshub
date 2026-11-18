@@ -47,7 +47,7 @@ src/
 
 Customer and back-office demo flows are implemented. See [the five-minute demo script](docs/DEMO.md) and [integration QA results](docs/QA.md).
 
-Production deployment is on hold at the user's request. No production URL has been published by this work.
+Production: **https://eatshub-red.vercel.app**. The Vercel project is linked to this repo, so every merge to `main` deploys production automatically and each PR gets a preview URL.
 
 ## Customer ordering demo
 

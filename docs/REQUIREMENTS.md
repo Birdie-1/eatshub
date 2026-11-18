@@ -85,10 +85,10 @@ Bottom navigation 4 แท็บ: **ร้านอาหาร · ตะกร�
 - [x] ยอดเงินถูกต้องและตรงกันทุกหน้า
 - [x] หลังบ้าน: ค้นหาและกรองสถานะไรเดอร์ได้ เปลี่ยนหน้าได้
 - [ ] แสดงผลดีบน iPhone/Android (≥ 360px) และ desktop
-- [ ] Deploy บน Vercel และเปิดจาก URL ได้
+- [x] Deploy บน Vercel และเปิดจาก URL ได้ — https://eatshub-red.vercel.app
 
-ตรวจ flow บน browser emulation แล้ว ดู [QA.md](QA.md) สำหรับผลตรวจและข้อจำกัด อุปกรณ์ iPhone/Android จริงยังรอตรวจ และ production deployment พักไว้ตามคำสั่งผู้ใช้ (17 พ.ย. 2026)
+ตรวจ flow บน browser emulation แล้ว ดู [QA.md](QA.md) สำหรับผลตรวจและข้อจำกัด อุปกรณ์ iPhone/Android จริงยังรอตรวจ Production deploy แล้วเมื่อ 18 พ.ย. 2026 ที่ https://eatshub-red.vercel.app (merge เข้า main จะ deploy อัตโนมัติ)
 
 ## 8. ยังเปิดอยู่
 
-- บัญชี Vercel / โดเมนที่จะใช้ (ต้องใช้ตอน deploy)
+- โดเมนของตัวเอง (ตอนนี้ใช้ eatshub-red.vercel.app ที่ Vercel ตั้งให้)

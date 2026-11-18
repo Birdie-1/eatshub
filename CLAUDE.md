@@ -99,7 +99,9 @@ To reduce merge conflicts: split work by screen/flow, keep edits to the frequent
 
 ## Deployment
 
-Vercel static Vite site (`vercel.json` rewrites every path to `index.html` so deep links work). **Production deployment is currently on hold at the user's request** — do not deploy, publish a production URL, or claim one exists unless the user explicitly asks.
+Vercel static Vite site (`vercel.json` rewrites every path to `index.html` so deep links work). Production is live at **https://eatshub-red.vercel.app** (Vercel team `birdie-1s-projects`, project `eatshub`).
+
+The project is linked to this GitHub repo: **every merge to `main` deploys production automatically**, and each PR gets its own preview URL (deployment-specific URLs are behind Vercel login; the production domain is public). So merging to `main` ships straight to the URL executives see — run the full check first. Don't change Vercel project settings, domains or deployment protection unless the user asks.
 
 ## Working agreements for Claude
 
