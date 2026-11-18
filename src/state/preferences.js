@@ -37,6 +37,17 @@ export function restoreRiderStatus(saved) {
 const riderStatusStore = createStore('rider-status', DEFAULT_RIDER_STATUS, restoreRiderStatus)
 
 /**
+ * True when the rider app is signed in and online, read fresh from storage so a rider app open in another
+ * window counts. New orders are then offered to the rider (R3) instead of following the clock.
+ * Blocked or corrupt storage counts as off, so the customer demo keeps its timed tracking.
+ */
+export function isRiderOnDuty() {
+  return (
+    load('session', null)?.riderSignedIn === true && restoreRiderStatus(load('rider-status', null)).online
+  )
+}
+
+/**
  * Delivery address picked in the home header (บ้าน / ออฟฟิศ). C8 uses it as the default.
  * => { address: { id, label, detail }, addresses, setAddress(id) }
  */
