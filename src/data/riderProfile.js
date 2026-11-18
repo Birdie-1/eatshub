@@ -94,7 +94,7 @@ export function summarizeJobs(jobs) {
     count: jobs.length,
     earning: jobs.reduce((total, job) => total + job.earning, 0),
     minutes: jobs.reduce((total, job) => total + job.minutes, 0),
-    km: Math.round(jobs.reduce((total, job) => total + job.km, 0) * 10) / 10,
+    km: Math.round(jobs.reduce((total, job) => total + job.km, 0) * 100) / 100,
   }
 }
 

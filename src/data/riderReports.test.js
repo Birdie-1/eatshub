@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { createRiderActivity, summarizeJobs } from './riderProfile'
-import { bangkokDate, bangkokYear, incomeDay, incomeMonths, recentDays } from './riderReports'
+import {
+  bangkokDate,
+  bangkokYear,
+  incomeDay,
+  incomeMonths,
+  recentDays,
+  completedRiderJobs,
+} from './riderReports'
 
 const now = new Date('2026-11-18T16:00:00+07:00')
 const { jobs } = createRiderActivity(now)
@@ -35,5 +42,54 @@ describe('rider income periods', () => {
     expect(incomeDay(rows, '2026-11-18', now)).toMatchObject({ count: 1, earning: 60 })
     expect(incomeDay(rows, '2026-11-19', now).count).toBe(0)
     expect(incomeMonths([], 2026, now).every((m) => m.count === 0)).toBe(true)
+  })
+})
+
+describe('rider-completed demo earnings', () => {
+  const order = {
+    id: 'demo-order',
+    rider: { code: 'EA00001' },
+    restaurant: { id: 'racha-ahan', name: 'ราชาอาหาร' },
+    riderJob: {
+      step: 5,
+      times: [
+        '2026-11-18T10:00:00+07:00',
+        '2026-11-18T10:02:00+07:00',
+        '2026-11-18T10:03:00+07:00',
+        '2026-11-18T10:05:00+07:00',
+      ],
+    },
+  }
+  it('derives a single 60-baht job from the completed order snapshot', () => {
+    const jobs = completedRiderJobs([order, order], now)
+    expect(jobs).toHaveLength(1)
+    expect(jobs[0]).toMatchObject({ id: order.id, earning: 60, minutes: 5, restaurantName: 'ราชาอาหาร' })
+    expect(incomeDay(jobs, '2026-11-18', now).earning).toBe(60)
+    expect(
+      summarizeJobs([
+        { ...jobs[0], km: 13 },
+        { ...jobs[0], km: 3.83 },
+      ]).km,
+    ).toBe(16.83)
+  })
+  it('excludes timed, incomplete, cancelled, other-rider and future jobs', () => {
+    expect(
+      completedRiderJobs(
+        [
+          { ...order, riderJob: undefined },
+          { ...order, riderJob: { ...order.riderJob, step: 4 } },
+          { ...order, cancelled: true },
+          { ...order, rider: { code: 'EA00002' } },
+          {
+            ...order,
+            riderJob: {
+              ...order.riderJob,
+              times: [...order.riderJob.times.slice(0, 3), '2026-11-19T10:00:00+07:00'],
+            },
+          },
+        ],
+        now,
+      ),
+    ).toEqual([])
   })
 })

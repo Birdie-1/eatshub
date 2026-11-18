@@ -27,9 +27,9 @@ import {
   getStatus,
   isRated,
   ORDER_STEPS,
-  ORDER_STEP_MS,
   PAYMENT_LABELS,
   paymentStatus,
+  stepTimes,
 } from '@/state/orders'
 
 const icons = [ReceiptText, Bike, Store, PackageCheck, CheckCheck]
@@ -64,6 +64,7 @@ export default function Tracking() {
   const complete = status === 5
   const step = cancelled ? { label: 'ยกเลิกออเดอร์', message: 'ออเดอร์ถูกยกเลิก' } : ORDER_STEPS[status - 1]
   const Illustration = cancelled ? X : icons[status - 1]
+  const times = stepTimes(order, now)
   return (
     <div className="flex min-h-full flex-col bg-surface">
       <TopBar title={`ออเดอร์: ${order.id}`} backTo="/app/orders" />
@@ -87,7 +88,8 @@ export default function Tracking() {
               </p>
             )}
           </div>
-          {!complete && !cancelled && (
+          {/* Orders the rider accepted only move from the rider app, so the demo skip is hidden. */}
+          {!complete && !cancelled && !order.riderJob && (
             <button
               className="mt-4 min-h-11 text-xs text-neutral-500 underline underline-offset-4"
               onClick={() => advance(order.id)}
@@ -129,10 +131,8 @@ export default function Tracking() {
                       <p className={`text-sm ${index + 1 <= status ? 'font-medium' : 'text-neutral-400'}`}>
                         {item.label}
                       </p>
-                      {index + 1 <= status && (
-                        <p className="mt-1 text-[11px] text-neutral-400">
-                          {time(Date.parse(order.createdAt) + index * ORDER_STEP_MS - (order.offsetMs || 0))}
-                        </p>
+                      {times[index] != null && (
+                        <p className="mt-1 text-[11px] text-neutral-400">{time(times[index])}</p>
                       )}
                     </div>
                   </li>
