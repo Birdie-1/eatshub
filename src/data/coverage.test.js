@@ -20,6 +20,32 @@ describe('historical service coverage', () => {
     for (const province of coverageProvinces)
       expect(provinceShapes.find((p) => p.id === province.id)?.d.length).toBeGreaterThan(10)
   })
+  it('keeps every province outline inside the map, so zooming centres on the province', () => {
+    // Endpoints of each segment, resolving relative commands (the SVG uses M L H V C Z, upper and lower case).
+    const points = (d) => {
+      const result = []
+      let [x, y, startX, startY] = [0, 0, 0, 0]
+      for (const [, command, args] of d.matchAll(/([MLHVCZ])([^MLHVCZ]*)/gi)) {
+        const n = (args.match(/-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?/gi) ?? []).map(Number)
+        const relative = command === command.toLowerCase()
+        const type = command.toUpperCase()
+        const step = { M: 2, L: 2, H: 1, V: 1, C: 6, Z: 0 }[type]
+        if (type === 'Z') [x, y] = [startX, startY]
+        for (let i = 0; step && i < n.length; i += step) {
+          if (type === 'H') x = (relative ? x : 0) + n[i]
+          else if (type === 'V') y = (relative ? y : 0) + n[i]
+          else [x, y] = [(relative ? x : 0) + n[i + step - 2], (relative ? y : 0) + n[i + step - 1]]
+          if (type === 'M' && i === 0) [startX, startY] = [x, y]
+          result.push([x, y])
+        }
+      }
+      return result
+    }
+    const outside = provinceShapes.filter(({ d }) =>
+      points(d).some(([x, y]) => x < 0 || y < 0 || x > 1051.164 || y > 1849.133),
+    )
+    expect(outside.map((p) => p.id)).toEqual([])
+  })
 })
 
 describe('fictional province orders', () => {
