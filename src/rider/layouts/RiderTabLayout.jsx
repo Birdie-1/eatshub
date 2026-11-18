@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from 'react-router'
+import { useLayoutEffect } from 'react'
+import { NavLink, Outlet, useLocation } from 'react-router'
 import { ChartColumn, House, User, Wallet } from 'lucide-react'
 
 const tabs = [
@@ -10,6 +11,10 @@ const tabs = [
 
 /** Rider screens with the dark 4-tab bottom navigation from the spec (selected tab is yellow). */
 export default function RiderTabLayout() {
+  const { pathname } = useLocation()
+  useLayoutEffect(() => {
+    document.getElementById('phone-scroll')?.scrollTo({ top: 0 })
+  }, [pathname])
   return (
     <>
       <main className="flex-1">

@@ -194,3 +194,11 @@ Tips to avoid conflicts:
 The rider summary derives from `src/data/riders.js`. Recent orders show the five newest records from `useOrders()`, including cancelled orders; their statuses update with the shared `src/shared/hooks/useOrderClock.js`. These demo checkout records are separate from the fixed annual sample report.
 
 Charts support focus, arrow keys, Home/End, previous/next month buttons, and expandable tables with exact values. At 360px, KPIs use two columns and other sections stack vertically. No chart library or backend was added.
+
+## Historical coverage and rider wallet/account screens
+
+A5 now appends a separate **May–November 2022** press-release section: a local, attributed 77-province SVG highlights the 19 service provinces (including Chumphon) and the three usage leaders. Four historical metrics are separate from the unchanged 2025 sample report. `coverage.js` owns names/metrics and matches every province to an SVG id; no map/chart dependency was added.
+
+R5 `/rider/wallet` displays credit/cash balances derived from their ledgers, pending cash withdrawals, signed history, and informational credit channels. R6 `/rider/income` provides Bangkok-calendar daily/monthly reports, a scrollable day strip, exact-value monthly charts/tables, period KPIs and job history. Future months are empty. R7 `/rider/account` shows the shared demo profile/rating distribution, online/auto-accept switches, and read-only details at `/rider/account/profile`, `/rider/account/banks`, `/rider/account/vehicle`.
+
+`useRider()` from `@/state` provides one shared activity/ledger snapshot and persisted boolean settings to R2/R5/R6/R7; R2 contains the wallet/settings integration while its full map/job flow remains in #35/#36. Rider logout clears only the rider session. `riderReports.js` groups the existing activity data without duplicating totals. Completed customer-order integration awaits R3–R4 (#36); automatically advancing customer orders are not counted as rider-completed work.

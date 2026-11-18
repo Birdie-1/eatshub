@@ -38,3 +38,13 @@ Images live in `src/shared/assets/images/` (downloaded from Unsplash, never hotl
 - Menu/rider counts and rider work states derive from the shared arrays. Blocked accounts overlap the work states, rather than increasing the rider count.
 - Top restaurants reuse real catalog records; customer names are fictional. Each Top 5 is a share of the report totals, not all of it: whatever is left must fit under the fifth row for everyone outside the list (one more restaurant, 290 more customers). `summarizeTop` gives a list's sales, orders and % of report sales.
 - `getRecentOrders` returns up to five valid records, newest first, without mutating the input. Recent demo checkout records are separate from the static report and do not change its KPIs.
+
+## Historical coverage (#33)
+
+`coverage.js` exports `coverageMetrics`, `coverageProvinces` (`{id,name,rank?}`), `coverageTop`, `coverageSource`, `provinceNames`, and `provinceShapes` (`{id,d}` parsed from the repository-owned SVG). The press-release period is May–November 2022; economic value is an estimate. Chumphon is included because it ranks first despite omission from the release's 18-name list, yielding 19 provinces. No provincial totals are invented. The SVG retains all 77 geometries under CC BY 3.0; see asset credits. Tests assert complete shape/name coverage, unique service ids and ranking membership/order.
+
+## Rider reports (#37–#38)
+
+`riderReports.js` groups `riderProfile.js` jobs using Bangkok calendar boundaries: `incomeDay(jobs,date,now)`, `incomeMonths(jobs,year,now)` return source `jobs` plus `{count,earning,minutes,km}`; monthly rows include `month` and `future`. Current periods are clipped at `now`, future months have no records. `bangkokDate`, `bangkokYear`, `monthStart`, `recentDays` support the calendar. Tests reconcile each KPI with its source jobs, including midnight, UTC/year boundaries and empty/future periods.
+
+`RiderProvider` shares the existing generated activity and both ledgers across screens, recomputes derived totals, and persists only `{online,autoAccept}` through the standard storage helpers. No separate wallet/income total is persisted. The R7 ratings use `riderProfile.ratingCounts` and the common 4.5 headline; fictional contact/bank/vehicle fields remain in `riderProfile`.
