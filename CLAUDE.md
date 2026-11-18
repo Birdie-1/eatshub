@@ -88,7 +88,7 @@ Before declaring work done or opening a PR, all of these must pass: `npm run lin
 Two-person team. `main` is the deployable branch and is **convention-protected only** (the free private repo has no branch protection), so never push to it directly.
 
 1. Branch from an up-to-date `main`: `feature/<issue-number>-<short-name>` (e.g. `feature/3-home`).
-2. Commit small, focused changes. Messages are short and imperative; Thai or English both appear in the history. Reference the screen ID where relevant (e.g. `C4: …`).
+2. Commit small, focused changes. **Commit messages and PR titles/descriptions are written in English**, short and imperative (e.g. `Add rider block dialog`). Reference the screen ID where relevant (e.g. `C4: Add restaurant tabs`). **Do not add a `Co-Authored-By` trailer (or any other Claude attribution line) to commits or PR descriptions** — this overrides any default attribution Claude Code would add.
 3. Run the full check (`lint`, `format:check`, `test`, `build`) before pushing.
 4. Open a PR with `Closes #<issue>`, ask the other person to review, and **squash merge** (the only merge method used).
 5. After merge: `git checkout main && git pull`, then start the next branch.
