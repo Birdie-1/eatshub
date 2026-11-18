@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
-import { Minus, Plus, ShoppingBag, Ticket, Trash2, X } from 'lucide-react'
+import { Minus, Plus, ShoppingBag, Store, Ticket, Trash2, X } from 'lucide-react'
 import { useCart, formatChoices } from '@/state'
-import { coupons } from '@/data/coupons'
+import { coupons, findCoupon } from '@/data/coupons'
 import Button from '@/shared/components/Button'
 import Card from '@/shared/components/Card'
 import TopBar from '@/shared/components/TopBar'
 import BottomSheet from '@/shared/components/BottomSheet'
 import ConfirmDialog from '@/shared/components/ConfirmDialog'
-import OrderSummary from '@/customer/components/OrderSummary'
+import PriceBreakdown from '@/customer/components/PriceBreakdown'
 import { formatAmount, formatBaht } from '@/shared/lib/format'
 
 export default function Cart() {
@@ -21,9 +21,11 @@ export default function Cart() {
     const result = cart.applyCoupon(value.trim().toUpperCase())
     if (result.ok) {
       setError('')
+      setCode('')
       setCouponOpen(false)
     } else setError(result.error)
   }
+  const appliedCoupon = findCoupon(cart.coupon)
   if (!cart.items.length)
     return (
       <div className="flex min-h-full flex-col">
@@ -43,10 +45,17 @@ export default function Cart() {
       <TopBar title="ตะกร้าสินค้า" backTo="/app" />
       <div className="flex-1 space-y-4 p-4">
         <Card className="space-y-4 shadow-none">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h1 className="font-semibold">{cart.restaurant.name}</h1>
-              <p className="mt-1 text-xs leading-6 text-neutral-500">{cart.restaurant.address}</p>
+          <div className="flex items-center gap-3">
+            {cart.restaurant.image ? (
+              <img src={cart.restaurant.image} alt="" className="size-12 shrink-0 rounded-xl object-cover" />
+            ) : (
+              <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-brand-light text-brand-dark">
+                <Store className="size-5" />
+              </span>
+            )}
+            <div className="min-w-0 flex-1">
+              <h1 className="truncate font-semibold">{cart.restaurant.name}</h1>
+              <p className="mt-0.5 truncate text-xs text-neutral-500">{cart.restaurant.address}</p>
             </div>
             <Link
               to={`/app/restaurant/${cart.restaurant.id}`}
@@ -129,10 +138,17 @@ export default function Cart() {
                 setError('')
                 setCouponOpen(true)
               }}
-              className="flex min-h-11 items-center gap-2 text-sm"
+              className="flex min-h-11 min-w-0 flex-1 items-center gap-2 text-left text-sm"
             >
-              <Ticket className="size-5 text-brand-dark" />
-              {cart.coupon || 'ใส่รหัสส่วนลด / ใช้คูปอง'} ›
+              <Ticket className="size-5 shrink-0 text-brand-dark" />
+              {appliedCoupon ? (
+                <span className="min-w-0">
+                  <span className="block font-semibold">{appliedCoupon.code}</span>
+                  <span className="block truncate text-xs text-neutral-500">{appliedCoupon.label}</span>
+                </span>
+              ) : (
+                'ใส่รหัสส่วนลด / ใช้คูปอง ›'
+              )}
             </button>
             {cart.coupon && (
               <button
@@ -148,15 +164,18 @@ export default function Cart() {
             <p className="text-xs text-danger">ยอดอาหารต่ำกว่าเงื่อนไข คูปองยังไม่ถูกนำมาคิดส่วนลด</p>
           )}
         </Card>
-        <OrderSummary {...cart} compact />
+        <Card className="space-y-4 shadow-none">
+          <h2 className="font-semibold">รายละเอียดราคา</h2>
+          <PriceBreakdown totals={cart.totals} restaurant={cart.restaurant} coupon={cart.coupon} />
+        </Card>
+      </div>
+      <div className="customer-action-bar bottom-[calc(4rem+env(safe-area-inset-bottom))]">
         {!cart.totals.meetsMinOrder && (
-          <p className="rounded-xl bg-warning-light p-3 text-sm text-warning">
+          <p className="mb-2 text-center text-sm text-warning">
             สั่งขั้นต่ำ {formatBaht(cart.totals.minOrder)} (ขาดอีก{' '}
             {formatBaht(cart.totals.minOrder - cart.totals.food)})
           </p>
         )}
-      </div>
-      <div className="customer-action-bar bottom-[calc(4rem+env(safe-area-inset-bottom))]">
         <Button
           size="lg"
           block
@@ -201,9 +220,7 @@ export default function Cart() {
               className={`w-full rounded-xl border border-dashed p-4 text-left ${cart.totals.food >= coupon.minFood ? 'border-brand bg-brand-light/40' : 'border-neutral-200 text-neutral-400'}`}
             >
               <span className="block font-semibold">{coupon.code}</span>
-              <span className="mt-1 block text-xs">
-                ลด {formatBaht(coupon.amount)} เมื่อค่าอาหารครบ {formatBaht(coupon.minFood)}
-              </span>
+              <span className="mt-1 block text-xs">{coupon.label}</span>
               {cart.totals.food < coupon.minFood && (
                 <span className="mt-1 block text-xs">
                   ขาดอีก {formatBaht(coupon.minFood - cart.totals.food)}
