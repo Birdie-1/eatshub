@@ -1,13 +1,10 @@
 import { useRef, useState } from 'react'
-import { ArrowUpRight, MapPin, MousePointer2, RotateCcw, ShoppingBag, Sparkles } from 'lucide-react'
+import { MapPin, MousePointer2, RotateCcw, ShoppingBag, Sparkles } from 'lucide-react'
 import Card from '@/shared/components/Card'
 import Badge from '@/shared/components/Badge'
 import { dashboardYear } from '@/data/dashboard'
 import {
-  coverageMetrics,
   coverageProvinces,
-  coverageSource,
-  coverageTop,
   provinceShapes,
   provinceNames,
   provinceOrderRows,
@@ -67,7 +64,8 @@ export default function ServiceCoverage() {
             ทุกออเดอร์ บนแผนที่เดียว
           </h2>
           <p className="mt-2 text-xs leading-6 text-neutral-500">
-            รายงานตัวอย่างปี {dashboardYear + 543} · ชี้เพื่อดูยอด คลิกเพื่อสำรวจจังหวัด
+            จังหวัดบริการและ Top 3 ตามช่วง พ.ค.–พ.ย. 2565 แยกจากรายงานตัวอย่างปี {dashboardYear + 543} · ชี้เพื่อดูยอด
+            คลิกเพื่อสำรวจจังหวัด
           </p>
         </div>
         <Badge tone="brand">
@@ -82,7 +80,7 @@ export default function ServiceCoverage() {
             className="coverage-canvas relative isolate overflow-hidden rounded-2xl border border-neutral-100 bg-surface p-3 sm:p-5"
           >
             <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
-              <h3 className="text-xs font-semibold">ประเทศไทย · 19 จังหวัดบริการ</h3>
+              <h3 className="text-xs font-semibold">ประเทศไทย · 19 จังหวัดบริการ (พ.ค.–พ.ย. 2565)</h3>
               <button
                 type="button"
                 onClick={() => {
@@ -276,35 +274,6 @@ export default function ServiceCoverage() {
           </p>
         </div>
       </div>
-      <details className="mt-5 rounded-2xl border border-neutral-200 bg-surface p-4">
-        <summary className="min-h-11 cursor-pointer text-sm font-semibold leading-6">
-          ข้อมูลการให้บริการ พ.ค.–พ.ย. 2565 จากข่าวประชาสัมพันธ์
-        </summary>
-        <div className="mt-3 grid grid-cols-2 gap-3 xl:grid-cols-4">
-          {coverageMetrics.map((metric) => (
-            <div key={metric.label} className="min-w-0 rounded-xl bg-white p-3">
-              <p className="text-[10px] text-neutral-500">{metric.label}</p>
-              <p className="mt-2 whitespace-nowrap text-base font-bold tabular-nums sm:text-xl">
-                {metric.value}
-              </p>
-              <p className="mt-1 text-[10px] text-neutral-400">{metric.unit}</p>
-            </div>
-          ))}
-        </div>
-        <p className="mt-4 text-xs leading-6 text-neutral-500">
-          การใช้งานสูงสุดตามข่าว: {coverageTop.map((p) => `${p.rank}. ${p.name}`).join(' · ')} ข่าวระบุ 18 จังหวัด
-          แต่รวมชุมพรซึ่งเป็นอันดับ 1 จึงนับเป็น 19 จังหวัด มูลค่าทางเศรษฐกิจเป็นค่าคาดการณ์ ข้อมูลข่าวแยกจากออเดอร์สมมติด้านบน
-        </p>
-        <a
-          href={coverageSource}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 inline-flex min-h-11 items-center gap-1 text-xs text-neutral-500 underline underline-offset-4"
-        >
-          อ่านข่าวประชาสัมพันธ์
-          <ArrowUpRight className="size-3" />
-        </a>
-      </details>
       <footer className="mt-4 text-[10px] leading-5 text-neutral-400">
         แผนที่: NordNordWest / Paul_012 ·{' '}
         <a
