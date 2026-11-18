@@ -2,12 +2,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import {
   Bell,
-  BookOpen,
   ChevronRight,
   Gift,
   Heart,
   HelpCircle,
-  Home,
   Info,
   KeyRound,
   LogOut,
@@ -29,7 +27,7 @@ const groups = [
     ['ข้อมูลส่วนตัว', User],
     ['การแจ้งเตือน', Bell],
     ['บันทึกที่อยู่', MapPin],
-    ['ร้านค้าที่ถูกใจ', Heart],
+    ['ร้านค้าที่ถูกใจ', Heart, '/app/account/favorites'],
     ['เปลี่ยนรหัสผ่าน', KeyRound],
     ['คะแนนสะสม', Star],
     ['แนะนำเพื่อน', UserPlus],
@@ -73,10 +71,10 @@ export default function Account() {
         </Card>
         {groups.map((items, index) => (
           <Card key={index} className="divide-y divide-neutral-100 border border-neutral-100 shadow-none">
-            {items.map(([label, Icon]) => (
+            {items.map(([label, Icon, to]) => (
               <button
                 key={label}
-                onClick={notInScope}
+                onClick={to ? () => navigate(to) : notInScope}
                 className="flex min-h-14 w-full items-center gap-3 text-left text-sm"
               >
                 <Icon className="size-5 text-neutral-400" />

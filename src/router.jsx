@@ -15,6 +15,7 @@ import Payment from '@/customer/pages/Payment'
 import Tracking from '@/customer/pages/Tracking'
 import Orders from '@/customer/pages/Orders'
 import Account from '@/customer/pages/Account'
+import Favorites from '@/customer/pages/Favorites'
 import OrderSuccess from '@/customer/pages/OrderSuccess'
 import RequireCustomer from '@/customer/components/RequireCustomer'
 
@@ -54,6 +55,7 @@ export const router = createBrowserRouter([
           { path: 'checkout', element: <Checkout /> }, // C8
           { path: 'payment/:method', element: <Payment /> }, // C9: promptpay | paypal
           { path: 'orders/:orderId', element: <Tracking /> }, // C10
+          { path: 'account/favorites', element: <Favorites /> }, // C12 sub-page
           { path: 'success/:orderId', element: <OrderSuccess /> },
         ],
       },

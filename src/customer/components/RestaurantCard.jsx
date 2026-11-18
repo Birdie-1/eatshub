@@ -7,10 +7,12 @@ import { useFavorites } from '@/state'
 /**
  * Horizontal restaurant row used on Home (C2) and Search (C3).
  * Top right shows the blue "ร้านแนะนำ" badge for recommended stores, otherwise a ♥ toggle.
+ * `showFavorite` forces the ♥ toggle even for recommended stores (used on the favorites list).
  */
-export default function RestaurantCard({ restaurant: r }) {
+export default function RestaurantCard({ restaurant: r, showFavorite = false }) {
   const { isFavorite, toggleFavorite } = useFavorites()
   const liked = isFavorite(r.id)
+  const showBadge = r.recommended && !showFavorite
 
   return (
     <div className="relative">
@@ -25,8 +27,8 @@ export default function RestaurantCard({ restaurant: r }) {
           className="size-20 shrink-0 rounded-xl bg-surface object-cover"
         />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <h3 className={`truncate font-semibold ${r.recommended ? 'pr-18' : 'pr-7'}`}>{r.name}</h3>
-          <p className={`truncate text-sm text-muted ${r.recommended ? '' : 'pr-7'}`}>{r.types.join(', ')}</p>
+          <h3 className={`truncate font-semibold ${showBadge ? 'pr-18' : 'pr-7'}`}>{r.name}</h3>
+          <p className={`truncate text-sm text-muted ${showBadge ? '' : 'pr-7'}`}>{r.types.join(', ')}</p>
           {r.promo && (
             <p className="flex min-w-0 items-center gap-1 text-xs font-medium text-brand-dark">
               <TicketPercent className="size-3.5 shrink-0" />
@@ -47,7 +49,7 @@ export default function RestaurantCard({ restaurant: r }) {
       </Link>
 
       <div className="absolute top-3 right-3">
-        {r.recommended ? (
+        {showBadge ? (
           <Badge tone="info" solid className="px-2 text-[11px]">
             ร้านแนะนำ
           </Badge>
