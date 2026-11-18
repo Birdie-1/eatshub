@@ -88,6 +88,7 @@ Run commands inside the inner `eatshub` directory containing `package.json`. If 
 | `/app/orders/:orderId` | C10 Order tracking |
 | `/app/orders` | C11 Order history |
 | `/app/account` | C12 Account |
+| `/app/account/favorites` | C12 sub-page: favorite restaurants |
 | `/admin/signin` | A1 Back-office sign in |
 | `/admin/riders` | A3 Rider list |
 
