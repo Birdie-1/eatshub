@@ -19,3 +19,13 @@ Shapes are documented at the top of each file. `restaurants.test.js` checks the 
 - When adding to the cart, pass `toCartRestaurant(restaurant)`, not the full object.
 
 Images live in `src/shared/assets/images/` (downloaded from Unsplash, never hotlinked) — credits in `CREDITS.md` there.
+
+## A5 dashboard report
+
+`dashboard.js` exports `dashboardTotals`, `monthlyDashboard`, `topRestaurants`, `topCustomers`, `riderSummary`, `dashboardYear`, and `getRecentOrders(orders)`.
+
+- Report revenue/orders are fixed sample totals: 177,321 baht / 946 orders. Each monthly series and each Top-5 ranking sums to those totals (`dashboard.test.js`).
+- Monthly rows contain `{ month, name, shortName, sales, orders, restaurants, customers }`. Restaurants/customers mean new registrations; their annual totals are 6 catalog restaurants / 295 sample customers.
+- Menu/rider counts and rider work states derive from the shared arrays. Blocked accounts overlap the work states, rather than increasing the rider count.
+- Top restaurants reuse real catalog records; customer names are fictional. The sample assumes the five listed restaurants/customers cover the report totals.
+- `getRecentOrders` returns up to five valid records, newest first, without mutating the input. Recent demo checkout records are separate from the static report and do not change its KPIs.

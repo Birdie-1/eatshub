@@ -14,9 +14,9 @@ export default function Landing() {
       icon: Smartphone,
     },
     {
-      to: adminSignedIn ? '/admin/riders' : '/admin/signin',
+      to: adminSignedIn ? '/admin' : '/admin/signin',
       title: 'ระบบหลังบ้าน',
-      hint: 'รายชื่อไรเดอร์ในระบบ',
+      hint: 'ภาพรวมแพลตฟอร์ม · รายชื่อไรเดอร์',
       action: 'เปิดระบบหลังบ้าน',
       icon: LayoutDashboard,
     },

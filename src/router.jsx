@@ -22,6 +22,7 @@ import RequireCustomer from '@/customer/components/RequireCustomer'
 import AdminLayout from '@/admin/layouts/AdminLayout'
 import AdminSignIn from '@/admin/pages/SignIn'
 import Riders from '@/admin/pages/Riders'
+import Dashboard from '@/admin/pages/Dashboard'
 import RequireAdmin from '@/admin/components/RequireAdmin'
 
 /**
@@ -72,7 +73,7 @@ export const router = createBrowserRouter([
       </RequireAdmin>
     ), // A2
     children: [
-      { index: true, element: <Navigate to="riders" replace /> },
+      { index: true, element: <Dashboard /> }, // A5
       { path: 'riders', element: <Riders /> }, // A3
     ],
   },

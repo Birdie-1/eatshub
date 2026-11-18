@@ -16,10 +16,10 @@ export default function AdminSignIn() {
   const destination = location.state?.from
   const next =
     typeof destination === 'string' &&
-    destination.startsWith('/admin/') &&
+    /^\/admin(?:[/?#]|$)/.test(destination) &&
     !destination.startsWith('/admin/signin')
       ? destination
-      : '/admin/riders'
+      : '/admin'
   if (adminSignedIn) return <Navigate to={next} replace />
   return (
     <div className="admin-signin min-h-dvh bg-admin-dark text-white">
