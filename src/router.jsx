@@ -32,6 +32,7 @@ import RiderJob from '@/rider/pages/Job'
 import RiderWallet from '@/rider/pages/Wallet'
 import RiderIncome from '@/rider/pages/Income'
 import RiderAccount from '@/rider/pages/Account'
+import RiderAccountDetails from '@/rider/pages/AccountDetails'
 import RequireRider from '@/rider/components/RequireRider'
 
 /**
@@ -91,6 +92,7 @@ export const router = createBrowserRouter([
             ],
           },
           { path: 'jobs/:orderId', element: <RiderJob /> }, // R4
+          { path: 'account/:section', element: <RiderAccountDetails /> }, // R7 read-only details
         ],
       },
     ],

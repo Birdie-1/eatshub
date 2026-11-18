@@ -48,8 +48,8 @@ export default function Home() {
     navigate(`/rider/jobs/${order.id}`)
   }
   const wallets = [
-    { label: 'ยอดเครดิต', amount: credit.balance, icon: CreditCard },
-    { label: 'กระเป๋าเงินสด', amount: cash.balance, icon: Banknote },
+    { kind: 'credit', label: 'ยอดเครดิต', amount: credit.balance, icon: CreditCard },
+    { kind: 'cash', label: 'กระเป๋าเงินสด', amount: cash.balance, icon: Banknote },
   ]
   return (
     <div className="relative flex h-full min-h-[600px] flex-col overflow-hidden bg-surface">
@@ -117,11 +117,11 @@ export default function Home() {
         )}
 
         <div className="grid grid-cols-2 gap-3">
-          {wallets.map(({ label, amount, icon: Icon }) => (
+          {wallets.map(({ kind, label, amount, icon: Icon }) => (
             <Card
               key={label}
               as={Link}
-              to="/rider/wallet"
+              to={`/rider/wallet?wallet=${kind}`}
               className="block transition hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin"
             >
               <span className="flex items-center gap-1.5 text-xs text-neutral-500">

@@ -201,3 +201,17 @@ Tips to avoid conflicts:
 The rider summary derives from `src/data/riders.js`. Recent orders show the five newest records from `useOrders()`, including cancelled orders; their statuses update with the shared `src/shared/hooks/useOrderClock.js`. These demo checkout records are separate from the fixed annual sample report.
 
 Charts support focus, arrow keys, Home/End, previous/next month buttons, and expandable tables with exact values. At 360px, KPIs use two columns and other sections stack vertically. No chart library or backend was added.
+
+## Historical coverage and rider wallet/account screens
+
+A5 now appends a separate **May–November 2022** press-release section: a local, attributed 77-province SVG highlights the 19 service provinces (including Chumphon) and the three usage leaders. Four historical metrics are separate from the unchanged 2025 sample report. `coverage.js` owns names/metrics and matches every province to an SVG id; no map/chart dependency was added.
+
+R5 `/rider/wallet` displays credit/cash balances derived from their ledgers, pending cash withdrawals, signed history, and informational credit channels. R6 `/rider/income` provides Bangkok-calendar daily/monthly reports, a scrollable day strip, exact-value monthly charts/tables, period KPIs and job history. Future months are empty. R7 `/rider/account` shows the shared demo profile/rating distribution, online/auto-accept switches, and read-only details at `/rider/account/profile`, `/rider/account/banks`, `/rider/account/vehicle`.
+
+`useRider()` from `@/state` provides one shared activity/ledger snapshot to R2/R5/R6/R7. The full R2 home from #40 reads it through `useRiderSummary`; R7 uses the existing `useRiderStatus()` store from R2 for both persisted switches. Rider logout clears only the rider session. `riderReports.js` groups the existing activity data without duplicating totals. Completed rider-driven orders from R3–R4 feed today’s income and the cash ledger directly from their order snapshots, once per order id. Timed customer deliveries are excluded; no duplicate income records are persisted.
+
+## Admin map exploration and rider earnings
+
+The A5 map is now the first dashboard section. Hover/focus shows a province’s **fictional 2025 order count**, click/Enter zooms and highlights it with a short ring animation, and Reset/Escape restores Thailand. The 19 allocated province counts sum to the existing 946-order demo KPI; they are explicitly labeled fictional and are separate from both live checkout orders and the 2022 press-release figures (available in the historical-data disclosure). Province zeroes mean no allocation in this demo, not real-world absence of orders.
+
+Below the map, admin rider earnings use the same EA00001 completed-job history as R2/R5/R6: selected-day income, current-month income, highest aggregate day and highest aggregate calendar month within the last 365 Bangkok days. Peak dates/months and job counts are shown. The report covers one demo rider, not earnings for all 17 catalog riders. Daily/monthly charts support keyboard selection and exact-value tables. Map/chart animations respect reduced motion.

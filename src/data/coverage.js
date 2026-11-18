@@ -1,0 +1,146 @@
+import mapSvg from '@/shared/assets/images/thailand-provinces.svg?raw'
+
+/** Historical press-release figures, May–November 2022, as agreed in issue #33.
+ * Provinces: { id: SVG province id, name: Thai name, rank?: usage rank }.
+ * The release lists 18 provinces but ranks Chumphon first; this report includes it (19).
+ * No provincial totals are inferred. Economic value is explicitly an estimate.
+ * Geometry: NordNordWest / Paul_012, CC BY 3.0; see assets/images/CREDITS.md.
+ */
+export const coverageSource = 'https://www.thailandsmartcontent.com/2022/11/eatshub.html'
+export const coverageMetrics = [
+  { label: 'ผู้ลงทะเบียน', value: '600,000+', unit: 'ราย' },
+  { label: 'ยอดเข้าใช้งาน', value: '10,000,000+', unit: 'ครั้ง' },
+  { label: 'ร้านค้าบนแพลตฟอร์ม', value: '25,000+', unit: 'แห่ง' },
+  { label: 'มูลค่าทางเศรษฐกิจ', value: '~500', unit: 'ล้านบาท · คาดการณ์' },
+]
+export const coverageProvinces = [
+  ['10', 'กรุงเทพมหานคร'],
+  ['14', 'พระนครศรีอยุธยา', 3],
+  ['50', 'เชียงใหม่'],
+  ['60', 'นครสวรรค์'],
+  ['65', 'พิษณุโลก'],
+  ['80', 'นครศรีธรรมราช'],
+  ['76', 'เพชรบุรี', 2],
+  ['84', 'สุราษฎร์ธานี'],
+  ['83', 'ภูเก็ต'],
+  ['90', 'สงขลา'],
+  ['20', 'ชลบุรี'],
+  ['22', 'จันทบุรี'],
+  ['21', 'ระยอง'],
+  ['30', 'นครราชสีมา'],
+  ['40', 'ขอนแก่น'],
+  ['41', 'อุดรธานี'],
+  ['34', 'อุบลราชธานี'],
+  ['48', 'นครพนม'],
+  ['86', 'ชุมพร', 1],
+].map(([id, name, rank]) => ({ id: `th-${id}`, name, rank }))
+export const coverageTop = coverageProvinces.filter((p) => p.rank).sort((a, b) => a.rank - b.rank)
+// This repository-owned SVG has one path per province, including all offshore islands.
+export const provinceShapes = [...mapSvg.matchAll(/<path id="(th-\d+)" d="([^"]+)"/g)].map(([, id, d]) => ({
+  id,
+  d,
+}))
+
+// ISO 3166-2 numeric suffixes used by the source SVG (Bangkok plus 76 provinces).
+export const provinceNames = Object.fromEntries(
+  [
+    ['10', 'กรุงเทพมหานคร'],
+    ['11', 'สมุทรปราการ'],
+    ['12', 'นนทบุรี'],
+    ['13', 'ปทุมธานี'],
+    ['14', 'พระนครศรีอยุธยา'],
+    ['15', 'อ่างทอง'],
+    ['16', 'ลพบุรี'],
+    ['17', 'สิงห์บุรี'],
+    ['18', 'ชัยนาท'],
+    ['19', 'สระบุรี'],
+    ['20', 'ชลบุรี'],
+    ['21', 'ระยอง'],
+    ['22', 'จันทบุรี'],
+    ['23', 'ตราด'],
+    ['24', 'ฉะเชิงเทรา'],
+    ['25', 'ปราจีนบุรี'],
+    ['26', 'นครนายก'],
+    ['27', 'สระแก้ว'],
+    ['30', 'นครราชสีมา'],
+    ['31', 'บุรีรัมย์'],
+    ['32', 'สุรินทร์'],
+    ['33', 'ศรีสะเกษ'],
+    ['34', 'อุบลราชธานี'],
+    ['35', 'ยโสธร'],
+    ['36', 'ชัยภูมิ'],
+    ['37', 'อำนาจเจริญ'],
+    ['38', 'บึงกาฬ'],
+    ['39', 'หนองบัวลำภู'],
+    ['40', 'ขอนแก่น'],
+    ['41', 'อุดรธานี'],
+    ['42', 'เลย'],
+    ['43', 'หนองคาย'],
+    ['44', 'มหาสารคาม'],
+    ['45', 'ร้อยเอ็ด'],
+    ['46', 'กาฬสินธุ์'],
+    ['47', 'สกลนคร'],
+    ['48', 'นครพนม'],
+    ['49', 'มุกดาหาร'],
+    ['50', 'เชียงใหม่'],
+    ['51', 'ลำพูน'],
+    ['52', 'ลำปาง'],
+    ['53', 'อุตรดิตถ์'],
+    ['54', 'แพร่'],
+    ['55', 'น่าน'],
+    ['56', 'พะเยา'],
+    ['57', 'เชียงราย'],
+    ['58', 'แม่ฮ่องสอน'],
+    ['60', 'นครสวรรค์'],
+    ['61', 'อุทัยธานี'],
+    ['62', 'กำแพงเพชร'],
+    ['63', 'ตาก'],
+    ['64', 'สุโขทัย'],
+    ['65', 'พิษณุโลก'],
+    ['66', 'พิจิตร'],
+    ['67', 'เพชรบูรณ์'],
+    ['70', 'ราชบุรี'],
+    ['71', 'กาญจนบุรี'],
+    ['72', 'สุพรรณบุรี'],
+    ['73', 'นครปฐม'],
+    ['74', 'สมุทรสาคร'],
+    ['75', 'สมุทรสงคราม'],
+    ['76', 'เพชรบุรี'],
+    ['77', 'ประจวบคีรีขันธ์'],
+    ['80', 'นครศรีธรรมราช'],
+    ['81', 'กระบี่'],
+    ['82', 'พังงา'],
+    ['83', 'ภูเก็ต'],
+    ['84', 'สุราษฎร์ธานี'],
+    ['85', 'ระนอง'],
+    ['86', 'ชุมพร'],
+    ['90', 'สงขลา'],
+    ['91', 'สตูล'],
+    ['92', 'ตรัง'],
+    ['93', 'พัทลุง'],
+    ['94', 'ปัตตานี'],
+    ['95', 'ยะลา'],
+    ['96', 'นราธิวาส'],
+  ].map(([id, name]) => [`th-${id}`, name]),
+)
+
+/** Fictional annual province order counts, explicitly requested for the interactive admin map.
+ * Separate from historical 2022 news metrics; sums to the 2025 demo KPI (946 orders).
+ * Provinces outside this demo allocation show zero; no claim about actual province activity.
+ */
+const demoOrderCounts = [83, 97, 54, 30, 25, 29, 113, 41, 37, 32, 47, 19, 23, 40, 49, 31, 26, 20, 150]
+export const provinceOrderRows = coverageProvinces.map((province, index) => ({
+  ...province,
+  orders: demoOrderCounts[index],
+}))
+export const provinceOrderTotal = provinceOrderRows.reduce((sum, row) => sum + row.orders, 0)
+export function provinceOrderReport(id) {
+  const row = provinceOrderRows.find((province) => province.id === id)
+  return {
+    id,
+    name: provinceNames[id],
+    rank: row?.rank,
+    orders: row?.orders ?? 0,
+    share: row ? Math.round((row.orders / provinceOrderTotal) * 1000) / 10 : 0,
+  }
+}

@@ -38,3 +38,21 @@ Images live in `src/shared/assets/images/` (downloaded from Unsplash, never hotl
 - Menu/rider counts and rider work states derive from the shared arrays. Blocked accounts overlap the work states, rather than increasing the rider count.
 - Top restaurants reuse real catalog records; customer names are fictional. Each Top 5 is a share of the report totals, not all of it: whatever is left must fit under the fifth row for everyone outside the list (one more restaurant, 290 more customers). `summarizeTop` gives a list's sales, orders and % of report sales.
 - `getRecentOrders` returns up to five valid records, newest first, without mutating the input. Recent demo checkout records are separate from the static report and do not change its KPIs.
+
+## Historical coverage (#33)
+
+`coverage.js` exports `coverageMetrics`, `coverageProvinces` (`{id,name,rank?}`), `coverageTop`, `coverageSource`, `provinceNames`, and `provinceShapes` (`{id,d}` parsed from the repository-owned SVG). The press-release period is May–November 2022; economic value is an estimate. Chumphon is included because it ranks first despite omission from the release's 18-name list, yielding 19 provinces. No provincial totals are invented. The SVG retains all 77 geometries under CC BY 3.0; see asset credits. Tests assert complete shape/name coverage, unique service ids and ranking membership/order.
+
+## Rider reports (#37–#38)
+
+`riderReports.js` groups `riderProfile.js` jobs using Bangkok calendar boundaries: `incomeDay(jobs,date,now)`, `incomeMonths(jobs,year,now)` return source `jobs` plus `{count,earning,minutes,km}`; monthly rows include `month` and `future`. Current periods are clipped at `now`, future months have no records. `bangkokDate`, `bangkokYear`, `monthStart`, `recentDays` support the calendar. Tests reconcile each KPI with its source jobs, including midnight, UTC/year boundaries and empty/future periods.
+
+`RiderProvider` shares the existing generated activity and both ledgers across screens, recomputes derived totals, while `useRiderStatus()` in `preferences.js` persists the shared `{online,autoAccept}` switches through the standard storage helpers. No separate wallet/income total is persisted. The R7 ratings use `riderProfile.ratingCounts` and the common 4.5 headline; fictional contact/bank/vehicle fields remain in `riderProfile`.
+
+`completedRiderJobs(orders, now)` derives earned jobs only from non-cancelled EA00001 orders with `riderJob.step === 5` and valid, non-future completion timestamps. IDs are deduplicated; the provider combines these with the sample history and uses the same jobs for R2/R5/R6. Each earns `RIDER_EARNING` (60 baht); minutes use actual stage timestamps rounded to tenths, distance uses the same catalog `distanceKm` as the offer. Distance totals retain two decimal places so per-job figures reconcile. Income is never persisted separately.
+
+## Admin rider earnings and province-order demo
+
+`adminInsights.js` exports `riderEarningsInsights(jobs, now)`: rolling 365 Bangkok-day daily/monthly aggregates (`{period, earning, count}`), today/current-month records, peaks and date bounds. Duplicate ids, invalid/negative earnings, future and out-of-window jobs are excluded. Tied maxima choose the latest period; empty peaks are null. It reads the shared completed-job history and does not estimate other riders' earnings.
+
+`coverage.js` additionally exports `provinceOrderRows`, `provinceOrderTotal` and `provinceOrderReport(id)`. The user authorized fictional province order counts for the interactive map: 19 rows sum to 946 (the 2025 demo KPI), with Chumphon/Phetchaburi/Ayutthaya leading. Other map provinces return zero. These figures are not inferred from the 2022 release or live checkout orders. Tests reconcile allocations and verify Bangkok-period maxima, ties, clipping, invalid data and deduplication.

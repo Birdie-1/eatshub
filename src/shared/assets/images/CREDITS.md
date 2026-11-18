@@ -67,3 +67,9 @@ To add a photo: download `https://images.unsplash.com/photo-<id>?w=800&h=600&fit
 
 `src/shared/assets/icons/categories/*.png` are [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (3D style, resized to 128 px),
 MIT License — full text in `src/shared/assets/icons/categories/LICENSE`. Each file is named after its category id in `src/data/restaurants.js`.
+
+## Thailand province map
+
+`thailand-provinces.svg` adapts [BlankMap-Thailand-provinces.svg](https://commons.wikimedia.org/wiki/File:BlankMap-Thailand-provinces.svg) by [NordNordWest](https://commons.wikimedia.org/wiki/User:NordNordWest), modified by [Paul_012](https://commons.wikimedia.org/wiki/User:Paul_012), licensed [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). Downloaded 18 November 2026 from the [original SVG](https://upload.wikimedia.org/wikipedia/commons/1/11/BlankMap-Thailand-provinces.svg).
+
+Changes: retained only the 77 province geometries; combined islands and polygon pieces into a single path per province (`th-10` etc.); rounded fractional coordinates to three decimal places; removed surrounding countries, water, editor metadata, and original styling. The app colors provinces using design tokens. The original NordNordWest / Paul_012 work is not endorsed by them. Attribution and license links also appear below the displayed map.
