@@ -1,8 +1,9 @@
-import { useRider } from '@/state'
+import Switch from '@/rider/components/Switch'
+import { useRiderStatus } from '@/state'
 
 /** Shared controls, intentionally backed by the same preferences on R2 and R7. */
 export default function RiderSettings() {
-  const { online, autoAccept, setOnline, setAutoAccept } = useRider()
+  const { online, autoAccept, setOnline, setAutoAccept } = useRiderStatus()
   return (
     <section
       aria-label="ตั้งค่ารับงาน"
@@ -27,18 +28,7 @@ export default function RiderSettings() {
             <p className="text-sm font-semibold">{label}</p>
             <p className="mt-1 text-[11px] leading-5 text-neutral-500">{description}</p>
           </div>
-          <button
-            type="button"
-            role="switch"
-            aria-label={label}
-            aria-checked={checked}
-            onClick={() => change(!checked)}
-            className={`relative h-11 w-14 shrink-0 rounded-xl ${checked ? 'bg-brand' : 'bg-neutral-200'}`}
-          >
-            <span
-              className={`absolute top-2 size-7 rounded-lg bg-white shadow-sm transition-transform ${checked ? 'left-6' : 'left-1'}`}
-            />
-          </button>
+          <Switch label={label} checked={checked} onChange={change} />
         </div>
       ))}
     </section>

@@ -1,10 +1,10 @@
 import { Link } from 'react-router'
-import { ArrowRight, LayoutDashboard, Smartphone } from 'lucide-react'
+import { ArrowRight, Bike, LayoutDashboard, Smartphone } from 'lucide-react'
 import Logo from '@/shared/components/Logo'
 import { useSession } from '@/state'
 
 export default function Landing() {
-  const { customerSignedIn, adminSignedIn } = useSession()
+  const { customerSignedIn, riderSignedIn, adminSignedIn } = useSession()
   const entries = [
     {
       to: customerSignedIn ? '/app' : '/app/signin',
@@ -12,6 +12,13 @@ export default function Landing() {
       hint: 'เลือกร้าน · สั่งอาหาร · ชำระเงิน · ติดตามออเดอร์',
       action: 'เปิดแอปลูกค้า',
       icon: Smartphone,
+    },
+    {
+      to: riderSignedIn ? '/rider' : '/rider/signin',
+      title: 'แอปไรเดอร์',
+      hint: 'ออนไลน์รับงาน · ยอดกระเป๋าเงิน · ข้อมูลวันนี้',
+      action: 'เปิดแอปไรเดอร์',
+      icon: Bike,
     },
     {
       to: adminSignedIn ? '/admin' : '/admin/signin',
@@ -30,7 +37,7 @@ export default function Landing() {
         </h1>
         <p className="mt-3 text-sm sm:text-base">แพลตฟอร์มสั่งอาหารเดลิเวอรี่</p>
       </div>
-      <div className="grid w-full max-w-3xl gap-4 md:grid-cols-2">
+      <div className="grid w-full max-w-5xl gap-4 md:grid-cols-3">
         {entries.map(({ to, title, hint, action, icon: Icon }) => (
           <Link
             key={to}

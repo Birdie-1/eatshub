@@ -34,16 +34,17 @@ src/
                         FloatingCartBar (C6)
   rider/                rider app (R1–R7, scope in REQUIREMENTS §4.1; issues #34–#38)
     layouts/            RiderTabLayout (dark bottom nav หน้าแรก · กระเป๋าเงิน · รายได้ · บัญชี)
-    pages/              R1 sign-in; R2, R4–R7 are placeholders until #35–#38
-    components/         RequireRider (demo route guard)
+    pages/              R1 sign-in, R2 home; R4–R7 are placeholders until #36–#38
+    components/         RequireRider (demo route guard), Switch, StatsSheet (R2 pull-up sheet)
+    useRiderSummary.js  wallet balances + today's numbers shared by R2 and R5
   admin/                back office
     layouts/            AdminLayout (header, sidebar with ☰ on mobile, footer), adminMenu.js
     pages/              A1 sign-in, A3 rider list
   shared/               used by more than one app
-    pages/Landing.jsx   choose customer app / back office (rider entry added with #35)
+    pages/Landing.jsx   choose customer app / rider app / back office
     components/         shared UI (see "Shared building blocks" below)
     lib/format.js       formatBaht / formatAmount
-    assets/images/      Unsplash food photos (stored in repo, never hotlinked)
+    assets/images/      Unsplash food photos + rider-map.svg (stored in repo, never hotlinked)
   data/                 static mock data from the specs (see src/data/README.md), coupons.js
   state/                cart, orders, session (React Context + localStorage) and fixtures
 ```
@@ -54,7 +55,7 @@ Production: **https://eatshub-red.vercel.app**. The Vercel project is linked to 
 
 ## Customer ordering demo
 
-- Landing has separate customer/back-office entrances. The rider app (`/rider`) is reachable by URL only until its home screen (#35) is built. Customer routes require the demo session and return to the requested page after sign-in.
+- Landing has separate customer, rider and back-office entrances (three columns from `md` up). Customer routes require the demo session and return to the requested page after sign-in.
 - Checkout reads the real cart, addresses and `calcTotals` output. COD, PromptPay sample QR and PayPal confirmation are simulations; no financial credentials are collected.
 - Every order freezes its items, notes, address, totals and `DEFAULT_RIDER`. Order IDs use a persisted sequence beginning after sample order 00012.
 - Tracking advances every 8 seconds (about 32 seconds total); the demo skip button survives refresh. COD becomes paid only on delivery.
@@ -136,7 +137,7 @@ Inside the phone frame, use `sticky`/`absolute` instead of `fixed` so bars stay 
 
 **Money**: `formatBaht(215)` → `215 ฿` for prices in lists; `formatAmount(215)` → `215.00` for order summaries.
 
-**State** — `import { useCart, useOrders, useSession } from '@/state'`:
+**State** — `import { useCart, useOrders, useSession, useRiderStatus } from '@/state'`:
 
 ```js
 useCart()    // { restaurant, items, noteToStore, noteToRider, coupon, totals,
@@ -146,6 +147,7 @@ useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id),
 useSession() // { customerSignedIn, adminSignedIn, riderSignedIn, signIn('customer' | 'admin' | 'rider'), signOut(kind) }
 useAddress() // { address: { id, label, detail }, addresses, setAddress(id) } — picked on C2, default for C8
 useFavorites() // { favorites, isFavorite(id), toggleFavorite(id) } — restaurant ♥
+useRiderStatus() // { online, autoAccept, setOnline(bool), setAutoAccept(bool) } — rider switches (R2, R7); default both on
 ```
 
 - Build cart lines with `makeCartItem({ restaurantId, menu, option, addons, note, qty })` (same choices + note → same `key`, so quantities merge).
@@ -201,4 +203,4 @@ A5 now appends a separate **May–November 2022** press-release section: a local
 
 R5 `/rider/wallet` displays credit/cash balances derived from their ledgers, pending cash withdrawals, signed history, and informational credit channels. R6 `/rider/income` provides Bangkok-calendar daily/monthly reports, a scrollable day strip, exact-value monthly charts/tables, period KPIs and job history. Future months are empty. R7 `/rider/account` shows the shared demo profile/rating distribution, online/auto-accept switches, and read-only details at `/rider/account/profile`, `/rider/account/banks`, `/rider/account/vehicle`.
 
-`useRider()` from `@/state` provides one shared activity/ledger snapshot and persisted boolean settings to R2/R5/R6/R7; R2 contains the wallet/settings integration while its full map/job flow remains in #35/#36. Rider logout clears only the rider session. `riderReports.js` groups the existing activity data without duplicating totals. Completed customer-order integration awaits R3–R4 (#36); automatically advancing customer orders are not counted as rider-completed work.
+`useRider()` from `@/state` provides one shared activity/ledger snapshot to R2/R5/R6/R7. The full R2 home from #40 reads it through `useRiderSummary`; R7 uses the existing `useRiderStatus()` store from R2 for both persisted switches. Rider logout clears only the rider session. `riderReports.js` groups the existing activity data without duplicating totals. Completed customer-order integration awaits R3–R4 (#36); automatically advancing customer orders are not counted as rider-completed work.
