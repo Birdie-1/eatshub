@@ -177,7 +177,7 @@ Tips to avoid conflicts:
 
 ## Admin dashboard (A5)
 
-`/admin` shows a sample annual report for 2026: sales **177,321 baht**, **946 orders**, and catalog counts from `menus.length` / `riders.length` (currently 45 / 17). The monthly series and each Top-5 ranking reconcile with the headline totals. New restaurants/customers are monthly registrations, not cumulative counts. All ranking identities are mock data, with restaurant photos and addresses reused from the catalog.
+`/admin` shows a sample annual report for 2025 (a completed year): sales **177,321 baht**, **946 orders**, and catalog counts from `menus.length` / `riders.length` (currently 45 / 17). The monthly sales/orders series reconcile with the headline totals; each Top-5 ranking is a share of them (shown as % of sales). The restaurant chart is the running count on the platform; new customers are monthly registrations. All ranking identities are mock data, with restaurant photos and addresses reused from the catalog.
 
 The rider summary derives from `src/data/riders.js`. Recent orders show the five newest records from `useOrders()`, including cancelled orders; their statuses update with the shared `src/shared/hooks/useOrderClock.js`. These demo checkout records are separate from the fixed annual sample report.
 

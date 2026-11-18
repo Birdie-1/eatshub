@@ -13,7 +13,7 @@ export default function MonthlyChart({ title, series, totalLabel, total }) {
   const bars = useRef([])
   const max = Math.max(1, ...monthlyDashboard.map((row) => row[series]))
   const format = series === 'sales' ? formatBaht : (value) => integer.format(value)
-  const unit = series === 'sales' ? 'พันบาท' : series === 'restaurants' ? 'ร้านใหม่' : 'คนใหม่'
+  const unit = series === 'sales' ? 'พันบาท' : series === 'restaurants' ? 'ร้าน (สะสม)' : 'คนใหม่'
   const active = monthlyDashboard[selected]
   const focusMonth = (index) => bars.current[index]?.focus()
   const onKeyDown = (event, index) => {
