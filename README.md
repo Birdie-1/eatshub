@@ -169,7 +169,9 @@ git push -u origin feature/3-home
 gh pr create --fill
 ```
 
-Before opening a PR: `npm run lint && npm test && npm run build`.
+Before opening a PR: `npm run lint && npm run format:check && npm test && npm run build`.
+
+GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs the same four checks on every PR and on each push to `main`. The free private repo has no branch protection, so a failing check doesn't block the merge button — don't merge a PR with a red ❌.
 
 Tips to avoid conflicts:
 - Split work by screen/flow (e.g. one person on customer ordering, the other on the back-office rider list). Shared files (`router.jsx`, `index.css`, `src/shared/`, `src/data/`) change most often, so keep edits there small.
