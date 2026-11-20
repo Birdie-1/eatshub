@@ -20,9 +20,12 @@ import { toast } from '@/shared/components/Toast'
 import OrderSummary from '@/customer/components/OrderSummary'
 import RatingSheet from '@/customer/components/RatingSheet'
 import StarRating from '@/customer/components/StarRating'
+import RiderMap from '@/customer/components/RiderMap'
 import { useOrders } from '@/state'
+import { getRestaurant } from '@/data/restaurants'
 import { useOrderClock } from '@/shared/hooks/useOrderClock'
 import {
+  deliveryLeg,
   formatOrderDate,
   getStatus,
   isRated,
@@ -65,17 +68,24 @@ export default function Tracking() {
   const step = cancelled ? { label: 'ยกเลิกออเดอร์', message: 'ออเดอร์ถูกยกเลิก' } : ORDER_STEPS[status - 1]
   const Illustration = cancelled ? X : icons[status - 1]
   const times = stepTimes(order, now)
+  // The map shows only while the rider rides to the customer; the route is the restaurant's distance.
+  const distanceKm = getRestaurant(order.restaurant.id)?.distanceKm ?? 2
+  const leg = deliveryLeg(order, now, distanceKm)
   return (
     <div className="flex min-h-full flex-col bg-surface">
       <TopBar title={`ออเดอร์: ${order.id}`} backTo="/app/orders" />
       <div className="space-y-4 p-4">
         <Card className="border border-neutral-100 text-center shadow-none">
           <div key={status} className="animate-[fade-in_250ms_ease-out]">
-            <span
-              className={`mx-auto grid size-24 place-items-center rounded-3xl ${cancelled ? 'bg-danger-light text-danger' : complete ? 'bg-success-light text-success' : 'bg-brand-light text-brand-dark'}`}
-            >
-              <Illustration className="size-12" strokeWidth={1.5} />
-            </span>
+            {leg ? (
+              <RiderMap order={order} now={now} distanceKm={distanceKm} />
+            ) : (
+              <span
+                className={`mx-auto grid size-24 place-items-center rounded-3xl ${cancelled ? 'bg-danger-light text-danger' : complete ? 'bg-success-light text-success' : 'bg-brand-light text-brand-dark'}`}
+              >
+                <Illustration className="size-12" strokeWidth={1.5} />
+              </span>
+            )}
             <Badge tone={cancelled ? 'danger' : complete ? 'success' : 'brand'} className="mx-auto mb-3 mt-5">
               {step.label}
             </Badge>
@@ -84,7 +94,8 @@ export default function Tracking() {
             </h2>
             {!complete && !cancelled && (
               <p className="mt-2 text-sm text-neutral-500">
-                คุณจะได้รับอาหารภายใน <strong className="text-ink">{step.minutes} นาที</strong>
+                คุณจะได้รับอาหารภายใน{' '}
+                <strong className="text-ink">{leg ? leg.minutes : step.minutes} นาที</strong>
               </p>
             )}
           </div>
