@@ -23,18 +23,15 @@ export function save(key, value) {
 
 /**
  * Calls `callback(value)` when another tab or window saves `key` (the browser `storage` event never fires
- * in the tab that wrote it). Removed keys and corrupt JSON are ignored. Returns an unsubscribe function.
+ * in the tab that wrote it). `value` is what is stored now, not the event's own copy: events can arrive
+ * after newer writes, and acting on an older copy makes tabs flip between versions. Removed keys and
+ * corrupt JSON are ignored. Returns an unsubscribe function.
  */
 export function subscribe(key, callback) {
   const onStorage = (event) => {
     if (event.key !== PREFIX + key || event.newValue == null) return
-    let value
-    try {
-      value = JSON.parse(event.newValue)
-    } catch {
-      return
-    }
-    callback(value)
+    const value = load(key, undefined)
+    if (value !== undefined) callback(value)
   }
   window.addEventListener('storage', onStorage)
   return () => window.removeEventListener('storage', onStorage)
