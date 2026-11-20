@@ -174,7 +174,7 @@ useRiderStatus() // { online, autoAccept, setOnline(bool), setAutoAccept(bool) }
 - Coupons live in `src/data/coupons.js` (`EATSHUB20`, `NEWUSER100`).
 - `src/state/fixtures.js` has the spec's sample cart (ราชาอาหาร, 215 ฿ / 9 points) for tests; shipped screens read the live cart instead.
 - Rider jobs (`src/state/orders.js`): `canAcceptJob(order)`, `acceptJob`, `advanceJob` and `stepTimes(order)` (when each stage was reached, for C10). `deliveryLeg(order, now, distanceKm)` gives the C10 map's progress, km and minutes left during "ส่งอาหาร" (null otherwise). An offered order carries `jobOfferExpiresAt`; an accepted one carries `riderJob: { step, times, auto? }`. Nothing else in the order snapshot changes. `isRiderOnDuty()` (`src/state/preferences.js`) decides whether a new order is offered.
-- Everything is saved to `localStorage` (keys prefixed `eatshub:`); clear it to reset the demo. `subscribe(key, callback)` in `src/state/storage.js` delivers changes made by other tabs.
+- Everything is saved to `localStorage` (keys prefixed `eatshub:`); clear it to reset the demo. `subscribe(key, callback)` in `src/state/storage.js` delivers changes made by other tabs. It always hands over the value stored now (events can arrive late), and `useOrders()` applies every change to the latest saved list, so two windows changing orders at once don't undo each other.
 
 ## Working together (2 people)
 
@@ -406,7 +406,7 @@ useRiderStatus() // { online, autoAccept, setOnline(bool), setAutoAccept(bool) }
 - คูปองอยู่ใน `src/data/coupons.js` (`EATSHUB20`, `NEWUSER100`)
 - `src/state/fixtures.js` มีตะกร้าตัวอย่างตามสเปก (ราชาอาหาร, 215 ฿ / 9 คะแนน) สำหรับใช้ในเทสต์เท่านั้น หน้าจอจริงอ่านจากตะกร้าจริง
 - งานไรเดอร์ (`src/state/orders.js`): `canAcceptJob(order)`, `acceptJob`, `advanceJob` และ `stepTimes(order)` (เวลาที่ถึงแต่ละขั้น ใช้ใน C10) `deliveryLeg(order, now, distanceKm)` ให้ความคืบหน้า ระยะทาง (กม.) และเวลาที่เหลือของแผนที่ C10 ระหว่างขั้น "ส่งอาหาร" (ขั้นอื่นได้ null) ออเดอร์ที่ถูกเสนอจะมี `jobOfferExpiresAt` ออเดอร์ที่รับแล้วจะมี `riderJob: { step, times, auto? }` ส่วนอื่นของ snapshot ออเดอร์ไม่เปลี่ยน `isRiderOnDuty()` (`src/state/preferences.js`) เป็นตัวตัดสินว่าจะเสนอออเดอร์ใหม่ให้ไรเดอร์หรือไม่
-- ทุกอย่างบันทึกใน `localStorage` (key ขึ้นต้นด้วย `eatshub:`) ล้างออกเพื่อรีเซ็ตเดโม `subscribe(key, callback)` ใน `src/state/storage.js` ส่งต่อการเปลี่ยนแปลงที่เกิดจากแท็บอื่น
+- ทุกอย่างบันทึกใน `localStorage` (key ขึ้นต้นด้วย `eatshub:`) ล้างออกเพื่อรีเซ็ตเดโม `subscribe(key, callback)` ใน `src/state/storage.js` ส่งต่อการเปลี่ยนแปลงที่เกิดจากแท็บอื่น โดยส่งค่าที่อยู่ใน storage ตอนนี้เสมอ (event อาจมาช้า) และ `useOrders()` แก้ไขจากรายการล่าสุดที่บันทึกไว้ทุกครั้ง สองหน้าต่างที่แก้พร้อมกันจึงไม่ทับกัน
 
 ## การทำงานร่วมกัน (2 คน)
 

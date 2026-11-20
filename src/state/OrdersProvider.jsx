@@ -35,7 +35,8 @@ const OrdersContext = createContext(null)
 /**
  * Orders shared by the customer app (C8–C11, C13 chat), the rider app (R3–R4, R8 chat) and the back office (A5).
  * Every change is saved, and changes saved by another tab or window are picked up, so the customer and
- * rider apps can run side by side and follow each other.
+ * rider apps can run side by side and follow each other. Each change is applied to the latest saved list
+ * (not this tab's possibly older copy), so two windows changing orders at once don't undo each other.
  */
 export function OrdersProvider({ children }) {
   const [orders, setOrders] = useState(() => {
@@ -44,21 +45,36 @@ export function OrdersProvider({ children }) {
     return seeded ? valid : [...valid, ...createSampleOrders()]
   })
   const sequence = useRef(load('order-seq', 12))
+  // First visit only: store the sample history. After that, only `change` below writes orders, so a tab
+  // never saves back an older list it was handed by another tab.
+  const initial = useRef(orders)
   useEffect(() => {
-    save('orders', orders)
+    if (load('history-seeded', false)) return
+    save('orders', initial.current)
     save('history-seeded', true)
-  }, [orders])
-  // Saving the same JSON back doesn't fire another event, so two tabs can't ping-pong.
+  }, [])
+  // Another tab saved: show what is stored now (subscribe always hands over the latest value).
   useEffect(() => subscribe('orders', (saved) => setOrders(restoreOrders(saved))), [])
   const value = useMemo(() => {
-    // An unchanged order keeps the same list, so no-op updates (e.g. marking a read chat read) don't re-render.
-    const update = (id, change) =>
-      setOrders((previous) => {
-        const next = previous.map((order) => (order.id === id ? change(order) : order))
-        return next.some((order, index) => order !== previous[index]) ? next : previous
+    /**
+     * Applies `edit(list) => list` to the latest saved orders (this tab's copy when storage is blocked),
+     * then saves and shows the result. Returning the same list means nothing changed: no write, no render.
+     */
+    const change = (edit) => {
+      const saved = load('orders', null)
+      const base = Array.isArray(saved) ? restoreOrders(saved) : orders
+      const next = edit(base)
+      if (next === base) return
+      save('orders', next)
+      setOrders(next)
+    }
+    const update = (id, edit) =>
+      change((list) => {
+        const next = list.map((order) => (order.id === id ? edit(order) : order))
+        return next.some((order, index) => order !== list[index]) ? next : list
       })
-    const nextSeq = () => {
-      const seq = nextOrderSequence(orders, sequence.current)
+    const nextSeq = (list) => {
+      const seq = nextOrderSequence(list, sequence.current)
       sequence.current = seq
       save('order-seq', seq)
       return seq
@@ -71,17 +87,22 @@ export function OrdersProvider({ children }) {
       riderOrders: sorted,
       /** C8. A rider app on duty is offered the order, ahead of any unfinished simulated job. */
       createOrder({ cart, address, payment }) {
-        const room = makeRoomForCustomerOrder(orders, isRiderOnDuty())
-        const order = buildOrder({ cart, address, payment, seq: nextSeq(), offerToRider: room.offer })
-        const dropped = new Set(orders.filter((kept) => !room.orders.includes(kept)).map((gone) => gone.id))
-        setOrders((previous) => [order, ...previous.filter((kept) => !dropped.has(kept.id))])
+        let order
+        change((list) => {
+          const room = makeRoomForCustomerOrder(list, isRiderOnDuty())
+          order = buildOrder({ cart, address, payment, seq: nextSeq(list), offerToRider: room.offer })
+          return [order, ...room.orders]
+        })
         return order
       },
       /** R3 demo: offer the rider a simulated job, dropping earlier ones that were rejected or ran out. */
       offerDemoJob() {
         const now = new Date()
-        const job = createDemoJob({ seq: nextSeq(), now })
-        setOrders((previous) => [job, ...previous.filter((order) => !isStaleDemoJob(order, now.getTime()))])
+        let job
+        change((list) => {
+          job = createDemoJob({ seq: nextSeq(list), now })
+          return [job, ...list.filter((order) => !isStaleDemoJob(order, now.getTime()))]
+        })
         return job
       },
       getOrder: (id) => orders.find((order) => order.id === id) ?? null,
