@@ -33,7 +33,7 @@ src/
     pages/              C1–C12 screens
     components/         customer-only UI: RestaurantCard, CategoryGrid, BannerCarousel,
                         RestaurantFilterSheet, AddressSheet, MenuCard (C4 items), StarRating,
-                        FloatingCartBar (C6)
+                        FloatingCartBar (C6), OrderHistoryCard (C11)
   rider/                rider app (R1–R7, scope in REQUIREMENTS §4.1; issues #34–#38)
     layouts/            RiderTabLayout (dark bottom nav หน้าแรก · กระเป๋าเงิน · รายได้ · บัญชี)
     pages/              R1 sign-in, R2 home (+ R3 popup), R4 job + earnings summary; R5–R7 are placeholders until #37–#38
@@ -256,7 +256,7 @@ src/
     pages/              หน้าจอ C1–C12
     components/         UI เฉพาะแอปลูกค้า: RestaurantCard, CategoryGrid, BannerCarousel,
                         RestaurantFilterSheet, AddressSheet, MenuCard (รายการใน C4), StarRating,
-                        FloatingCartBar (C6)
+                        FloatingCartBar (C6), OrderHistoryCard (C11)
   rider/                แอปไรเดอร์ (R1–R7, scope ใน REQUIREMENTS §4.1; issue #34–#38)
     layouts/            RiderTabLayout (bottom nav สีเข้ม หน้าแรก · กระเป๋าเงิน · รายได้ · บัญชี)
     pages/              R1 sign in, R2 หน้าแรก (+ popup R3), R4 งาน + สรุปรายได้; R5–R7 เป็น placeholder จนถึง #37–#38
