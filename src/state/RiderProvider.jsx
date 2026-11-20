@@ -10,7 +10,7 @@ import { useOrders } from './OrdersProvider'
 const RiderContext = createContext(null)
 /** One shared activity and ledger snapshot for R2/R5/R6/R7. */
 export function RiderProvider({ children }) {
-  const { orders } = useOrders()
+  const { riderOrders: orders } = useOrders()
   const [tick, setNow] = useState(() => Date.now())
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 60000)

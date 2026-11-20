@@ -5,10 +5,12 @@ import {
   advanceOrder,
   buildOrder,
   getStatus,
+  isStaleDemoJob,
   nextOrderSequence,
   rateOrder,
+  rejectJob,
 } from './orders'
-import { createSampleOrders } from '@/data/orders'
+import { createDemoJob, createSampleOrders } from '@/data/orders'
 import { isRiderOnDuty } from './preferences'
 import { load, save, subscribe } from './storage'
 
@@ -49,15 +51,29 @@ export function OrdersProvider({ children }) {
   const value = useMemo(() => {
     const update = (id, change) =>
       setOrders((previous) => previous.map((order) => (order.id === id ? change(order) : order)))
+    const nextSeq = () => {
+      const seq = nextOrderSequence(orders, sequence.current)
+      sequence.current = seq
+      save('order-seq', seq)
+      return seq
+    }
+    const sorted = [...orders].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     return {
-      orders: [...orders].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)),
+      /** Customer orders (C11, A5) — simulated rider jobs left out. */
+      orders: sorted.filter((order) => !order.simulated),
+      /** Everything the rider app can be offered or has done, simulated jobs included (R2–R6). */
+      riderOrders: sorted,
       createOrder({ cart, address, payment }) {
-        const seq = nextOrderSequence(orders, sequence.current)
-        const order = buildOrder({ cart, address, payment, seq, offerToRider: isRiderOnDuty() })
-        sequence.current = seq
-        save('order-seq', seq)
+        const order = buildOrder({ cart, address, payment, seq: nextSeq(), offerToRider: isRiderOnDuty() })
         setOrders((previous) => [order, ...previous])
         return order
+      },
+      /** R3 demo: offer the rider a simulated job, dropping earlier ones that were rejected or ran out. */
+      offerDemoJob() {
+        const now = new Date()
+        const job = createDemoJob({ seq: nextSeq(), now })
+        setOrders((previous) => [job, ...previous.filter((order) => !isStaleDemoJob(order, now.getTime()))])
+        return job
       },
       getOrder: (id) => orders.find((order) => order.id === id) ?? null,
       getStatus,
@@ -65,6 +81,8 @@ export function OrdersProvider({ children }) {
       rate: (id, stars) => update(id, (order) => rateOrder(order, stars)),
       /** R3: rider accepts an offered order (ignored once it's taken, expired or cancelled). */
       acceptJob: (id, { auto = false } = {}) => update(id, (order) => acceptJob(order, Date.now(), { auto })),
+      /** R3: rider rejects an offered order; a customer order then follows the clock from stage 2. */
+      rejectJob: (id) => update(id, (order) => rejectJob(order)),
       /** R4: rider finished stage `from` (2 → 3 → 4 → 5); stale or repeated clicks are ignored. */
       advanceJob: (id, from) => update(id, (order) => advanceJob(order, from)),
     }

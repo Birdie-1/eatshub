@@ -37,10 +37,10 @@ function Countdown({ seconds }) {
 /**
  * R3 — new job popup over the rider home. Shows the rider's earning, distance and food cost, the pickup
  * (restaurant) and drop-off (order address), with a 45-second countdown and one "รับงาน" button.
- * `auto` shows the "รับงานใหม่อัตโนมัติแล้ว" version for jobs taken by auto-accept. There is no reject
- * button (out of scope); Escape or the backdrop only closes the popup — the offer runs out on its own.
+ * "ปฏิเสธ" ends the offer (`onReject`); Escape or the backdrop only closes the popup, and the offer keeps
+ * running. `auto` shows the "รับงานใหม่อัตโนมัติแล้ว" version for jobs taken by auto-accept (no reject).
  */
-export default function JobOfferDialog({ order, now, auto = false, onAccept, onDismiss }) {
+export default function JobOfferDialog({ order, now, auto = false, onAccept, onReject, onDismiss }) {
   useEffect(() => {
     const onKey = (event) => event.key === 'Escape' && onDismiss()
     window.addEventListener('keydown', onKey)
@@ -107,9 +107,20 @@ export default function JobOfferDialog({ order, now, auto = false, onAccept, onD
           </li>
         </ol>
 
-        <Button block size="lg" className="mt-5" onClick={onAccept} autoFocus>
-          {auto ? 'เริ่มงาน' : 'รับงาน'}
-        </Button>
+        {auto ? (
+          <Button block size="lg" className="mt-5" onClick={onAccept} autoFocus>
+            เริ่มงาน
+          </Button>
+        ) : (
+          <div className="mt-5 grid grid-cols-[1fr_2fr] gap-2">
+            <Button variant="secondary" size="lg" onClick={onReject}>
+              ปฏิเสธ
+            </Button>
+            <Button size="lg" onClick={onAccept} autoFocus>
+              รับงาน
+            </Button>
+          </div>
+        )}
       </div>
     </div>,
     host ?? document.body,

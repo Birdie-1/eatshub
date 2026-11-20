@@ -26,7 +26,8 @@ function createStore(key, fallback, restore = (saved) => saved) {
 const addressStore = createStore('address', DEFAULT_ADDRESS_ID)
 const favoritesStore = createStore('favorites', [])
 
-export const DEFAULT_RIDER_STATUS = { online: true, autoAccept: true }
+/** Auto-accept starts off (spec screenshot: on) so the demo shows the R3 offer popup; REQUIREMENTS §6. */
+export const DEFAULT_RIDER_STATUS = { online: true, autoAccept: false }
 /** Keeps only boolean switch values from storage; anything else falls back to the default. */
 export function restoreRiderStatus(saved) {
   const status = { ...DEFAULT_RIDER_STATUS }

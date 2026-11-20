@@ -3,7 +3,12 @@ import { renderToString } from 'react-dom/server'
 import { OrdersProvider, restoreOrders, useOrders } from './OrdersProvider'
 
 function Count() {
-  return <p>{useOrders().orders.length}</p>
+  const { orders, riderOrders } = useOrders()
+  return (
+    <p>
+      {orders.length}/{riderOrders.length}
+    </p>
+  )
 }
 function history(entries = {}) {
   vi.stubGlobal('localStorage', { getItem: (key) => entries[key] ?? null, setItem: vi.fn() })
@@ -15,11 +20,14 @@ function history(entries = {}) {
 }
 afterEach(() => vi.unstubAllGlobals())
 describe('history restoration', () => {
-  it('opens in a fresh/private window with four sample records', () => expect(history()).toContain('>4<'))
+  it('opens in a fresh/private window with four sample records', () =>
+    expect(history()).toContain('>4<!-- -->/<!-- -->4<'))
   it('upgrades the old empty placeholder history once', () =>
-    expect(history({ 'eatshub:orders': '[]' })).toContain('>4<'))
+    expect(history({ 'eatshub:orders': '[]' })).toContain('>4<!-- -->/<!-- -->4<'))
   it('preserves intentionally empty history after initialization', () =>
-    expect(history({ 'eatshub:orders': '[]', 'eatshub:history-seeded': 'true' })).toContain('>0<'))
+    expect(history({ 'eatshub:orders': '[]', 'eatshub:history-seeded': 'true' })).toContain(
+      '>0<!-- -->/<!-- -->0<',
+    ))
   it('falls back safely when browser storage is unavailable', () => {
     vi.stubGlobal('localStorage', {
       getItem: () => {
@@ -35,7 +43,22 @@ describe('history restoration', () => {
           <Count />
         </OrdersProvider>,
       ),
-    ).toContain('>4<')
+    ).toContain('>4<!-- -->/<!-- -->4<')
+  })
+})
+describe('simulated rider jobs', () => {
+  const order = {
+    id: 'EH-BKK-261118-00013',
+    createdAt: '2026-11-18T05:00:00.000Z',
+    items: [],
+    totals: { total: 172.75 },
+    address: { label: 'บ้าน', detail: 'x' },
+  }
+  it('are left out of the customer/back-office list but kept for the rider app', () => {
+    const saved = JSON.stringify([order, { ...order, id: 'EH-BKK-261118-00014', simulated: true }])
+    expect(history({ 'eatshub:orders': saved, 'eatshub:history-seeded': 'true' })).toContain(
+      '>1<!-- -->/<!-- -->2<',
+    )
   })
 })
 describe('restoreOrders (saved or synced from another tab)', () => {

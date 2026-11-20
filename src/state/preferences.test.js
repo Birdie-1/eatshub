@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { DEFAULT_RIDER_STATUS, restoreRiderStatus } from './preferences'
 
 describe('rider status (R2 switches)', () => {
-  it('starts online with auto-accept on, as in the spec screenshot', () => {
-    expect(DEFAULT_RIDER_STATUS).toEqual({ online: true, autoAccept: true })
+  it('starts online with auto-accept off, so the demo shows the R3 offer popup', () => {
+    expect(DEFAULT_RIDER_STATUS).toEqual({ online: true, autoAccept: false })
     expect(restoreRiderStatus(undefined)).toEqual(DEFAULT_RIDER_STATUS)
   })
   it('keeps saved switch values', () => {
@@ -11,7 +11,8 @@ describe('rider status (R2 switches)', () => {
       online: false,
       autoAccept: false,
     })
-    expect(restoreRiderStatus({ online: false })).toEqual({ online: false, autoAccept: true })
+    expect(restoreRiderStatus({ online: false })).toEqual({ online: false, autoAccept: false })
+    expect(restoreRiderStatus({ autoAccept: true })).toEqual({ online: true, autoAccept: true })
   })
   it('ignores corrupt or unknown saved values', () => {
     expect(restoreRiderStatus('yes')).toEqual(DEFAULT_RIDER_STATUS)

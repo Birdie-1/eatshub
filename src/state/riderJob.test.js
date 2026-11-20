@@ -6,9 +6,11 @@ import {
   buildOrder,
   canAcceptJob,
   getStatus,
+  isStaleDemoJob,
   JOB_OFFER_MS,
   ORDER_STEP_MS,
   rateOrder,
+  rejectJob,
   stepTimes,
 } from './orders'
 import { isRiderOnDuty } from './preferences'
@@ -112,6 +114,41 @@ describe('offer timeout', () => {
       null,
       null,
     ])
+  })
+})
+
+describe('rider rejects the offer (R3)', () => {
+  it('ends the offer now, so the order continues on the clock from stage 2', () => {
+    const rejected = rejectJob(create(), t0 + 3000)
+    expect(rejected.jobOfferExpiresAt).toBe(new Date(t0 + 3000).toISOString())
+    expect(rejected).not.toHaveProperty('riderJob')
+    expect(getStatus(rejected, t0 + 3000)).toBe(2)
+    expect(canAcceptJob(rejected, t0 + 3000)).toBe(false)
+    expect(acceptJob(rejected, t0 + 3000)).toBe(rejected)
+  })
+  it('ignores orders that are no longer offered', () => {
+    const offline = create(false)
+    const accepted = acceptJob(create(), t0 + 1000)
+    const expired = create()
+    expect(rejectJob(offline, t0)).toBe(offline)
+    expect(rejectJob(accepted, t0 + 2000)).toBe(accepted)
+    expect(rejectJob(expired, t0 + JOB_OFFER_MS)).toBe(expired)
+  })
+})
+
+describe('isStaleDemoJob (simulated jobs nobody took)', () => {
+  const demo = () => ({ ...create(), simulated: true })
+  it('keeps a simulated job while it is still offered or once the rider took it', () => {
+    expect(isStaleDemoJob(demo(), t0 + 1000)).toBe(false)
+    expect(isStaleDemoJob(acceptJob(demo(), t0 + 1000), t0 + 10 * 60000)).toBe(false)
+  })
+  it('drops a simulated job once rejected or expired', () => {
+    expect(isStaleDemoJob(rejectJob(demo(), t0 + 1000), t0 + 1000)).toBe(true)
+    expect(isStaleDemoJob(demo(), t0 + JOB_OFFER_MS)).toBe(true)
+  })
+  it('never drops customer orders', () => {
+    expect(isStaleDemoJob(create(), t0 + JOB_OFFER_MS)).toBe(false)
+    expect(isStaleDemoJob(create(false), t0)).toBe(false)
   })
 })
 
