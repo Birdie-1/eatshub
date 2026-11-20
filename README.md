@@ -199,11 +199,11 @@ Tips to avoid conflicts:
 
 ## Admin dashboard (A5)
 
-`/admin` shows a sample annual report for 2025 (a completed year): sales **177,321 baht**, **946 orders**, and catalog counts from `menus.length` / `riders.length` (currently 45 / 17). The monthly sales/orders series reconcile with the headline totals; each Top-5 ranking is a share of them (shown as % of sales). The restaurant chart is the running count on the platform; new customers are monthly registrations. All ranking identities are mock data, with restaurant photos and addresses reused from the catalog.
+`/admin` has three sections, in this order: **2025 overview** (a completed sample year), **riders · last 30 days**, and **recent orders**. The overview shows four KPIs (sales **177,321 baht**, **946 orders**, average order value **187 baht**, **295** new customers), each with its second-half vs first-half change from `halfYearGrowth`, then the province map, the monthly sales chart and the Top 5 restaurants (each shown as % of sales). The monthly series reconcile with the headline totals. Restaurant photos are reused from the catalog. Menu/rider catalog counts, the restaurant and new-customer charts and the Top 5 customers were removed on 20 Nov 2026 to keep only what an executive needs.
 
-The rider summary derives from `src/data/riders.js`. Recent orders show the five newest records from `useOrders()`, including cancelled orders; their statuses update with the shared `src/shared/hooks/useOrderClock.js`. These demo checkout records are separate from the fixed annual sample report.
+The live rider states (ready / delivering / offline, blocked overlapping) derive from `src/data/riders.js` and sit in the rider section. Recent orders show the five newest records from `useOrders()`, including cancelled orders; their statuses update with the shared `src/shared/hooks/useOrderClock.js`. These demo checkout records are separate from the fixed annual sample report.
 
-Charts support focus, arrow keys, Home/End, previous/next month buttons, and expandable tables with exact values. At 360px, KPIs use two columns and other sections stack vertically. No chart library or backend was added.
+Charts support focus, arrow keys, Home/End, a previous/next month stepper, and expandable tables with exact values. At 360px, KPIs use two columns and other sections stack vertically. No chart library or backend was added.
 
 ## Historical coverage and rider wallet/account screens
 
@@ -215,9 +215,9 @@ R5 `/rider/wallet` displays credit/cash balances derived from their ledgers, pen
 
 ## Admin map exploration and rider earnings
 
-The A5 map is now the first dashboard section. Hover/focus shows a province’s **fictional 2025 order count**, click/Enter zooms and highlights it with a short ring animation, and Reset/Escape restores Thailand. The 19 allocated province counts sum to the existing 946-order demo KPI; they are explicitly labeled fictional and are separate from both live checkout orders and the 2022 service-province list. Province zeroes mean no allocation in this demo, not real-world absence of orders.
+The A5 map follows the overview KPIs. Hover/focus shows a province’s **fictional 2025 order count**, click/Enter zooms and highlights it with a short ring animation, and Reset/Escape restores Thailand. The 19 allocated province counts sum to the existing 946-order demo KPI; they are explicitly labeled fictional and are separate from both live checkout orders and the 2022 service-province list. Province zeroes mean no allocation in this demo, not real-world absence of orders. Beside the map are the selected province and a ranked province list (top 6, expandable to all 19).
 
-Below the map, **rider performance · last 30 days** (#43, `RiderPerformance.jsx` + `RushHourChart.jsx`) covers all 17 catalog riders over the same 30 Bangkok days as the R6 day strip: four team figures (completed jobs, job-weighted average delivery time, acceptance rate, job-weighted rating), a Top 10 of active riders (cards below 1024px, table above; blocked riders are excluded from the ranking but counted in the figures) and an hourly rush chart of orders vs online riders per day with the busiest two hours per rider highlighted and an exact-value table. EA00001 reads the shared `useRider()` activity, so its numbers match R6; the other 16 riders are deterministic fictional data. Map animations respect reduced motion.
+After the overview, **riders · last 30 days** (#43, `RiderPerformance.jsx` + `RushHourChart.jsx`) covers all 17 catalog riders over the same 30 Bangkok days as the R6 day strip: four team figures (completed jobs, job-weighted average delivery time, acceptance rate, job-weighted rating), the live rider states, a Top 5 of active riders (jobs, rating, acceptance; blocked riders are excluded from the ranking but counted in the figures) and an hourly rush chart of orders vs online riders per day with the busiest two hours per rider highlighted and an exact-value table. EA00001 reads the shared `useRider()` activity, so its numbers match R6; the other 16 riders are deterministic fictional data. Map animations respect reduced motion.
 
 ---
 
@@ -422,11 +422,11 @@ GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) รั�
 
 ## แดชบอร์ดแอดมิน (A5)
 
-`/admin` แสดงรายงานประจำปีตัวอย่างของปี 2025 (ปีที่จบแล้ว): ยอดขาย **177,321 บาท**, **946 ออเดอร์** และจำนวนในแคตตาล็อกจาก `menus.length` / `riders.length` (ปัจจุบัน 45 / 17) ยอดขาย/ออเดอร์รายเดือนรวมแล้วตรงกับตัวเลขสรุป อันดับ Top 5 แต่ละชุดเป็นสัดส่วนของยอดนั้น (แสดงเป็น % ของยอดขาย) กราฟร้านอาหารเป็นจำนวนสะสมบนแพลตฟอร์ม ลูกค้าใหม่เป็นยอดลงทะเบียนรายเดือน ชื่อในอันดับทั้งหมดเป็น mock data โดยใช้รูปและที่อยู่ร้านจากแคตตาล็อก
+`/admin` มี 3 ส่วนตามลำดับ: **ภาพรวมปี 2025** (ปีตัวอย่างที่จบแล้ว), **ไรเดอร์ · 30 วันล่าสุด** และ **ออเดอร์ล่าสุด** ภาพรวมแสดง KPI 4 ช่อง (ยอดขาย **177,321 บาท**, **946 ออเดอร์**, ยอดเฉลี่ยต่อออเดอร์ **187 บาท**, ลูกค้าใหม่ **295** คน) แต่ละช่องมี % ครึ่งปีหลังเทียบครึ่งปีแรกจาก `halfYearGrowth` ตามด้วยแผนที่จังหวัด กราฟยอดขายรายเดือน และ Top 5 ร้าน (แสดงเป็น % ของยอดขาย) ยอดรายเดือนรวมแล้วตรงกับตัวเลขสรุป รูปร้านใช้จากแคตตาล็อก จำนวนเมนู/ไรเดอร์ในแคตตาล็อก กราฟร้านอาหารและลูกค้าใหม่ และ Top 5 ลูกค้า ถูกเอาออกเมื่อ 20 พ.ย. 2026 เพื่อเหลือเฉพาะข้อมูลที่ผู้บริหารต้องใช้
 
-สรุปไรเดอร์คำนวณจาก `src/data/riders.js` ออเดอร์ล่าสุดแสดง 5 รายการใหม่สุดจาก `useOrders()` รวมออเดอร์ที่ถูกยกเลิก สถานะอัปเดตด้วย `src/shared/hooks/useOrderClock.js` ที่ใช้ร่วมกัน ออเดอร์จาก checkout เดโมเหล่านี้แยกจากรายงานตัวอย่างประจำปีที่ตายตัว
+สถานะไรเดอร์ตอนนี้ (พร้อมรับงาน / กำลังจัดส่ง / ออฟไลน์ โดยบัญชีที่ถูกระงับนับรวมอยู่แล้ว) คำนวณจาก `src/data/riders.js` และอยู่ในส่วนไรเดอร์ ออเดอร์ล่าสุดแสดง 5 รายการใหม่สุดจาก `useOrders()` รวมออเดอร์ที่ถูกยกเลิก สถานะอัปเดตด้วย `src/shared/hooks/useOrderClock.js` ที่ใช้ร่วมกัน ออเดอร์จาก checkout เดโมเหล่านี้แยกจากรายงานตัวอย่างประจำปีที่ตายตัว
 
-กราฟรองรับ focus, ปุ่มลูกศร, Home/End, ปุ่มเดือนก่อน/ถัดไป และตารางที่กางออกดูค่าจริงได้ ที่ความกว้าง 360px KPI แสดง 2 คอลัมน์ ส่วนอื่นเรียงต่อกันแนวตั้ง ไม่ได้เพิ่ม chart library หรือ backend
+กราฟรองรับ focus, ปุ่มลูกศร, Home/End, ตัวเลือกเดือนก่อน/ถัดไป และตารางที่กางออกดูค่าจริงได้ ที่ความกว้าง 360px KPI แสดง 2 คอลัมน์ ส่วนอื่นเรียงต่อกันแนวตั้ง ไม่ได้เพิ่ม chart library หรือ backend
 
 ## พื้นที่ให้บริการในอดีต และหน้ากระเป๋าเงิน/บัญชีของไรเดอร์
 
@@ -438,6 +438,6 @@ R5 `/rider/wallet` แสดงยอดเครดิต/เงินสดท
 
 ## สำรวจแผนที่ในหน้าแอดมิน และรายได้ไรเดอร์
 
-แผนที่ใน A5 เป็น section แรกของแดชบอร์ด hover/focus จะแสดง**จำนวนออเดอร์สมมติปี 2025** ของจังหวัดนั้น คลิก/Enter จะซูมและไฮไลต์จังหวัดพร้อม animation วงแหวนสั้น ๆ ส่วน Reset/Escape จะกลับมาแสดงทั้งประเทศไทย ยอดที่จัดสรรให้ 19 จังหวัดรวมกันเท่ากับ KPI เดโม 946 ออเดอร์ มีป้ายระบุชัดว่าเป็นข้อมูลสมมติ และแยกจากทั้งออเดอร์ checkout จริงและรายชื่อจังหวัดที่ให้บริการปี 2565 จังหวัดที่เป็นศูนย์หมายถึงไม่ได้จัดสรรในเดโมนี้ ไม่ได้แปลว่าไม่มีออเดอร์จริง
+แผนที่ใน A5 อยู่ต่อจาก KPI ภาพรวม hover/focus จะแสดง**จำนวนออเดอร์สมมติปี 2025** ของจังหวัดนั้น คลิก/Enter จะซูมและไฮไลต์จังหวัดพร้อม animation วงแหวนสั้น ๆ ส่วน Reset/Escape จะกลับมาแสดงทั้งประเทศไทย ยอดที่จัดสรรให้ 19 จังหวัดรวมกันเท่ากับ KPI เดโม 946 ออเดอร์ มีป้ายระบุชัดว่าเป็นข้อมูลสมมติ และแยกจากทั้งออเดอร์ checkout จริงและรายชื่อจังหวัดที่ให้บริการปี 2565 จังหวัดที่เป็นศูนย์หมายถึงไม่ได้จัดสรรในเดโมนี้ ไม่ได้แปลว่าไม่มีออเดอร์จริง ข้างแผนที่แสดงจังหวัดที่เลือกและอันดับจังหวัดที่มีออเดอร์มากที่สุด (6 อันดับ กางดูครบ 19 จังหวัดได้)
 
-ใต้แผนที่คือ **ประสิทธิภาพไรเดอร์ · 30 วันล่าสุด** (#43, `RiderPerformance.jsx` + `RushHourChart.jsx`) ครอบคลุมไรเดอร์ทั้ง 17 คนในแคตตาล็อก ในช่วง 30 วันตามเวลากรุงเทพฯ เดียวกับแถบเลือกวันของ R6 ประกอบด้วยตัวเลขของทีม 4 ช่อง (งานที่ส่งสำเร็จ, เวลาส่งเฉลี่ยถ่วงน้ำหนักตามจำนวนงาน, อัตรารับงาน, คะแนนถ่วงน้ำหนักตามจำนวนงาน), Top 10 ไรเดอร์ที่ active (การ์ดเมื่อต่ำกว่า 1024px, ตารางเมื่อกว้างกว่า; ไรเดอร์ที่ถูก block ไม่ติดอันดับแต่ยังนับในตัวเลขรวม) และกราฟช่วงเวลาเร่งด่วนรายชั่วโมงของออเดอร์เทียบกับไรเดอร์ที่ online ต่อวัน ไฮไลต์ 2 ชั่วโมงที่ยุ่งที่สุดต่อไรเดอร์ พร้อมตารางค่าจริง EA00001 อ่านจากกิจกรรม `useRider()` ที่ใช้ร่วมกัน ตัวเลขจึงตรงกับ R6 ส่วนไรเดอร์อีก 16 คนเป็นข้อมูลสมมติที่สร้างแบบกำหนดแน่นอน (deterministic) แผนที่ไม่เล่น animation เมื่อผู้ใช้ตั้งค่าลดการเคลื่อนไหว (reduced motion)
+ต่อจากภาพรวมคือ **ไรเดอร์ · 30 วันล่าสุด** (#43, `RiderPerformance.jsx` + `RushHourChart.jsx`) ครอบคลุมไรเดอร์ทั้ง 17 คนในแคตตาล็อก ในช่วง 30 วันตามเวลากรุงเทพฯ เดียวกับแถบเลือกวันของ R6 ประกอบด้วยตัวเลขของทีม 4 ช่อง (งานที่ส่งสำเร็จ, เวลาส่งเฉลี่ยถ่วงน้ำหนักตามจำนวนงาน, อัตรารับงาน, คะแนนถ่วงน้ำหนักตามจำนวนงาน), สถานะไรเดอร์ตอนนี้, Top 5 ไรเดอร์ที่ active (งาน · คะแนน · อัตรารับงาน; ไรเดอร์ที่ถูก block ไม่ติดอันดับแต่ยังนับในตัวเลขรวม) และกราฟช่วงเวลาเร่งด่วนรายชั่วโมงของออเดอร์เทียบกับไรเดอร์ที่ online ต่อวัน ไฮไลต์ 2 ชั่วโมงที่ยุ่งที่สุดต่อไรเดอร์ พร้อมตารางค่าจริง EA00001 อ่านจากกิจกรรม `useRider()` ที่ใช้ร่วมกัน ตัวเลขจึงตรงกับ R6 ส่วนไรเดอร์อีก 16 คนเป็นข้อมูลสมมติที่สร้างแบบกำหนดแน่นอน (deterministic) แผนที่ไม่เล่น animation เมื่อผู้ใช้ตั้งค่าลดการเคลื่อนไหว (reduced motion)

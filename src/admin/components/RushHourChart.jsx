@@ -1,4 +1,3 @@
-import { Clock3 } from 'lucide-react'
 import Card from '@/shared/components/Card'
 import { PERFORMANCE_DAYS } from '@/data/riderPerformance'
 
@@ -21,23 +20,16 @@ export default function RushHourChart({ hours, peak }) {
     <Card
       as="section"
       aria-labelledby="rush-hour-title"
-      className="min-w-0 border border-neutral-200/80 shadow-none"
+      className="min-w-0 border border-neutral-200 shadow-none sm:p-6"
     >
-      <div className="flex items-center gap-2">
-        <span className="grid size-9 place-items-center rounded-xl bg-info-light text-info">
-          <Clock3 className="size-4" />
-        </span>
-        <div>
-          <h3 id="rush-hour-title" className="text-sm font-semibold">
-            ช่วงเวลาเร่งด่วน
-          </h3>
-          <p className="mt-1 text-[11px] text-neutral-400">ออเดอร์เทียบไรเดอร์ออนไลน์ เฉลี่ยต่อวัน</p>
-        </div>
-      </div>
-      <p className="mt-4 rounded-xl bg-brand-light/70 px-3 py-2.5 text-xs leading-6">
+      <h3 id="rush-hour-title" className="font-semibold">
+        ช่วงเวลาเร่งด่วน
+      </h3>
+      <p className="mt-1 text-xs text-neutral-500">ออเดอร์เทียบไรเดอร์ออนไลน์ เฉลี่ยต่อวัน</p>
+      <p className="mt-4 rounded-xl bg-brand-light px-3 py-2.5 text-xs leading-6">
         <strong className="font-semibold">{peakText}</strong>
         {peak && (
-          <span className="block text-neutral-500">
+          <span className="block text-neutral-600">
             เฉลี่ย {one.format(peak.orders / peak.riderHours)} ออเดอร์ต่อไรเดอร์ต่อชั่วโมง
           </span>
         )}
@@ -53,7 +45,7 @@ export default function RushHourChart({ hours, peak }) {
             key={row.hour}
             className={`flex min-w-0 flex-col items-center rounded-lg pt-2 pb-1 ${row.peak ? 'bg-brand-light' : ''}`}
           >
-            <div className="flex h-32 w-full items-end justify-center gap-px">
+            <div className="flex h-40 w-full items-end justify-center gap-px">
               <span
                 className={`w-2/5 max-w-3 rounded-t-sm ${row.peak ? 'bg-brand-dark' : 'bg-brand'}`}
                 style={{ height: `${(row.ordersPerDay / max) * 100}%` }}
@@ -63,11 +55,11 @@ export default function RushHourChart({ hours, peak }) {
                 style={{ height: `${(row.ridersPerDay / max) * 100}%` }}
               />
             </div>
-            <span className="mt-1.5 text-[9px] tabular-nums text-neutral-500">{row.hour}</span>
+            <span className="mt-1.5 text-[10px] tabular-nums text-neutral-500">{row.hour}</span>
           </div>
         ))}
       </div>
-      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-neutral-500">
+      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-neutral-500">
         <span className="flex items-center gap-1.5">
           <span className="size-2.5 rounded bg-brand" />
           ออเดอร์ต่อวัน

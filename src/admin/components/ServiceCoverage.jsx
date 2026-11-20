@@ -1,8 +1,6 @@
 import { useRef, useState } from 'react'
-import { MapPin, MousePointer2, RotateCcw, ShoppingBag, Sparkles } from 'lucide-react'
+import { RotateCcw } from 'lucide-react'
 import Card from '@/shared/components/Card'
-import Badge from '@/shared/components/Badge'
-import { dashboardYear } from '@/data/dashboard'
 import {
   coverageProvinces,
   provinceShapes,
@@ -15,8 +13,13 @@ import {
 const WIDTH = 1051.164
 const HEIGHT = 1849.133
 const count = new Intl.NumberFormat('th-TH')
+const ranked = [...provinceOrderRows].sort((a, b) => b.orders - a.orders)
+const SHORT_LIST = 6
+
+/** A5 map: 19 service provinces (May–Nov 2022) coloured on Thailand, with fictional 2025 order counts. */
 export default function ServiceCoverage() {
   const [selected, setSelected] = useState('th-86')
+  const [showAll, setShowAll] = useState(false)
   const [hover, setHover] = useState(null)
   const [zoom, setZoom] = useState(null)
   const [pulse, setPulse] = useState(null)
@@ -33,6 +36,11 @@ export default function ServiceCoverage() {
     setHover(null)
     setPulse((previous) => ({ id, x, y, key: (previous?.key ?? 0) + 1 }))
     setZoom({ x, y, scale: 2 })
+  }
+  const reset = () => {
+    setZoom(null)
+    setHover(null)
+    setPulse(null)
   }
   const preview = (id, event) => {
     const rect = canvas.current.getBoundingClientRect()
@@ -52,230 +60,190 @@ export default function ServiceCoverage() {
     <Card
       as="section"
       aria-labelledby="coverage-title"
-      className="coverage-hero min-w-0 overflow-hidden border border-neutral-200/80 shadow-none sm:p-6"
+      className="min-w-0 overflow-hidden border border-neutral-200 shadow-none sm:p-6"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="mb-2 flex items-center gap-2 text-xs font-semibold text-brand-dark">
-            <MapPin className="size-4" />
-            ภาพรวมพื้นที่ให้บริการ
-          </p>
-          <h2 id="coverage-title" className="text-xl font-bold sm:text-2xl">
-            ทุกออเดอร์ บนแผนที่เดียว
-          </h2>
-          <p className="mt-2 text-xs leading-6 text-neutral-500">
-            จังหวัดบริการและ Top 3 ตามช่วง พ.ค.–พ.ย. 2565 แยกจากรายงานตัวอย่างปี {dashboardYear + 543} · ชี้เพื่อดูยอด
-            คลิกเพื่อสำรวจจังหวัด
+          <h3 id="coverage-title" className="font-semibold">
+            ออเดอร์แยกตามจังหวัด
+          </h3>
+          <p className="mt-1 text-xs leading-5 text-neutral-500">
+            19 จังหวัดบริการตามข่าว พ.ค.–พ.ย. 2565 · ยอดรายจังหวัดเป็นข้อมูลสมมติ · แตะจังหวัดเพื่อซูม
           </p>
         </div>
-        <Badge tone="brand">
-          <Sparkles className="size-3" />
-          ยอดรายจังหวัดเป็นข้อมูลสมมติ
-        </Badge>
+        <button
+          type="button"
+          onClick={reset}
+          disabled={!zoom}
+          className="flex min-h-11 items-center gap-1.5 rounded-xl border border-neutral-200 bg-white px-3 text-xs font-medium text-neutral-600 hover:bg-neutral-50 disabled:opacity-40"
+        >
+          <RotateCcw className="size-3.5" />
+          ดูทั้งประเทศ
+        </button>
       </div>
-      <div className="mt-5 grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-        <div className="min-w-0">
-          <div
-            ref={canvas}
-            className="coverage-canvas relative isolate overflow-hidden rounded-2xl border border-neutral-100 bg-surface p-3 sm:p-5"
+      <div className="mt-5 grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-8">
+        <div
+          ref={canvas}
+          className="coverage-canvas relative isolate min-w-0 overflow-hidden rounded-2xl bg-surface p-3 sm:p-5"
+        >
+          <svg
+            viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+            role="group"
+            aria-label="แผนที่ออเดอร์สมมติรายจังหวัด"
+            className="relative mx-auto h-auto max-h-[360px] w-full sm:max-h-[460px] overflow-hidden"
+            onPointerLeave={() => setHover(null)}
           >
-            <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
-              <h3 className="text-xs font-semibold">ประเทศไทย · 19 จังหวัดบริการ (พ.ค.–พ.ย. 2565)</h3>
-              <button
-                type="button"
-                onClick={() => {
-                  setZoom(null)
-                  setHover(null)
-                  setPulse(null)
-                }}
-                disabled={!zoom}
-                className="flex min-h-11 items-center gap-1.5 rounded-xl border border-neutral-200 bg-white/95 px-3 text-[11px] font-medium text-neutral-600 shadow-sm disabled:opacity-40"
-              >
-                <RotateCcw className="size-3.5" />
-                ดูทั้งประเทศ
-              </button>
-            </div>
-            <svg
-              viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-              role="group"
-              aria-label="แผนที่ออเดอร์สมมติรายจังหวัด"
-              className="relative mx-auto h-auto max-h-[540px] w-full overflow-hidden"
-              onPointerLeave={() => setHover(null)}
-            >
-              <g className="coverage-zoom" style={{ transform }}>
-                {provinceShapes.map(({ id, d }) => {
-                  const province = provinceOrderReport(id)
-                  const covered = coverageProvinces.some((p) => p.id === id)
-                  const chosen = id === (hover?.id ?? selected)
-                  return (
-                    <path
-                      key={id}
-                      ref={(el) => {
-                        paths.current[id] = el
-                      }}
-                      id={`coverage-${id}`}
-                      d={d}
-                      role="button"
-                      tabIndex={0}
-                      aria-pressed={selected === id}
-                      aria-label={`${provinceNames[id]} ${province.orders} ออเดอร์ ข้อมูลสมมติ${province.rank ? ` อันดับ ${province.rank}` : ''}`}
-                      aria-describedby={hover?.id === id ? 'province-map-tooltip' : undefined}
-                      strokeWidth={chosen ? 4 : 1.2}
-                      className={`coverage-province cursor-pointer stroke-white focus:outline-none ${chosen ? 'fill-admin stroke-brand' : covered ? (province.rank ? 'fill-brand-dark' : 'fill-brand') : 'fill-neutral-200'}`}
-                      onPointerEnter={(event) => preview(id, event)}
-                      onFocus={(event) => preview(id, event)}
-                      onBlur={() => setHover(null)}
-                      onClick={() => select(id)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter' || event.key === ' ') {
-                          event.preventDefault()
-                          select(id)
-                        }
-                        if (event.key === 'Escape') {
-                          setZoom(null)
-                          setHover(null)
-                          setPulse(null)
-                        }
-                      }}
-                    >
-                      <title>
-                        {provinceNames[id]} · {province.orders} ออเดอร์ · ข้อมูลสมมติ
-                      </title>
-                    </path>
-                  )
-                })}
-                {pulse && (
-                  <g key={pulse.key} className="pointer-events-none" aria-hidden="true">
-                    <circle
-                      cx={pulse.x}
-                      cy={pulse.y}
-                      r="24"
-                      className="coverage-pulse fill-none stroke-brand"
-                      strokeWidth="5"
-                    />
-                    <circle
-                      cx={pulse.x}
-                      cy={pulse.y}
-                      r="9"
-                      className="fill-white stroke-brand-dark"
-                      strokeWidth="3"
-                    />
-                  </g>
-                )}
-              </g>
-            </svg>
-            {hover && (
-              <div
-                id="province-map-tooltip"
-                role="tooltip"
-                className="insight-enter pointer-events-none absolute z-20 w-48 rounded-2xl border border-brand/30 bg-admin px-4 py-3 text-white shadow-xl"
-                style={{ left: hover.x, top: hover.y }}
-              >
-                <p className="text-xs font-semibold">{active.name}</p>
-                <p className="mt-1.5 text-2xl font-bold tabular-nums">
-                  {count.format(active.orders)}
-                  <span className="ml-1 text-[10px] font-normal text-neutral-300">ออเดอร์</span>
-                </p>
-                <p className="mt-1 text-[10px] text-neutral-300">{active.share}% ของทั้งหมด · ข้อมูลสมมติ</p>
-              </div>
-            )}
+            <g className="coverage-zoom" style={{ transform }}>
+              {provinceShapes.map(({ id, d }) => {
+                const province = provinceOrderReport(id)
+                const covered = coverageProvinces.some((p) => p.id === id)
+                const chosen = id === (hover?.id ?? selected)
+                return (
+                  <path
+                    key={id}
+                    ref={(el) => {
+                      paths.current[id] = el
+                    }}
+                    id={`coverage-${id}`}
+                    d={d}
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={selected === id}
+                    aria-label={`${provinceNames[id]} ${province.orders} ออเดอร์ ข้อมูลสมมติ${province.rank ? ` อันดับ ${province.rank}` : ''}`}
+                    aria-describedby={hover?.id === id ? 'province-map-tooltip' : undefined}
+                    strokeWidth={chosen ? 4 : 1.2}
+                    className={`coverage-province cursor-pointer stroke-white focus:outline-none ${chosen ? 'fill-admin stroke-brand' : covered ? (province.rank ? 'fill-brand-dark' : 'fill-brand') : 'fill-neutral-200'}`}
+                    onPointerEnter={(event) => preview(id, event)}
+                    onFocus={(event) => preview(id, event)}
+                    onBlur={() => setHover(null)}
+                    onClick={() => select(id)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault()
+                        select(id)
+                      }
+                      if (event.key === 'Escape') reset()
+                    }}
+                  >
+                    <title>
+                      {provinceNames[id]} · {province.orders} ออเดอร์ · ข้อมูลสมมติ
+                    </title>
+                  </path>
+                )
+              })}
+              {pulse && (
+                <g key={pulse.key} className="pointer-events-none" aria-hidden="true">
+                  <circle
+                    cx={pulse.x}
+                    cy={pulse.y}
+                    r="24"
+                    className="coverage-pulse fill-none stroke-brand"
+                    strokeWidth="5"
+                  />
+                  <circle
+                    cx={pulse.x}
+                    cy={pulse.y}
+                    r="9"
+                    className="fill-white stroke-brand-dark"
+                    strokeWidth="3"
+                  />
+                </g>
+              )}
+            </g>
+          </svg>
+          {hover && (
             <div
-              className="relative z-10 flex flex-wrap justify-center gap-3 pt-3 text-[10px] text-neutral-500"
-              aria-label="คำอธิบายสีแผนที่"
+              id="province-map-tooltip"
+              role="tooltip"
+              className="insight-enter pointer-events-none absolute z-20 w-48 rounded-xl bg-admin px-4 py-3 text-white shadow-lg"
+              style={{ left: hover.x, top: hover.y }}
             >
-              {[
-                ['bg-brand', 'จังหวัดบริการ'],
-                ['bg-brand-dark', 'Top 3'],
-                ['bg-admin', 'จังหวัดที่เลือก'],
-                ['bg-neutral-200', 'จังหวัดอื่น'],
-              ].map(([tone, label]) => (
-                <span key={label} className="flex items-center gap-1.5">
-                  <span className={`size-2.5 rounded ${tone}`} />
-                  {label}
-                </span>
-              ))}
+              <p className="text-xs font-semibold">{active.name}</p>
+              <p className="mt-1 text-2xl font-bold tabular-nums">
+                {count.format(active.orders)}
+                <span className="ml-1 text-[11px] font-normal text-neutral-300">ออเดอร์</span>
+              </p>
+              <p className="mt-0.5 text-[11px] text-neutral-300">{active.share}% ของทั้งหมด</p>
             </div>
-            <p className="relative z-10 mt-3 flex items-center justify-center gap-1.5 text-[10px] leading-5 text-neutral-400">
-              <MousePointer2 className="size-3" />
-              แตะหรือกด Enter เพื่อซูม · Escape เพื่อกลับ
+          )}
+          <ul
+            className="relative z-10 flex flex-wrap justify-center gap-x-3 gap-y-1 pt-3 text-[11px] text-neutral-500"
+            aria-label="คำอธิบายสีแผนที่"
+          >
+            {[
+              ['bg-brand', 'จังหวัดบริการ'],
+              ['bg-brand-dark', 'Top 3'],
+              ['bg-admin', 'ที่เลือก'],
+              ['bg-neutral-200', 'จังหวัดอื่น'],
+            ].map(([tone, label]) => (
+              <li key={label} className="flex items-center gap-1.5">
+                <span className={`size-2.5 rounded-sm ${tone}`} />
+                {label}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="min-w-0">
+          <div key={active.id} className="insight-enter border-b border-neutral-100 pb-5">
+            <p className="text-xs text-neutral-500">{hover ? 'กำลังชี้' : 'จังหวัดที่เลือก'}</p>
+            <div className="mt-1 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <h4 className="text-xl font-semibold">{active.name}</h4>
+              <p className="text-3xl font-semibold tracking-tight tabular-nums">
+                {count.format(active.orders)}
+                <span className="ml-1.5 text-xs font-normal text-neutral-500">ออเดอร์</span>
+              </p>
+            </div>
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-neutral-100" aria-hidden="true">
+              <div
+                className="h-full rounded-full bg-brand-dark transition-[width] duration-500 motion-reduce:transition-none"
+                style={{ width: `${active.share}%` }}
+              />
+            </div>
+            <p className="mt-2 text-xs text-neutral-500">
+              {active.share}% จาก {count.format(provinceOrderTotal)} ออเดอร์
+            </p>
+            <p role="status" aria-live="polite" className="sr-only">
+              {active.name} {active.orders} ออเดอร์ ข้อมูลสมมติ
             </p>
           </div>
-        </div>
-        <div className="min-w-0 space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-2xl bg-admin p-4 text-white">
-              <p className="flex items-center gap-2 text-[11px] text-neutral-300">
-                <ShoppingBag className="size-4 text-brand" />
-                ออเดอร์รวมทุกจังหวัด
-              </p>
-              <p className="mt-3 text-3xl font-bold tabular-nums">{count.format(provinceOrderTotal)}</p>
-              <p className="mt-1 text-[10px] text-neutral-400">ข้อมูลสมมติปี {dashboardYear + 543}</p>
-            </div>
-            <div className="rounded-2xl border border-neutral-200 bg-white p-4">
-              <p className="text-[11px] text-neutral-500">จังหวัดในชุดตัวอย่าง</p>
-              <p className="mt-3 text-3xl font-bold tabular-nums">
-                {provinceOrderRows.length}
-                <span className="ml-1 text-xs font-normal text-neutral-400">จังหวัด</span>
-              </p>
-              <p className="mt-1 text-[10px] text-neutral-400">ยอดรวมตรงกับ KPI ออเดอร์</p>
-            </div>
-          </div>
-          <section
-            aria-label="รายละเอียดจังหวัดที่เลือก"
-            className="overflow-hidden rounded-2xl border border-brand/30 bg-brand-light/50 p-4 sm:p-5"
-          >
-            <div key={active.id} className="insight-enter">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-[10px] font-semibold text-brand-dark">จังหวัดที่กำลังสำรวจ</p>
-                  <h3 className="mt-1 text-xl font-bold">{active.name}</h3>
-                </div>
-                <MapPin className="size-5 shrink-0 text-brand-dark" />
-              </div>
-              <p className="mt-4 text-4xl font-bold tracking-tight tabular-nums">
-                {count.format(active.orders)}
-                <span className="ml-2 text-xs font-normal text-neutral-500">ออเดอร์</span>
-              </p>
-              <div className="mt-4 h-2 overflow-hidden rounded-full bg-white">
-                <div
-                  className="h-full rounded-full bg-brand-dark transition-all duration-700 motion-reduce:transition-none"
-                  style={{ width: `${active.share}%` }}
-                />
-              </div>
-              <p className="mt-2 text-[11px] text-neutral-500">
-                คิดเป็น {active.share}% จาก {provinceOrderTotal} ออเดอร์สมมติ
-              </p>
-              <p role="status" aria-live="polite" className="sr-only">
-                {active.name} {active.orders} ออเดอร์ ข้อมูลสมมติ
-              </p>
-            </div>
-          </section>
-          <div>
-            <h3 className="mb-2 text-sm font-semibold">สำรวจจังหวัดบริการ</h3>
-            <ul className="grid max-h-72 grid-cols-2 gap-1 overflow-y-auto rounded-xl border border-neutral-100 p-1">
-              {provinceOrderRows.map((province) => (
+          <h4 className="mt-5 text-sm font-semibold">จังหวัดที่มีออเดอร์มากที่สุด</h4>
+          <ol className="mt-2 space-y-0.5">
+            {(showAll ? ranked : ranked.slice(0, SHORT_LIST)).map((province, index) => {
+              const chosen = selected === province.id
+              return (
                 <li key={province.id}>
                   <button
                     type="button"
-                    aria-pressed={selected === province.id}
+                    aria-pressed={chosen}
                     onClick={() => select(province.id)}
-                    className={`flex min-h-11 w-full items-center justify-between gap-1 rounded-lg px-2 text-left text-[11px] transition-colors ${selected === province.id ? 'bg-brand font-semibold' : 'text-neutral-600 hover:bg-surface'}`}
+                    className={`grid min-h-11 w-full grid-cols-[1.25rem_minmax(0,7rem)_minmax(0,1fr)_2.5rem] items-center gap-2 rounded-lg px-2 text-left text-xs transition-colors ${chosen ? 'bg-brand-light font-semibold' : 'text-neutral-600 hover:bg-surface'}`}
                   >
-                    <span>{province.name}</span>
-                    <span className="shrink-0 tabular-nums">{province.orders}</span>
+                    <span className="text-neutral-400 tabular-nums">{index + 1}</span>
+                    <span className="truncate">{province.name}</span>
+                    <span className="h-1.5 overflow-hidden rounded-full bg-neutral-100" aria-hidden="true">
+                      <span
+                        className={`block h-full rounded-full ${province.rank ? 'bg-brand-dark' : 'bg-brand'}`}
+                        style={{ width: `${(province.orders / ranked[0].orders) * 100}%` }}
+                      />
+                    </span>
+                    <span className="text-right tabular-nums">{province.orders}</span>
                   </button>
                 </li>
-              ))}
-            </ul>
-          </div>
-          <p className="text-[11px] leading-6 text-neutral-400">
-            จำนวนออเดอร์รายจังหวัดเป็นตัวเลขสมมติสำหรับสาธิต ไม่ใช่สถิติจากข่าว และไม่ใช่ออเดอร์สดจากแอปลูกค้า
-            จังหวัดนอกชุดตัวอย่างแสดง 0
-          </p>
+              )
+            })}
+          </ol>
+          <button
+            type="button"
+            aria-expanded={showAll}
+            onClick={() => setShowAll(!showAll)}
+            className="mt-2 min-h-11 rounded-lg px-2 text-xs font-medium text-neutral-600 underline underline-offset-4 hover:text-ink"
+          >
+            {showAll ? 'แสดงเฉพาะ 6 อันดับแรก' : `ดูทั้ง ${ranked.length} จังหวัด`}
+          </button>
         </div>
       </div>
-      <footer className="mt-4 text-[10px] leading-5 text-neutral-400">
-        แผนที่: NordNordWest / Paul_012 ·{' '}
+      <footer className="mt-5 text-[11px] leading-5 text-neutral-400">
+        จังหวัดนอกชุดตัวอย่างแสดง 0 · แผนที่: NordNordWest / Paul_012 ·{' '}
         <a
           href="https://commons.wikimedia.org/wiki/File:BlankMap-Thailand-provinces.svg"
           target="_blank"

@@ -32,7 +32,9 @@ Images live in `src/shared/assets/images/` (downloaded from Unsplash, never hotl
 
 ## A5 dashboard report
 
-`dashboard.js` exports `dashboardTotals`, `monthlyDashboard`, `topRestaurants`, `topCustomers`, `summarizeTop(rows)`, `riderSummary`, `dashboardYear`, and `getRecentOrders(orders)`.
+`dashboard.js` exports `dashboardTotals`, `monthlyDashboard`, `topRestaurants`, `topCustomers`, `summarizeTop(rows)`, `averageOrderValue`, `halfYearGrowth(key)`, `riderSummary`, `dashboardYear`, and `getRecentOrders(orders)`.
+
+- `averageOrderValue` is report sales ÷ report orders rounded to whole baht (187). `halfYearGrowth(key)` is the % change of July–December over January–June for a monthly series (`null` if the first half is zero); the dashboard KPIs show it for sales, orders and new customers. `topCustomers` and the restaurant/customer monthly series are no longer shown on A5 but stay as tested sample data.
 
 - Report revenue/orders are fixed sample totals: 177,321 baht / 946 orders. The monthly sales/orders series sum to those totals (`dashboard.test.js`). `dashboardYear` is 2025 — a completed year, so no future month shows data.
 - Monthly rows contain `{ month, name, shortName, sales, orders, restaurants, customers }`. `restaurants` is the running count of catalog restaurants on the platform (non-decreasing, ends at 6); `customers` means new registrations (295 for the year).
