@@ -26,20 +26,21 @@ brand/                  logo files (primary color #FCBB18), imported via @brand/
 docs/REQUIREMENTS.md    mockup scope, decisions, done criteria (source of truth)
 docs/specs/             module specs summarized from the original PDFs
 src/
-  main.jsx, router.jsx  entry + all routes; screen IDs (C1–C12, R1–R7, A1–A5) match REQUIREMENTS.md
+  main.jsx, router.jsx  entry + all routes; screen IDs (C1–C13, R1–R8, A1–A5) match REQUIREMENTS.md
   index.css             Tailwind + design tokens (see "Styling" below)
   customer/             customer app
     layouts/            TabLayout (bottom nav ร้านอาหาร · ตะกร้า · ออเดอร์ · บัญชี)
-    pages/              C1–C12 screens
+    pages/              C1–C13 screens (C13 chat with the rider)
     components/         customer-only UI: RestaurantCard, CategoryGrid, BannerCarousel,
                         RestaurantFilterSheet, AddressSheet, MenuCard (C4 items), StarRating,
                         FloatingCartBar (C6), OrderHistoryCard (C11)
-  rider/                rider app (R1–R7, scope in REQUIREMENTS §4.1; issues #34–#38)
+  rider/                rider app (R1–R8, scope in REQUIREMENTS §4.1; issues #34–#38)
     layouts/            RiderTabLayout (dark bottom nav หน้าแรก · กระเป๋าเงิน · รายได้ · บัญชี)
-    pages/              R1 sign-in, R2 home (+ R3 popup), R4 job + earnings summary, R5 wallets, R6 income, R7 account
+    pages/              R1 sign-in, R2 home (+ R3 popup), R4 job + earnings summary, R5 wallets, R6 income, R7 account, R8 chat with the customer
     components/         RequireRider (demo route guard), Switch, StatsSheet (R2 pull-up sheet),
                         JobOfferDialog (R3), SignaturePad (R4)
     useRiderSummary.js  wallet balances + today's numbers shared by R2 and R5
+    useDemoCustomerReply.js  simulated customer answers the rider on demo jobs (R4, R8)
   admin/                back office
     layouts/            AdminLayout (header, sidebar with ☰ on mobile, footer), adminMenu.js
     pages/              A1 sign-in, A3 rider list
@@ -65,6 +66,7 @@ Production: **https://eatshub-red.vercel.app**. The Vercel project is linked to 
 - During "ส่งอาหาร" (rider on the way to the customer) C10 shows a drawn mock map instead of the illustration: a motorbike moving along a highlighted route to the customer's pin, with distance and minutes left. A rider-driven order's motorbike stops just short of the door until the rider app marks it delivered.
 - If the rider app is signed in and online when the order is placed, the order is offered to the rider instead: it waits at stage 1 for up to 45 seconds (R3 popup, or taken at once with auto-accept). Once accepted, only the rider's buttons on R4 move it (no skip button on C10); if nobody accepts (or the rider taps reject), the clock takes over from stage 2. With the rider app signed out or offline, tracking runs on the clock as before.
 - The rider app also works on its own: online and idle on R2 for about 5 seconds, it offers itself a simulated job built from real restaurant/menu data (`createDemoJob`, `simulated: true`). Simulated jobs are hidden from the customer's history and the back office's recent orders, but delivered ones count in R6 income. Real customer orders are offered first. Auto-accept starts off so the R3 popup (reject / accept) is visible.
+- Once the rider app has accepted an order, the rider (R4 → R8) and the customer (C10 → C13) can chat until delivery; afterwards the thread is read-only. Messages are stored on the order, so two windows update each other, and each side gets an unread badge. On simulated jobs a demo customer answers the rider's latest message after about 2.5 seconds. Timed orders (no rider app) have no chat.
 - Orders are shared through `localStorage` and every tab listens for changes, so the customer app and rider app can run side by side in two windows (or by switching apps in one tab) and follow each other.
 - Once delivered, the customer rates the order once via `rate(id, { rider, restaurant, review })`, Grab/LINE MAN style: rider stars (1–5) are required, restaurant stars and a review (≤ 200 chars) are optional. A back-to-home button is shown before and after rating. The history tab's "เขียนรีวิว" opens the same sheet.
 - History seeds four sample orders once, preserves new orders across refresh and logout, and supports an explicitly empty saved history.
@@ -98,12 +100,14 @@ Run commands inside the inner `eatshub` directory containing `package.json`. If 
 | `/app/payment/:method` | C9 Payment (`promptpay` / `paypal`) |
 | `/app/success/:orderId` | Order/payment success (refresh-safe) |
 | `/app/orders/:orderId` | C10 Order tracking |
+| `/app/orders/:orderId/chat` | C13 Chat with the rider (orders the rider app accepted) |
 | `/app/orders` | C11 Order history |
 | `/app/account` | C12 Account |
 | `/app/account/favorites` | C12 sub-page: favorite restaurants |
 | `/rider/signin` | R1 Rider sign in |
 | `/rider` | R2 Rider home (+ R3 new-job popup) |
 | `/rider/jobs/:orderId` | R4 Delivery in progress + earnings summary |
+| `/rider/jobs/:orderId/chat` | R8 Chat with the customer |
 | `/rider/wallet` | R5 Wallets |
 | `/rider/income` | R6 Income |
 | `/rider/account` | R7 Account |
@@ -140,6 +144,8 @@ Inside the phone frame, use `sticky`/`absolute` instead of `fixed` so bars stay 
 | `TopBar` | sticky back button + title; `backTo`, `right`, `transparent` (over a cover image) |
 | `BottomSheet` | `open`, `onClose`, `title`, `footer`; stays inside the phone frame |
 | `ConfirmDialog` | centered yes/no dialog: `open`, `title`, `confirmLabel`, `onConfirm`, `onCancel`; stays inside the phone frame |
+| `ChatThread` | R8/C13 chat: `order`, `side` (`rider` \| `customer`), `now`, `otherName`, `onSend(text)`; quick replies + sticky input while open, read-only after delivery |
+| `ChatButton` | secondary button to the chat with an unread badge: `to`, `unread` |
 | `toast(msg)` | from `Toast.jsx`; shows a short message in the nearest `<Toaster />` |
 
 **Money**: `formatBaht(215)` → `215 ฿` for prices in lists; `formatAmount(215)` → `215.00` for order summaries.
@@ -153,6 +159,7 @@ useCart()    // { restaurant, items, noteToStore, noteToRider, coupon, totals,
 useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id), getStatus(order), advance(id), rate(id, { rider, restaurant, review }),
              //   riderOrders, offerDemoJob(), acceptJob(id, { auto }), rejectJob(id), advanceJob(id, fromStage) } — rider side (R3–R4)
              //   `orders` leaves out simulated rider jobs; `riderOrders` includes them
+             //   sendMessage(id, 'rider' | 'customer', text), markChatRead(id, side), demoReply(id) — chat (R8/C13, rules in state/chat.js)
 useSession() // { customerSignedIn, adminSignedIn, riderSignedIn, signIn('customer' | 'admin' | 'rider'), signOut(kind) }
 useAddress() // { address: { id, label, detail }, addresses, setAddress(id) } — picked on C2, default for C8
 useFavorites() // { favorites, isFavorite(id), toggleFavorite(id) } — restaurant ♥
@@ -251,20 +258,21 @@ brand/                  ไฟล์โลโก้ (สีหลัก #FCBB18)
 docs/REQUIREMENTS.md    scope ของ mockup, การตัดสินใจ, เกณฑ์ว่าเสร็จ (แหล่งอ้างอิงหลัก)
 docs/specs/             สเปกแต่ละโมดูล สรุปจาก PDF ต้นฉบับ
 src/
-  main.jsx, router.jsx  จุดเริ่มต้น + route ทั้งหมด; รหัสหน้าจอ (C1–C12, R1–R7, A1–A5) ตรงกับ REQUIREMENTS.md
+  main.jsx, router.jsx  จุดเริ่มต้น + route ทั้งหมด; รหัสหน้าจอ (C1–C13, R1–R8, A1–A5) ตรงกับ REQUIREMENTS.md
   index.css             Tailwind + design tokens (ดู "การจัดสไตล์" ด้านล่าง)
   customer/             แอปลูกค้า
     layouts/            TabLayout (bottom nav ร้านอาหาร · ตะกร้า · ออเดอร์ · บัญชี)
-    pages/              หน้าจอ C1–C12
+    pages/              หน้าจอ C1–C13 (C13 แชทกับไรเดอร์)
     components/         UI เฉพาะแอปลูกค้า: RestaurantCard, CategoryGrid, BannerCarousel,
                         RestaurantFilterSheet, AddressSheet, MenuCard (รายการใน C4), StarRating,
                         FloatingCartBar (C6), OrderHistoryCard (C11)
-  rider/                แอปไรเดอร์ (R1–R7, scope ใน REQUIREMENTS §4.1; issue #34–#38)
+  rider/                แอปไรเดอร์ (R1–R8, scope ใน REQUIREMENTS §4.1; issue #34–#38)
     layouts/            RiderTabLayout (bottom nav สีเข้ม หน้าแรก · กระเป๋าเงิน · รายได้ · บัญชี)
-    pages/              R1 sign in, R2 หน้าแรก (+ popup R3), R4 งาน + สรุปรายได้, R5 กระเป๋าเงิน, R6 รายได้, R7 บัญชี
+    pages/              R1 sign in, R2 หน้าแรก (+ popup R3), R4 งาน + สรุปรายได้, R5 กระเป๋าเงิน, R6 รายได้, R7 บัญชี, R8 แชทกับลูกค้า
     components/         RequireRider (route guard แบบ demo), Switch, StatsSheet (sheet ดึงขึ้นใน R2),
                         JobOfferDialog (R3), SignaturePad (R4)
     useRiderSummary.js  ยอดกระเป๋าเงิน + ตัวเลขของวันนี้ ใช้ร่วมกันใน R2 และ R5
+    useDemoCustomerReply.js  ลูกค้าจำลองตอบไรเดอร์ในงานจำลอง (R4, R8)
   admin/                ระบบหลังบ้าน
     layouts/            AdminLayout (header, sidebar พร้อมปุ่ม ☰ บนมือถือ, footer), adminMenu.js
     pages/              A1 sign in, A3 รายชื่อไรเดอร์
@@ -290,6 +298,7 @@ Production: **https://eatshub-red.vercel.app** โปรเจกต์ Vercel �
 - ระหว่างขั้น "ส่งอาหาร" (ไรเดอร์กำลังมาหาลูกค้า) C10 แสดงแผนที่จำลองแทนภาพประกอบ: มอเตอร์ไซค์วิ่งตามเส้นทางไฮไลต์ไปหาหมุดลูกค้า พร้อมระยะทางและเวลาที่เหลือ ออเดอร์ที่ไรเดอร์ถือ มอเตอร์ไซค์จะหยุดก่อนถึงหน้าบ้านจนกว่าแอปไรเดอร์จะกดส่งอาหารแล้ว
 - ถ้าแอปไรเดอร์ sign in และ online อยู่ตอนสั่งอาหาร ออเดอร์จะถูกเสนอให้ไรเดอร์แทน โดยรออยู่ที่ขั้นที่ 1 ได้นานสุด 45 วินาที (popup R3 หรือรับทันทีถ้าเปิดรับงานอัตโนมัติ) เมื่อรับงานแล้ว จะเดินขั้นได้เฉพาะจากปุ่มของไรเดอร์ใน R4 (ไม่มีปุ่มข้ามใน C10) ถ้าไม่มีใครรับ (หรือไรเดอร์กดปฏิเสธ) ระบบเวลาจะเดินต่อตั้งแต่ขั้นที่ 2 ถ้าแอปไรเดอร์ sign out หรือ offline การติดตามจะเดินตามเวลาเหมือนเดิม
 - แอปไรเดอร์ใช้งานเดี่ยว ๆ ได้ด้วย: ถ้าออนไลน์และว่างอยู่ที่ R2 ราว 5 วินาที จะเสนองานจำลองที่สร้างจากร้าน/เมนูจริง (`createDemoJob`, `simulated: true`) งานจำลองไม่แสดงในประวัติออเดอร์ของลูกค้าและออเดอร์ล่าสุดของหลังบ้าน แต่งานที่ส่งเสร็จนับเข้ารายได้ R6 ออเดอร์จริงของลูกค้าจะถูกเสนอก่อน รับงานอัตโนมัติเริ่มต้นเป็นปิด เพื่อให้เห็น popup R3 (ปฏิเสธ / รับงาน)
+- เมื่อแอปไรเดอร์รับออเดอร์แล้ว ไรเดอร์ (R4 → R8) กับลูกค้า (C10 → C13) แชทกันได้จนส่งเสร็จ หลังจากนั้นอ่านได้อย่างเดียว ข้อความเก็บไว้กับออเดอร์ จึงอัปเดตข้ามสองหน้าต่างได้ และแต่ละฝั่งมี badge ข้อความใหม่ ในงานจำลอง ลูกค้าจำลองจะตอบข้อความล่าสุดของไรเดอร์ในราว 2.5 วินาที ออเดอร์ที่เดินตามเวลา (ไม่มีแอปไรเดอร์) ไม่มีแชท
 - ออเดอร์แชร์ผ่าน `localStorage` และทุกแท็บฟังการเปลี่ยนแปลง จึงเปิดแอปลูกค้าและแอปไรเดอร์คู่กันสองหน้าต่าง (หรือสลับแอปในแท็บเดียว) แล้วเห็นความคืบหน้าตรงกันได้
 - เมื่อจัดส่งเรียบร้อย ลูกค้าให้คะแนนออเดอร์ได้ครั้งเดียวผ่าน `rate(id, { rider, restaurant, review })` แบบ Grab/LINE MAN: ดาวไรเดอร์ (1–5) บังคับ ส่วนดาวร้านค้าและรีวิว (ไม่เกิน 200 ตัวอักษร) ไม่บังคับ มีปุ่มกลับหน้าแรกทั้งก่อนและหลังให้คะแนน ปุ่ม "เขียนรีวิว" ในแท็บประวัติจะเปิด sheet เดียวกัน
 - ประวัติออเดอร์ใส่ออเดอร์ตัวอย่าง 4 รายการครั้งแรกครั้งเดียว ออเดอร์ใหม่ยังอยู่หลัง refresh และ logout และรองรับกรณีที่ประวัติถูกบันทึกว่าว่างจริง ๆ
@@ -323,12 +332,14 @@ Production: **https://eatshub-red.vercel.app** โปรเจกต์ Vercel �
 | `/app/payment/:method` | C9 ชำระเงิน (`promptpay` / `paypal`) |
 | `/app/success/:orderId` | สั่งซื้อ/ชำระเงินสำเร็จ (refresh ได้) |
 | `/app/orders/:orderId` | C10 ติดตามออเดอร์ |
+| `/app/orders/:orderId/chat` | C13 แชทกับไรเดอร์ (ออเดอร์ที่แอปไรเดอร์รับ) |
 | `/app/orders` | C11 ประวัติออเดอร์ |
 | `/app/account` | C12 บัญชี |
 | `/app/account/favorites` | หน้าย่อย C12: ร้านค้าที่ถูกใจ |
 | `/rider/signin` | R1 ไรเดอร์ Sign In |
 | `/rider` | R2 หน้าแรกไรเดอร์ (+ R3 popup งานใหม่) |
 | `/rider/jobs/:orderId` | R4 ระหว่างส่ง + สรุปรายได้ |
+| `/rider/jobs/:orderId/chat` | R8 แชทกับลูกค้า |
 | `/rider/wallet` | R5 กระเป๋าเงิน |
 | `/rider/income` | R6 รายได้ |
 | `/rider/account` | R7 บัญชี |
@@ -365,6 +376,8 @@ Production: **https://eatshub-red.vercel.app** โปรเจกต์ Vercel �
 | `TopBar` | ปุ่มย้อนกลับแบบ sticky + ชื่อหน้า; `backTo`, `right`, `transparent` (วางทับรูปปก) |
 | `BottomSheet` | `open`, `onClose`, `title`, `footer`; อยู่ในกรอบโทรศัพท์ |
 | `ConfirmDialog` | dialog ใช่/ไม่ใช่ กลางจอ: `open`, `title`, `confirmLabel`, `onConfirm`, `onCancel`; อยู่ในกรอบโทรศัพท์ |
+| `ChatThread` | แชท R8/C13: `order`, `side` (`rider` \| `customer`), `now`, `otherName`, `onSend(text)`; มีข้อความด่วน + ช่องพิมพ์แบบ sticky ระหว่างแชทได้ หลังส่งเสร็จอ่านอย่างเดียว |
+| `ChatButton` | ปุ่ม secondary ไปหน้าแชท พร้อม badge ข้อความใหม่: `to`, `unread` |
 | `toast(msg)` | จาก `Toast.jsx`; แสดงข้อความสั้น ๆ ใน `<Toaster />` ที่ใกล้ที่สุด |
 
 **เงิน**: `formatBaht(215)` → `215 ฿` สำหรับราคาในรายการ; `formatAmount(215)` → `215.00` สำหรับสรุปออเดอร์
@@ -378,6 +391,7 @@ useCart()    // { restaurant, items, noteToStore, noteToRider, coupon, totals,
 useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id), getStatus(order), advance(id), rate(id, { rider, restaurant, review }),
              //   riderOrders, offerDemoJob(), acceptJob(id, { auto }), rejectJob(id), advanceJob(id, fromStage) } — ฝั่งไรเดอร์ (R3–R4)
              //   `orders` ไม่รวมงานจำลองของไรเดอร์ ส่วน `riderOrders` รวมด้วย
+             //   sendMessage(id, 'rider' | 'customer', text), markChatRead(id, side), demoReply(id) — แชท (R8/C13, กฎอยู่ใน state/chat.js)
 useSession() // { customerSignedIn, adminSignedIn, riderSignedIn, signIn('customer' | 'admin' | 'rider'), signOut(kind) }
 useAddress() // { address: { id, label, detail }, addresses, setAddress(id) } — เลือกใน C2 และเป็นค่าเริ่มต้นใน C8
 useFavorites() // { favorites, isFavorite(id), toggleFavorite(id) } — ร้านที่กด ♥

@@ -23,7 +23,7 @@ Before declaring work done or opening a PR, all of these must pass: `npm run lin
 
 ## Source of truth
 
-- **Scope** → `docs/REQUIREMENTS.md`. If a change alters scope (new screen, new flow, something moving in/out of scope), update that doc in the same PR. Screen IDs (C1–C12, R1–R7, A1–A5) are used in `router.jsx` and docs — keep them consistent.
+- **Scope** → `docs/REQUIREMENTS.md`. If a change alters scope (new screen, new flow, something moving in/out of scope), update that doc in the same PR. Screen IDs (C1–C13, R1–R8, A1–A5) are used in `router.jsx` and docs — keep them consistent.
 - **Original product behaviour** → `docs/specs/*.md` (summaries of the original PDFs). Deliberate deviations from the specs are listed in REQUIREMENTS §6; add to that table when you fix a spec inconsistency.
 - **Mock data shapes** → the header comment of each file in `src/data/`, plus `src/data/README.md`.
 - When behaviour or structure changes, update README (and `src/data/README.md` for data files) so they stay accurate.

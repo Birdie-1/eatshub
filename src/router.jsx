@@ -14,6 +14,7 @@ import Checkout from '@/customer/pages/Checkout'
 import Payment from '@/customer/pages/Payment'
 import Tracking from '@/customer/pages/Tracking'
 import Orders from '@/customer/pages/Orders'
+import CustomerChat from '@/customer/pages/Chat'
 import Account from '@/customer/pages/Account'
 import Favorites from '@/customer/pages/Favorites'
 import OrderSuccess from '@/customer/pages/OrderSuccess'
@@ -29,6 +30,7 @@ import RiderTabLayout from '@/rider/layouts/RiderTabLayout'
 import RiderSignIn from '@/rider/pages/SignIn'
 import RiderHome from '@/rider/pages/Home'
 import RiderJob from '@/rider/pages/Job'
+import RiderChat from '@/rider/pages/Chat'
 import RiderWallet from '@/rider/pages/Wallet'
 import RiderIncome from '@/rider/pages/Income'
 import RiderAccount from '@/rider/pages/Account'
@@ -66,6 +68,7 @@ export const router = createBrowserRouter([
           { path: 'checkout', element: <Checkout /> }, // C8
           { path: 'payment/:method', element: <Payment /> }, // C9: promptpay | paypal
           { path: 'orders/:orderId', element: <Tracking /> }, // C10
+          { path: 'orders/:orderId/chat', element: <CustomerChat /> }, // C13
           { path: 'account/favorites', element: <Favorites /> }, // C12 sub-page
           { path: 'success/:orderId', element: <OrderSuccess /> },
         ],
@@ -92,6 +95,7 @@ export const router = createBrowserRouter([
             ],
           },
           { path: 'jobs/:orderId', element: <RiderJob /> }, // R4
+          { path: 'jobs/:orderId/chat', element: <RiderChat /> }, // R8
           { path: 'account/:section', element: <RiderAccountDetails /> }, // R7 read-only details
         ],
       },

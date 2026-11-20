@@ -21,6 +21,8 @@ import OrderSummary from '@/customer/components/OrderSummary'
 import RatingSheet from '@/customer/components/RatingSheet'
 import StarRating from '@/customer/components/StarRating'
 import RiderMap from '@/customer/components/RiderMap'
+import ChatButton from '@/shared/components/ChatButton'
+import { canChat, hasChat, unreadCount } from '@/state/chat'
 import { useOrders } from '@/state'
 import { getRestaurant } from '@/data/restaurants'
 import { useOrderClock } from '@/shared/hooks/useOrderClock'
@@ -170,6 +172,17 @@ export default function Tracking() {
                 </p>
               </div>
             </div>
+            {/* Chat only for orders the rider app accepted (someone is there to answer). */}
+            {hasChat(order, now) && (
+              <ChatButton
+                block
+                to={`/app/orders/${order.id}/chat`}
+                unread={unreadCount(order, 'customer')}
+                className="mt-4"
+              >
+                {canChat(order, now) ? 'แชทกับไรเดอร์' : 'ดูแชทกับไรเดอร์'}
+              </ChatButton>
+            )}
           </Card>
         )}
         <Card className="space-y-3 border border-neutral-100 shadow-none">
