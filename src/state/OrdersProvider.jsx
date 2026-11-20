@@ -10,6 +10,7 @@ import {
   rateOrder,
   rejectJob,
 } from './orders'
+import { addDemoReply, markChatRead, sendMessage } from './chat'
 import { createDemoJob, createSampleOrders } from '@/data/orders'
 import { isRiderOnDuty } from './preferences'
 import { load, save, subscribe } from './storage'
@@ -31,7 +32,7 @@ export function restoreOrders(saved) {
 const OrdersContext = createContext(null)
 
 /**
- * Orders shared by the customer app (C8–C11), the rider app (R3–R4) and the back office (A5).
+ * Orders shared by the customer app (C8–C11, C13 chat), the rider app (R3–R4, R8 chat) and the back office (A5).
  * Every change is saved, and changes saved by another tab or window are picked up, so the customer and
  * rider apps can run side by side and follow each other.
  */
@@ -49,8 +50,12 @@ export function OrdersProvider({ children }) {
   // Saving the same JSON back doesn't fire another event, so two tabs can't ping-pong.
   useEffect(() => subscribe('orders', (saved) => setOrders(restoreOrders(saved))), [])
   const value = useMemo(() => {
+    // An unchanged order keeps the same list, so no-op updates (e.g. marking a read chat read) don't re-render.
     const update = (id, change) =>
-      setOrders((previous) => previous.map((order) => (order.id === id ? change(order) : order)))
+      setOrders((previous) => {
+        const next = previous.map((order) => (order.id === id ? change(order) : order))
+        return next.some((order, index) => order !== previous[index]) ? next : previous
+      })
     const nextSeq = () => {
       const seq = nextOrderSequence(orders, sequence.current)
       sequence.current = seq
@@ -85,6 +90,12 @@ export function OrdersProvider({ children }) {
       rejectJob: (id) => update(id, (order) => rejectJob(order)),
       /** R4: rider finished stage `from` (2 → 3 → 4 → 5); stale or repeated clicks are ignored. */
       advanceJob: (id, from) => update(id, (order) => advanceJob(order, from)),
+      /** R8 / C13: `from` ('rider' | 'customer') sends a message; ignored once the chat is closed. */
+      sendMessage: (id, from, text) => update(id, (order) => sendMessage(order, from, text)),
+      /** R8 / C13: `side` has seen every message so far (clears its unread badge). */
+      markChatRead: (id, side) => update(id, (order) => markChatRead(order, side)),
+      /** R8: the simulated customer of a demo job answers the rider's latest message (once). */
+      demoReply: (id) => update(id, (order) => addDemoReply(order)),
     }
   }, [orders])
   return <OrdersContext.Provider value={value}>{children}</OrdersContext.Provider>

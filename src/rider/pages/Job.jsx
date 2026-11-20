@@ -10,6 +10,9 @@ import { RIDER_EARNING } from '@/data/riderProfile'
 import { formatChoices, useOrders } from '@/state'
 import { getStatus, PAYMENT_LABELS } from '@/state/orders'
 import SignaturePad from '@/rider/components/SignaturePad'
+import ChatButton from '@/shared/components/ChatButton'
+import { unreadCount } from '@/state/chat'
+import { useDemoCustomerReply } from '@/rider/useDemoCustomerReply'
 
 /** Rider stages 2–4 of the order (ORDER_STEPS): stepper label, what's happening, and the next button. */
 const STAGES = [
@@ -65,8 +68,10 @@ export default function Job() {
   const [signed, setSigned] = useState(false)
   const [confirmed, setConfirmed] = useState(false)
   const order = getOrder(orderId)
+  useDemoCustomerReply(order?.riderJob ? order : null, now)
 
   if (!order?.riderJob) return <Message title="ไม่พบงานนี้" />
+  const chatPath = `/rider/jobs/${order.id}/chat`
   const status = getStatus(order, now)
   if (status === 6)
     return (
@@ -96,6 +101,11 @@ export default function Job() {
             <p className="font-medium">{order.restaurant.name}</p>
             <p className="mt-1 text-xs text-neutral-500">ส่งถึง ลูกค้า · {order.address.label}</p>
           </Card>
+          {order.messages?.length > 0 && (
+            <ChatButton block to={chatPath}>
+              ดูแชทกับลูกค้า
+            </ChatButton>
+          )}
           <Button block size="lg" to="/rider" className="mt-auto">
             จบงาน
           </Button>
@@ -146,6 +156,10 @@ export default function Job() {
             </div>
           </li>
         </Card>
+
+        <ChatButton block to={chatPath} unread={unreadCount(order, 'rider')}>
+          แชทกับลูกค้า
+        </ChatButton>
 
         {order.notes?.noteToRider && (
           <p className="rounded-2xl bg-brand-light p-3 text-sm leading-6">
