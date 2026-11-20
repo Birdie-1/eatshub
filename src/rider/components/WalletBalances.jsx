@@ -1,45 +1,44 @@
-import { Link } from 'react-router'
-import { ChevronRight, CreditCard, Wallet } from 'lucide-react'
+import { CreditCard, Wallet } from 'lucide-react'
 import { useRider } from '@/state'
 import { formatBaht } from '@/shared/lib/format'
 
-export default function WalletBalances({ links = false }) {
+const wallets = [
+  { key: 'credit', title: 'ยอดเครดิต', icon: CreditCard },
+  { key: 'cash', title: 'กระเป๋าเงินสด', icon: Wallet },
+]
+
+/**
+ * R5 balance cards, which double as the tabs that pick whose history shows below (`wallet-history`).
+ * `selected` is 'credit' or 'cash'.
+ */
+export default function WalletBalances({ selected, onSelect }) {
   const { credit, cash } = useRider()
+  const balance = { credit: credit.balance, cash: cash.balance }
   return (
-    <section aria-label="ยอดกระเป๋าไรเดอร์" className="grid grid-cols-2 gap-3">
-      {[
-        {
-          title: 'ยอดเครดิต',
-          value: credit.balance,
-          icon: CreditCard,
-          tone: 'bg-brand-light text-brand-dark',
-          to: '/rider/wallet?wallet=credit',
-        },
-        {
-          title: 'กระเป๋าเงินสด',
-          value: cash.balance,
-          icon: Wallet,
-          tone: 'bg-success-light text-success',
-          to: '/rider/wallet?wallet=cash',
-        },
-      ].map(({ title, value, icon: Icon, tone, to }) => (
-        <div key={title} className="min-w-0 rounded-2xl border border-neutral-200 bg-white p-3">
-          <span className={`mb-3 inline-flex rounded-xl p-2 ${tone}`}>
-            <Icon className="size-5" />
-          </span>
-          <p className="text-[11px] text-neutral-500">{title}</p>
-          <p className="mt-2 text-lg font-bold tabular-nums">{formatBaht(value)}</p>
-          {links && (
-            <Link
-              to={to}
-              className="mt-2 flex min-h-11 items-center justify-between text-xs font-medium text-neutral-600"
+    <div role="tablist" aria-label="ประเภทกระเป๋า" className="grid grid-cols-2 gap-3">
+      {wallets.map(({ key, title, icon: Icon }) => {
+        const active = selected === key
+        return (
+          <button
+            key={key}
+            type="button"
+            role="tab"
+            id={`wallet-${key}`}
+            aria-selected={active}
+            aria-controls="wallet-history"
+            onClick={() => onSelect(key)}
+            className={`min-w-0 rounded-2xl border bg-white p-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin ${active ? 'border-brand ring-1 ring-brand' : 'border-neutral-200 hover:border-neutral-300'}`}
+          >
+            <span
+              className={`flex items-center gap-1.5 text-xs ${active ? 'font-semibold text-ink' : 'text-neutral-500'}`}
             >
-              ดูประวัติ
-              <ChevronRight className="size-4" />
-            </Link>
-          )}
-        </div>
-      ))}
-    </section>
+              <Icon className={`size-4 shrink-0 ${active ? 'text-brand-dark' : 'text-neutral-400'}`} />
+              {title}
+            </span>
+            <span className="mt-2 block text-xl font-bold tabular-nums">{formatBaht(balance[key])}</span>
+          </button>
+        )
+      })}
+    </div>
   )
 }

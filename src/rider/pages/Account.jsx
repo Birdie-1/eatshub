@@ -5,6 +5,7 @@ import Badge from '@/shared/components/Badge'
 import { riderProfile } from '@/data/riderProfile'
 import { useSession } from '@/state'
 import RiderSettings from '@/rider/components/RiderSettings'
+import RiderTabHeader from '@/rider/components/RiderTabHeader'
 
 export default function Account() {
   const { signOut } = useSession()
@@ -13,27 +14,27 @@ export default function Account() {
   const max = Math.max(...Object.values(riderProfile.ratingCounts))
   return (
     <div className="bg-surface pb-5">
-      <header className="border-b border-neutral-100 bg-white px-4 py-5">
-        <h1 className="text-lg font-bold">บัญชี</h1>
-      </header>
+      <RiderTabHeader title="บัญชี" />
       <div className="space-y-5 px-4 pt-5">
-        <Card className="border border-neutral-200 text-center shadow-none">
-          <span
-            role="img"
-            aria-label="รูปโปรไฟล์ไรเดอร์ตัวอย่าง"
-            className="mx-auto grid size-20 place-items-center rounded-full bg-brand-light text-brand-dark"
-          >
-            <CircleUserRound className="size-14" strokeWidth={1.2} />
-          </span>
-          <h2 className="mt-4 text-lg font-bold">{riderProfile.name}</h2>
-          <p className="mt-1 text-xs text-neutral-500">{riderProfile.code}</p>
-          <div className="mt-3 flex justify-center">
-            <Badge tone="brand">
-              <Medal className="size-3.5" />
-              พาร์ทเนอร์ {riderProfile.partnerLevel}
-            </Badge>
+        <Card className="border border-neutral-200 shadow-none">
+          <div className="flex items-center gap-4">
+            <span
+              role="img"
+              aria-label="รูปโปรไฟล์ไรเดอร์ตัวอย่าง"
+              className="grid size-16 shrink-0 place-items-center rounded-full bg-brand-light text-brand-dark"
+            >
+              <CircleUserRound className="size-11" strokeWidth={1.2} />
+            </span>
+            <div className="min-w-0">
+              <h2 className="text-lg font-bold leading-7">{riderProfile.name}</h2>
+              <p className="text-xs tabular-nums text-neutral-500">{riderProfile.code}</p>
+              <Badge tone="brand" className="mt-2">
+                <Medal className="size-3.5" />
+                พาร์ทเนอร์ {riderProfile.partnerLevel}
+              </Badge>
+            </div>
           </div>
-          <p className="mt-3 text-[10px] text-neutral-400">โปรไฟล์และข้อมูลทั้งหมดเป็นข้อมูลสมมติ</p>
+          <p className="mt-4 text-[11px] text-neutral-400">โปรไฟล์และข้อมูลทั้งหมดเป็นข้อมูลสมมติ</p>
         </Card>
         <Card
           as="section"

@@ -1,12 +1,12 @@
 import { useSearchParams } from 'react-router'
 import { ArrowDownLeft, ArrowUpRight, ShieldCheck } from 'lucide-react'
-import TopBar from '@/shared/components/TopBar'
 import Badge from '@/shared/components/Badge'
 import { formatAmount } from '@/shared/lib/format'
 import { formatOrderDate } from '@/state/orders'
 import { creditChannels } from '@/data/riderProfile'
 import { useRider } from '@/state'
 import WalletBalances from '@/rider/components/WalletBalances'
+import RiderTabHeader from '@/rider/components/RiderTabHeader'
 
 export default function Wallet() {
   const [params, setParams] = useSearchParams()
@@ -15,36 +15,14 @@ export default function Wallet() {
   const history = cashSelected ? cashHistory : creditHistory
   return (
     <div className="min-w-0 bg-surface pb-5">
-      <TopBar title="กระเป๋าเงิน" backTo="/rider" />
+      <RiderTabHeader title="กระเป๋าเงิน">
+        <Badge tone="brand">ข้อมูลตัวอย่าง</Badge>
+      </RiderTabHeader>
       <div className="space-y-5 px-4 pt-5">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold">เงินของคุณ</h2>
-          <Badge tone="brand">ข้อมูลตัวอย่าง</Badge>
-        </div>
-        <WalletBalances />
-        <div
-          role="tablist"
-          aria-label="ประเภทกระเป๋า"
-          className="grid grid-cols-2 rounded-xl bg-neutral-200/70 p-1"
-        >
-          {[
-            ['credit', 'ยอดเครดิต'],
-            ['cash', 'กระเป๋าเงินสด'],
-          ].map(([key, label]) => (
-            <button
-              key={key}
-              type="button"
-              role="tab"
-              id={`wallet-${key}`}
-              aria-selected={cashSelected === (key === 'cash')}
-              aria-controls="wallet-history"
-              onClick={() => setParams({ wallet: key }, { replace: true })}
-              className={`min-h-11 rounded-lg text-sm font-semibold ${cashSelected === (key === 'cash') ? 'bg-white shadow-sm' : 'text-neutral-500'}`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <WalletBalances
+          selected={cashSelected ? 'cash' : 'credit'}
+          onSelect={(key) => setParams({ wallet: key }, { replace: true })}
+        />
         <section
           id="wallet-history"
           role="tabpanel"
@@ -88,7 +66,7 @@ export default function Wallet() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-start justify-between gap-1">
-                      <p className="text-xs font-semibold">{item.label}</p>
+                      <p className="text-sm font-semibold">{item.label}</p>
                       <strong
                         className={`whitespace-nowrap text-sm tabular-nums ${item.amount > 0 ? 'text-success' : 'text-ink'}`}
                       >
@@ -96,9 +74,11 @@ export default function Wallet() {
                         {formatAmount(Math.abs(item.amount))} ฿
                       </strong>
                     </div>
-                    <p className="mt-1 text-[10px] text-neutral-400">{formatOrderDate(item.at)}</p>
+                    <p className="mt-1 text-[11px] text-neutral-400">{formatOrderDate(item.at)}</p>
                     {item.orderId && (
-                      <p className="mt-1 break-all text-[10px] text-neutral-400">{item.orderId}</p>
+                      <p className="mt-0.5 break-all text-[11px] tabular-nums text-neutral-400">
+                        {item.orderId}
+                      </p>
                     )}
                     {item.status && (
                       <div className="mt-2">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { Banknote, Bike, ChevronRight, CreditCard, Navigation, Zap } from 'lucide-react'
+import { Banknote, Bike, ChevronRight, CreditCard, Navigation, Star, Zap } from 'lucide-react'
 import mapImage from '@/shared/assets/images/rider-map.svg'
 import Card from '@/shared/components/Card'
 import { formatBaht } from '@/shared/lib/format'
@@ -163,7 +163,15 @@ export default function Home() {
         <h2 className="mb-2 text-sm font-semibold text-neutral-500">ข้อมูลสะสม</h2>
         <dl className="grid grid-cols-3 gap-2">
           <Stat label="ระดับพาร์ทเนอร์" value={riderProfile.partnerLevel} />
-          <Stat label="คะแนน" value={`⭐ ${riderProfile.rating}`} />
+          <Stat
+            label="คะแนน"
+            value={
+              <span className="inline-flex items-center gap-1">
+                <Star className="size-4 fill-brand text-brand" aria-hidden="true" />
+                {riderProfile.rating}
+              </span>
+            }
+          />
           <Stat label="อัตรารับงาน" value={`${acceptRate.toFixed(2)}%`} />
         </dl>
         <h2 className="mb-2 mt-5 text-sm font-semibold text-neutral-500">ข้อมูลวันนี้</h2>

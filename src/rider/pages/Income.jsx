@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { CalendarDays, ChevronLeft, ChevronRight, Clock3, Route, ShoppingBag, Wallet } from 'lucide-react'
-import TopBar from '@/shared/components/TopBar'
+import { CalendarDays, ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react'
+import RiderTabHeader from '@/rider/components/RiderTabHeader'
 import Badge from '@/shared/components/Badge'
 import { formatBaht } from '@/shared/lib/format'
 import { useRider } from '@/state'
@@ -61,12 +61,10 @@ export default function Income() {
   }, [date])
   return (
     <div className="min-w-0 bg-surface pb-5">
-      <TopBar title="รายได้" backTo="/rider" />
+      <RiderTabHeader title="รายได้">
+        <Badge tone="brand">ข้อมูลตัวอย่าง</Badge>
+      </RiderTabHeader>
       <div className="space-y-5 px-4 pt-5">
-        <div className="flex items-center justify-between">
-          <p className="text-xs text-neutral-500">ภาพรวมงานจัดส่งของคุณ</p>
-          <Badge tone="brand">ข้อมูลตัวอย่าง</Badge>
-        </div>
         <div
           role="tablist"
           aria-label="ช่วงเวลารายได้"
@@ -271,32 +269,23 @@ export default function Income() {
           <h2 className="text-sm font-semibold">
             {tab === 'day' ? fullDate(date) : `${months[month]} ${year + 543}`}
           </h2>
-          <div className="grid grid-cols-2 gap-3">
+          <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-200">
             {[
-              ['รายได้รวม', formatBaht(report.earning), Wallet, 'bg-brand-light text-brand-dark'],
-              ['งานที่สำเร็จ', `${report.count} งาน`, ShoppingBag, 'bg-success-light text-success'],
-              [
-                'ระยะเวลารวม',
-                `${report.minutes.toLocaleString('th-TH')} นาที`,
-                Clock3,
-                'bg-info-light text-info',
-              ],
-              [
-                'ระยะทางรวม',
-                `${report.km.toLocaleString('th-TH')} กม.`,
-                Route,
-                'bg-neutral-100 text-neutral-600',
-              ],
-            ].map(([label, value, Icon, tone]) => (
-              <div key={label} className="min-w-0 rounded-2xl border border-neutral-200 bg-white p-3">
-                <span className={`inline-flex rounded-lg p-2 ${tone}`}>
-                  <Icon className="size-4" />
-                </span>
-                <h3 className="mt-3 text-[11px] text-neutral-500">{label}</h3>
-                <p className="mt-2 text-lg font-bold tracking-tight tabular-nums">{value}</p>
+              ['รายได้รวม', formatBaht(report.earning)],
+              ['งานที่สำเร็จ', `${report.count} งาน`],
+              ['ระยะเวลารวม', `${report.minutes.toLocaleString('th-TH')} นาที`],
+              ['ระยะทางรวม', `${report.km.toLocaleString('th-TH')} กม.`],
+            ].map(([label, value], index) => (
+              <div key={label} className="flex min-w-0 flex-col-reverse bg-white p-4">
+                <dt className="mt-1 text-xs text-neutral-500">{label}</dt>
+                <dd
+                  className={`font-bold tracking-tight tabular-nums ${index === 0 ? 'text-2xl text-ink' : 'text-xl'}`}
+                >
+                  {value}
+                </dd>
               </div>
             ))}
-          </div>
+          </dl>
           <div className="rounded-2xl border border-neutral-200 bg-white p-4">
             <h3 className="text-sm font-semibold">รายการงาน · {report.count} งาน</h3>
             {!report.jobs.length ? (
@@ -309,13 +298,15 @@ export default function Income() {
               <>
                 <ul className="mt-2 divide-y divide-neutral-100">
                   {report.jobs.slice(0, shown).map((job) => (
-                    <li key={job.id} className="py-4">
-                      <div className="flex flex-wrap justify-between gap-2">
-                        <p className="break-all text-[11px] font-semibold">{job.id}</p>
-                        <strong className="text-sm text-success">{formatBaht(job.earning)}</strong>
+                    <li key={job.id} className="py-3.5">
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="min-w-0 text-sm font-semibold">{job.restaurantName}</p>
+                        <strong className="shrink-0 text-sm tabular-nums text-success">
+                          {formatBaht(job.earning)}
+                        </strong>
                       </div>
-                      <p className="mt-1 text-xs text-neutral-600">{job.restaurantName}</p>
-                      <p className="mt-2 text-[10px] leading-5 text-neutral-400">
+                      <p className="mt-1 break-all text-[11px] tabular-nums text-neutral-500">{job.id}</p>
+                      <p className="mt-0.5 text-[11px] leading-5 text-neutral-400">
                         {fullDate(bangkokDate(job.completedAt))} · {job.minutes} นาที · {job.km} กม.
                       </p>
                     </li>
