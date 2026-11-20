@@ -6,22 +6,16 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
-  Bike,
+  Ban,
   ChevronLeft,
   ChevronRight,
-  CircleCheck,
   Clock3,
-  Filter,
   MapPin,
   Phone,
   Search,
-  ShieldCheck,
-  Smartphone,
-  Truck,
-  Users,
   X,
 } from 'lucide-react'
-import { accountLabels, formatRiderDate, createRiders, changeRiderStatus, workLabels } from '@/data/riders'
+import { formatRiderDate, createRiders, changeRiderStatus, workLabels } from '@/data/riders'
 
 const tones = {
   online: 'success',
@@ -38,31 +32,40 @@ function Badge({ value }) {
     </SharedBadge>
   )
 }
-function Avatar({ small = false }) {
-  return (
-    <span
-      className={`grid shrink-0 place-items-center rounded-2xl bg-brand-light text-brand-dark ${small ? 'size-10' : 'size-12'}`}
-    >
-      <Bike className={small ? 'size-5' : 'size-6'} strokeWidth={1.6} />
-    </span>
-  )
+/** Status filter chips: the three work statuses plus blocked accounts; dots match the table badges. */
+const statusFilters = [
+  { key: 'all', label: 'ทั้งหมด' },
+  { key: 'online', label: 'พร้อมรับงาน', dot: 'bg-status-online' },
+  { key: 'delivery', label: 'กำลังจัดส่ง', dot: 'bg-status-delivery' },
+  { key: 'offline', label: 'ออฟไลน์', dot: 'bg-status-offline' },
+  { key: 'block', label: 'ระงับใช้งาน', blocked: true },
+]
+/** "20 พ.ย. 2569 08:53" → ["20 พ.ย. 2569", "08:53"] so table dates take two short lines. */
+function splitDateTime(iso) {
+  const text = formatRiderDate(iso)
+  const at = text.lastIndexOf(' ')
+  return [text.slice(0, at), text.slice(at + 1)]
 }
 function RiderStatus({ rider, onChange }) {
   return (
-    <div className="max-w-48">
-      <select
-        aria-label={`สถานะไรเดอร์ ${rider.code}`}
-        value={rider.riderStatus}
-        onChange={(event) => onChange(rider, event.target.value)}
-        className={`min-h-11 w-full min-w-24 cursor-pointer rounded-xl border border-transparent px-2 text-xs font-semibold outline-none focus:border-brand ${rider.riderStatus === 'active' ? 'bg-success-light text-success' : 'bg-danger-light text-danger'}`}
-      >
-        <option value="active">Active</option>
-        <option value="block">Block</option>
-      </select>
-      {rider.riderStatus === 'block' && (
-        <p className="mt-1 break-words text-[11px] leading-5 text-danger">เหตุผล: {rider.blockReason}</p>
-      )}
-    </div>
+    <select
+      aria-label={`สถานะไรเดอร์ ${rider.code}`}
+      value={rider.riderStatus}
+      onChange={(event) => onChange(rider, event.target.value)}
+      className={`min-h-11 w-28 cursor-pointer rounded-xl border border-transparent px-2 text-xs font-semibold outline-none focus:border-brand ${rider.riderStatus === 'active' ? 'bg-success-light text-success' : 'bg-danger-light text-danger'}`}
+    >
+      <option value="active">Active</option>
+      <option value="block">Block</option>
+    </select>
+  )
+}
+/** `short` is the table cell under the "เข้าสู่ระบบ" heading, where ใช่ / ไม่ is enough. */
+function LoggedIn({ rider, short = false }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+      <span className={`size-1.5 rounded-full ${rider.isLoggedIn ? 'bg-success' : 'bg-neutral-300'}`} />
+      {short ? (rider.isLoggedIn ? 'ใช่' : 'ไม่') : rider.isLoggedIn ? 'เข้าสู่ระบบอยู่' : 'ไม่ได้เข้าสู่ระบบ'}
+    </span>
   )
 }
 
@@ -93,7 +96,7 @@ export default function Riders() {
           ...all,
           [status]: riders.filter((rider) => rider.workStatus === status).length,
         }),
-        {},
+        { block: riders.filter((rider) => rider.riderStatus === 'block').length },
       ),
     [riders],
   )
@@ -122,6 +125,7 @@ export default function Riders() {
   const start = (currentPage - 1) * pageSize
   const visible = results.slice(start, start + pageSize)
   const filtered = query !== '' || work !== 'all' || field !== 'all'
+  const filterCount = (key) => (key === 'all' ? riders.length : counts[key])
   const reset = () => {
     setQuery('')
     setField('all')
@@ -174,85 +178,51 @@ export default function Riders() {
           จัดการไรเดอร์
         </span>
       </nav>
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <div className="mb-2 flex items-center gap-2">
-            <span className="h-5 w-1 rounded-full bg-brand" />
-            <span className="text-xs font-medium text-neutral-500">เครือข่ายการจัดส่ง</span>
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">จัดการไรเดอร์</h1>
-          <p className="mt-2 text-sm leading-6 text-neutral-500">ดูแลรายชื่อและสถานะไรเดอร์ทั้งหมดของคุณ</p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">จัดการไรเดอร์</h1>
+        <p className="mt-2 flex flex-wrap items-center gap-2 text-sm leading-6 text-neutral-500">
+          ดูแลรายชื่อและสถานะไรเดอร์ทั้งหมดของคุณ
+          <span className="rounded-md bg-brand-light px-2 py-0.5 text-[11px] text-amber-800">ข้อมูลตัวอย่าง</span>
+        </p>
       </div>
-      <section aria-label="ภาพรวมไรเดอร์" className="grid grid-cols-2 gap-3 xl:grid-cols-4 xl:gap-4">
-        {[
-          {
-            key: 'all',
-            label: 'ไรเดอร์ทั้งหมด',
-            number: riders.length,
-            icon: Users,
-            tone: 'bg-brand-light text-brand-dark',
-          },
-          {
-            key: 'online',
-            label: 'พร้อมรับงาน',
-            number: counts.online,
-            icon: CircleCheck,
-            tone: 'bg-status-online/10 text-green-700',
-          },
-          {
-            key: 'delivery',
-            label: 'กำลังจัดส่ง',
-            number: counts.delivery,
-            icon: Truck,
-            tone: 'bg-status-delivery/10 text-amber-700',
-          },
-          {
-            key: 'offline',
-            label: 'ออฟไลน์',
-            number: counts.offline,
-            icon: Clock3,
-            tone: 'bg-neutral-100 text-neutral-500',
-          },
-        ].map(({ key, label, number, icon: Icon, tone }) => (
-          <button
-            type="button"
-            key={key}
-            aria-pressed={work === key}
-            onClick={() => {
-              setWork(key)
-              setPage(1)
-            }}
-            className={`flex items-center gap-3 rounded-2xl border bg-white p-3.5 text-left transition hover:shadow-sm sm:p-5 ${work === key ? 'border-brand ring-1 ring-brand' : 'border-neutral-200/80'}`}
-          >
-            <span className={`grid size-10 shrink-0 place-items-center rounded-xl sm:size-12 ${tone}`}>
-              <Icon className="size-5" strokeWidth={1.7} />
-            </span>
-            <span>
-              <span className="block text-xs text-neutral-500 sm:text-sm">{label}</span>
-              <span className="mt-1 block text-2xl font-semibold tabular-nums">
-                {number}
-                <span className="ml-1.5 text-xs font-normal text-neutral-400">คน</span>
-              </span>
-            </span>
-          </button>
-        ))}
-      </section>
       <section
         aria-labelledby="rider-list-title"
         className="min-w-0 overflow-hidden rounded-2xl border border-neutral-200/80 bg-white"
       >
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-100 px-4 py-4 sm:px-5">
-          <h2 id="rider-list-title" className="flex items-center gap-2.5 font-semibold">
-            <Bike className="size-5 text-neutral-500" />
-            รายชื่อไรเดอร์
-            <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-500">
-              {riders.length}
-            </span>
-          </h2>
-          <span className="rounded-md bg-brand-light px-2 py-1 text-[11px] text-amber-800">ข้อมูลตัวอย่าง</span>
-        </div>
-        <div className="space-y-3 p-4 sm:p-5">
+        <h2 id="rider-list-title" className="sr-only">
+          รายชื่อไรเดอร์
+        </h2>
+        <div className="space-y-4 p-4 sm:p-5">
+          <div
+            role="group"
+            aria-label="กรองตามสถานะไรเดอร์"
+            className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 py-1.5 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:p-0"
+          >
+            {statusFilters.map(({ key, label, dot, blocked }) => {
+              const active = work === key
+              return (
+                <button
+                  type="button"
+                  key={key}
+                  aria-pressed={active}
+                  onClick={() => {
+                    setWork(key)
+                    setPage(1)
+                  }}
+                  className={`flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-xl border px-3 text-sm transition-colors ${active ? 'border-brand bg-brand-light font-semibold text-ink' : 'border-neutral-200 text-neutral-600 hover:border-neutral-300 hover:text-ink'}`}
+                >
+                  {dot && <span className={`size-2 rounded-full ${dot}`} />}
+                  {blocked && <Ban className="size-3.5 text-danger" />}
+                  {label}
+                  <span
+                    className={`min-w-6 rounded-md px-1.5 py-0.5 text-center text-xs tabular-nums ${active ? 'bg-brand text-ink' : 'bg-neutral-100 text-neutral-500'}`}
+                  >
+                    {filterCount(key)}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <label className="sr-only" htmlFor="rider-search-field">
               ค้นหาจาก
@@ -298,43 +268,23 @@ export default function Riders() {
               )}
             </div>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            <div className="hidden items-center gap-1.5 text-sm text-neutral-500 sm:flex">
-              <Filter className="size-4" />
-              ตัวกรอง
-            </div>
-            <label className="sr-only" htmlFor="rider-work-status">
-              สถานะทั้งหมด
-            </label>
-            <select
-              id="rider-work-status"
-              value={work}
-              onChange={change(setWork)}
-              className="admin-input sm:w-44"
-            >
-              <option value="all">สถานะทั้งหมด</option>
-              {Object.entries({ ...workLabels, ...accountLabels }).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-2 border-y border-neutral-100 bg-neutral-50/70 px-4 py-3 text-xs text-neutral-500 sm:px-5">
+          <div className="flex flex-wrap items-center gap-x-3">
+            <p role="status" aria-live="polite">
+              พบ <strong className="font-semibold text-neutral-800">{results.length}</strong> รายการ
+              {filtered && ' จากตัวกรองที่เลือก'}
+            </p>
             {filtered && (
               <button
                 type="button"
                 onClick={reset}
-                className="min-h-11 text-left text-sm text-neutral-500 underline underline-offset-4 hover:text-neutral-900"
+                className="min-h-11 text-neutral-500 underline underline-offset-4 hover:text-ink"
               >
                 ล้างตัวกรอง
               </button>
             )}
           </div>
-        </div>
-        <div className="flex flex-wrap items-center justify-between gap-2 border-y border-neutral-100 bg-neutral-50/70 px-4 py-3 text-xs text-neutral-500 sm:px-5">
-          <p role="status" aria-live="polite">
-            พบ <strong className="font-semibold text-neutral-800">{results.length}</strong> รายการ
-            {filtered && ' จากตัวกรองที่เลือก'}
-          </p>
           <div className="flex items-center gap-2 lg:hidden">
             <label htmlFor="rider-mobile-sort">เรียงตาม</label>
             <select
@@ -358,68 +308,67 @@ export default function Riders() {
           <>
             <div className="divide-y divide-neutral-100 lg:hidden">
               {visible.map((rider) => (
-                <article key={rider.code} className="p-4 sm:p-5">
-                  <div className="flex items-start gap-3">
-                    <Avatar />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <p className="text-xs font-semibold tracking-wide text-neutral-400">{rider.code}</p>
+                <article
+                  key={rider.code}
+                  className={`p-4 sm:p-5 ${rider.riderStatus === 'block' ? 'bg-danger-light/40' : ''}`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs font-semibold tabular-nums text-neutral-500">
+                          {rider.code}
+                        </span>
                         <Badge value={rider.workStatus} />
-                      </div>
-                      <h3 className="mt-1 text-sm font-semibold leading-6 sm:text-base">{rider.name}</h3>
-                      <p className="mt-1 flex items-center gap-1.5 text-sm text-neutral-500">
-                        <Phone className="size-3.5" />
-                        {rider.phone}
                       </p>
+                      <h3 className="mt-1.5 font-semibold leading-6">{rider.name}</h3>
                     </div>
+                    <RiderStatus rider={rider} onChange={requestStatus} />
                   </div>
-                  <div className="mt-4 grid grid-cols-2 gap-3 rounded-xl bg-neutral-50 p-3">
-                    <div>
-                      <p className="text-[11px] text-neutral-400">ทะเบียนรถ</p>
-                      <p className="mt-1 text-sm font-medium">{rider.plate}</p>
-                      <p className="mt-1 flex items-center gap-1 text-xs text-neutral-500">
-                        <MapPin className="size-3" />
-                        {rider.province}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="mb-1 text-[11px] text-neutral-400">สถานะไรเดอร์</p>
-                      <RiderStatus rider={rider} onChange={requestStatus} />
-                      <p className="mt-1.5 flex items-center gap-1 text-xs text-neutral-500">
-                        <Smartphone
-                          className={`size-3 ${rider.isLoggedIn ? 'text-brand-dark' : 'text-neutral-400'}`}
-                        />
-                        {rider.isLoggedIn ? 'เข้าสู่ระบบอยู่' : 'ไม่ได้เข้าสู่ระบบ'}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="mt-3 text-[11px] leading-5 text-neutral-400">
-                    ใช้งานล่าสุด
-                    <br />
-                    <span className="text-neutral-600">{formatRiderDate(rider.lastActiveAt)}</span>
-                  </p>
+                  {rider.riderStatus === 'block' && (
+                    <p className="mt-2 text-xs leading-5 text-danger">เหตุผล: {rider.blockReason}</p>
+                  )}
+                  <ul className="mt-3 space-y-1.5 text-xs text-neutral-600">
+                    <li className="flex items-center gap-2">
+                      <Phone className="size-3.5 shrink-0 text-neutral-400" />
+                      <span className="tabular-nums">{rider.phone}</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <MapPin className="size-3.5 shrink-0 text-neutral-400" />
+                      <span>
+                        {rider.plate} · {rider.province}
+                      </span>
+                    </li>
+                    <li className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <Clock3 className="size-3.5 shrink-0 text-neutral-400" />
+                      <span>ใช้งานล่าสุด {formatRiderDate(rider.lastActiveAt)}</span>
+                      <span className="text-neutral-300">·</span>
+                      <LoggedIn rider={rider} />
+                    </li>
+                  </ul>
                   <details className="mt-1 text-xs text-neutral-500">
                     <summary className="min-h-11 cursor-pointer py-3">ข้อมูลการแก้ไข</summary>
-                    <p className="pb-2 leading-6">
-                      ผู้แก้ไข: {rider.editedBy}
-                      <br />
-                      {formatRiderDate(rider.editedAt)}
+                    <p className="pb-1 leading-6">
+                      ผู้แก้ไข: {rider.editedBy} · {formatRiderDate(rider.editedAt)}
                     </p>
                   </details>
                 </article>
               ))}
             </div>
             <div className="hidden overflow-x-auto lg:block">
-              <table className="rider-table w-full text-left text-xs">
+              <table className="rider-table w-full text-left text-sm">
                 <caption className="sr-only">รายชื่อไรเดอร์ พร้อมข้อมูลติดต่อ สถานะ และการใช้งานล่าสุด</caption>
                 <thead>
                   <tr>
-                    <th scope="col">ลำดับ</th>
+                    <th scope="col" className="w-12">
+                      ลำดับ
+                    </th>
                     {sortHeading('code', 'รหัสไรเดอร์')}
                     {sortHeading('name', 'ชื่อ / เบอร์โทรศัพท์')}
                     {sortHeading('plate', 'ทะเบียนรถ / จังหวัด')}
                     {sortHeading('lastActiveAt', 'ใช้งานล่าสุด')}
-                    <th scope="col">เข้าสู่ระบบ</th>
+                    <th scope="col" className="whitespace-nowrap">
+                      เข้าสู่ระบบ
+                    </th>
                     {sortHeading('workStatus', 'สถานะงาน')}
                     {sortHeading('riderStatus', 'สถานะไรเดอร์')}
                     <th scope="col">ผู้แก้ไข / วันที่</th>
@@ -427,43 +376,48 @@ export default function Riders() {
                 </thead>
                 <tbody>
                   {visible.map((rider, index) => (
-                    <tr key={rider.code}>
-                      <td className="text-neutral-400">{start + index + 1}</td>
-                      <td className="font-semibold">{rider.code}</td>
+                    <tr
+                      key={rider.code}
+                      className={rider.riderStatus === 'block' ? 'bg-danger-light/40' : undefined}
+                    >
+                      <td className="text-xs tabular-nums text-neutral-400">{start + index + 1}</td>
+                      <td className="font-semibold tabular-nums">{rider.code}</td>
                       <td>
-                        <div className="flex items-center gap-3">
-                          <Avatar small />
-                          <div>
-                            <p className="whitespace-nowrap font-semibold">{rider.name}</p>
-                            <p className="mt-1.5 whitespace-nowrap text-neutral-500">{rider.phone}</p>
-                          </div>
-                        </div>
+                        <p className="whitespace-nowrap font-semibold">{rider.name}</p>
+                        <p className="mt-1 whitespace-nowrap text-xs tabular-nums text-neutral-500">
+                          {rider.phone}
+                        </p>
                       </td>
                       <td>
                         <p className="font-medium">{rider.plate}</p>
-                        <p className="mt-1.5 whitespace-nowrap text-neutral-500">{rider.province}</p>
+                        <p className="mt-1 whitespace-nowrap text-xs text-neutral-500">{rider.province}</p>
                       </td>
-                      <td className="min-w-36 text-neutral-500">{formatRiderDate(rider.lastActiveAt)}</td>
-                      <td>
-                        <span title={rider.isLoggedIn ? 'เข้าสู่ระบบอยู่' : 'ไม่ได้เข้าสู่ระบบ'}>
-                          <Smartphone
-                            aria-hidden="true"
-                            className={`mx-auto size-5 ${rider.isLoggedIn ? 'text-brand-dark' : 'text-neutral-300'}`}
-                          />
-                          <span className="sr-only">{rider.isLoggedIn ? 'เข้าสู่ระบบอยู่' : 'ไม่ได้เข้าสู่ระบบ'}</span>
+                      <td className="whitespace-nowrap text-xs text-neutral-500">
+                        {splitDateTime(rider.lastActiveAt)[0]}
+                        <span className="mt-1 block tabular-nums text-neutral-400">
+                          {splitDateTime(rider.lastActiveAt)[1]}
                         </span>
+                      </td>
+                      <td className="text-xs text-neutral-600">
+                        <LoggedIn rider={rider} short />
                       </td>
                       <td>
                         <Badge value={rider.workStatus} />
                       </td>
                       <td>
                         <RiderStatus rider={rider} onChange={requestStatus} />
+                        {rider.riderStatus === 'block' && (
+                          <p
+                            className="mt-1 max-w-28 truncate text-[11px] text-danger"
+                            title={rider.blockReason}
+                          >
+                            เหตุผล: {rider.blockReason}
+                          </p>
+                        )}
                       </td>
-                      <td className="min-w-40">
-                        <p className="font-medium">{rider.editedBy}</p>
-                        <p className="mt-1.5 text-[11px] text-neutral-400">
-                          {formatRiderDate(rider.editedAt)}
-                        </p>
+                      <td className="min-w-28">
+                        <p className="text-xs font-medium">{rider.editedBy}</p>
+                        <p className="mt-1 text-[11px] text-neutral-400">{formatRiderDate(rider.editedAt)}</p>
                       </td>
                     </tr>
                   ))}
@@ -544,10 +498,6 @@ export default function Riders() {
           </nav>
         </div>
       </section>
-      <p className="flex items-start gap-2 px-1 text-xs leading-6 text-neutral-400">
-        <ShieldCheck className="mt-1 size-4 shrink-0" />
-        โหมดสาธิต: ค้นหา กรอง และเปลี่ยนหน้าได้ ข้อมูลทั้งหมดเป็นข้อมูลตัวอย่าง
-      </p>
       {blocking && (
         <BlockRiderDialog
           key={blocking.code}

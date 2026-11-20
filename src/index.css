@@ -75,10 +75,10 @@
     @apply grid size-11 place-items-center rounded-xl border border-neutral-200 text-sm transition hover:border-brand disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-neutral-200;
   }
   .rider-table th {
-    @apply bg-neutral-50 px-4 py-2 font-medium text-neutral-500;
+    @apply bg-neutral-50 px-3 py-2 text-xs font-medium text-neutral-500;
   }
   .rider-table td {
-    @apply border-t border-neutral-100 px-4 py-4;
+    @apply border-t border-neutral-100 px-3 py-3.5;
   }
   .rider-table tbody tr {
     @apply transition-colors hover:bg-brand-light/20;
