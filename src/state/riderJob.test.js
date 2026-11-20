@@ -7,6 +7,7 @@ import {
   canAcceptJob,
   getStatus,
   isStaleDemoJob,
+  makeRoomForCustomerOrder,
   JOB_OFFER_MS,
   ORDER_STEP_MS,
   rateOrder,
@@ -149,6 +150,32 @@ describe('isStaleDemoJob (simulated jobs nobody took)', () => {
   it('never drops customer orders', () => {
     expect(isStaleDemoJob(create(), t0 + JOB_OFFER_MS)).toBe(false)
     expect(isStaleDemoJob(create(false), t0)).toBe(false)
+  })
+})
+
+describe('makeRoomForCustomerOrder (a new customer order comes before demo jobs)', () => {
+  const demo = (seq) => ({ ...create(), id: `demo-${seq}`, simulated: true })
+  const at = t0 + 5000
+  it('drops simulated jobs still offered or in progress, so the rider is free for the customer', () => {
+    const offered = demo(1)
+    const inProgress = acceptJob(demo(2), t0 + 1000)
+    const { orders, offer } = makeRoomForCustomerOrder([offered, inProgress], true, at)
+    expect(orders).toEqual([])
+    expect(offer).toBe(true)
+  })
+  it('keeps delivered simulated jobs (R6 income) and every customer order', () => {
+    const delivered = deliver(demo(3))
+    const customer = create(false)
+    expect(makeRoomForCustomerOrder([delivered, customer], true, at).orders).toEqual([delivered, customer])
+  })
+  it('does not offer to a rider busy with another customer order, and keeps that order', () => {
+    const busy = acceptJob(create(), t0 + 1000)
+    expect(makeRoomForCustomerOrder([busy], true, at)).toEqual({ orders: [busy], offer: false })
+    expect(makeRoomForCustomerOrder([deliver()], true, at).offer).toBe(true) // delivered: free again
+  })
+  it('changes nothing when the rider app is not on duty', () => {
+    const list = [acceptJob(demo(4), t0 + 1000)]
+    expect(makeRoomForCustomerOrder(list, false, at)).toEqual({ orders: list, offer: false })
   })
 })
 

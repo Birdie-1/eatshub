@@ -6,6 +6,7 @@ import {
   buildOrder,
   getStatus,
   isStaleDemoJob,
+  makeRoomForCustomerOrder,
   nextOrderSequence,
   rateOrder,
   rejectJob,
@@ -68,9 +69,12 @@ export function OrdersProvider({ children }) {
       orders: sorted.filter((order) => !order.simulated),
       /** Everything the rider app can be offered or has done, simulated jobs included (R2–R6). */
       riderOrders: sorted,
+      /** C8. A rider app on duty is offered the order, ahead of any unfinished simulated job. */
       createOrder({ cart, address, payment }) {
-        const order = buildOrder({ cart, address, payment, seq: nextSeq(), offerToRider: isRiderOnDuty() })
-        setOrders((previous) => [order, ...previous])
+        const room = makeRoomForCustomerOrder(orders, isRiderOnDuty())
+        const order = buildOrder({ cart, address, payment, seq: nextSeq(), offerToRider: room.offer })
+        const dropped = new Set(orders.filter((kept) => !room.orders.includes(kept)).map((gone) => gone.id))
+        setOrders((previous) => [order, ...previous.filter((kept) => !dropped.has(kept.id))])
         return order
       },
       /** R3 demo: offer the rider a simulated job, dropping earlier ones that were rejected or ran out. */
