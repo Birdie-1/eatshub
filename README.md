@@ -63,7 +63,8 @@ Production: **https://eatshub-red.vercel.app**. The Vercel project is linked to 
 - Every order freezes its items, notes, address, totals and `DEFAULT_RIDER`. Order IDs use a persisted sequence beginning after sample order 00012.
 - Tracking advances every 8 seconds (about 32 seconds total); the demo skip button survives refresh. COD becomes paid only on delivery.
 - During "ส่งอาหาร" (rider on the way to the customer) C10 shows a drawn mock map instead of the illustration: a motorbike moving along a highlighted route to the customer's pin, with distance and minutes left. A rider-driven order's motorbike stops just short of the door until the rider app marks it delivered.
-- If the rider app is signed in and online when the order is placed, the order is offered to the rider instead: it waits at stage 1 for up to 45 seconds (R3 popup, or taken at once with auto-accept). Once accepted, only the rider's buttons on R4 move it (no skip button on C10); if nobody accepts, the clock takes over from stage 2. With the rider app signed out or offline, tracking runs on the clock as before.
+- If the rider app is signed in and online when the order is placed, the order is offered to the rider instead: it waits at stage 1 for up to 45 seconds (R3 popup, or taken at once with auto-accept). Once accepted, only the rider's buttons on R4 move it (no skip button on C10); if nobody accepts (or the rider taps reject), the clock takes over from stage 2. With the rider app signed out or offline, tracking runs on the clock as before.
+- The rider app also works on its own: online and idle on R2 for about 5 seconds, it offers itself a simulated job built from real restaurant/menu data (`createDemoJob`, `simulated: true`). Simulated jobs are hidden from the customer's history and the back office's recent orders, but delivered ones count in R6 income. Real customer orders are offered first. Auto-accept starts off so the R3 popup (reject / accept) is visible.
 - Orders are shared through `localStorage` and every tab listens for changes, so the customer app and rider app can run side by side in two windows (or by switching apps in one tab) and follow each other.
 - Once delivered, the customer rates the order once via `rate(id, { rider, restaurant, review })`, Grab/LINE MAN style: rider stars (1–5) are required, restaurant stars and a review (≤ 200 chars) are optional. A back-to-home button is shown before and after rating. The history tab's "เขียนรีวิว" opens the same sheet.
 - History seeds four sample orders once, preserves new orders across refresh and logout, and supports an explicitly empty saved history.
@@ -150,11 +151,12 @@ useCart()    // { restaurant, items, noteToStore, noteToRider, coupon, totals,
              //   add(item, restaurant, { replace }), updateQty(key, qty), remove(key), clear(),
              //   setNotes({ noteToStore, noteToRider }), applyCoupon(code), removeCoupon() }
 useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id), getStatus(order), advance(id), rate(id, { rider, restaurant, review }),
-             //   acceptJob(id, { auto }), advanceJob(id, fromStage) } — rider side (R3–R4)
+             //   riderOrders, offerDemoJob(), acceptJob(id, { auto }), rejectJob(id), advanceJob(id, fromStage) } — rider side (R3–R4)
+             //   `orders` leaves out simulated rider jobs; `riderOrders` includes them
 useSession() // { customerSignedIn, adminSignedIn, riderSignedIn, signIn('customer' | 'admin' | 'rider'), signOut(kind) }
 useAddress() // { address: { id, label, detail }, addresses, setAddress(id) } — picked on C2, default for C8
 useFavorites() // { favorites, isFavorite(id), toggleFavorite(id) } — restaurant ♥
-useRiderStatus() // { online, autoAccept, setOnline(bool), setAutoAccept(bool) } — rider switches (R2, R7); default both on
+useRiderStatus() // { online, autoAccept, setOnline(bool), setAutoAccept(bool) } — rider switches (R2, R7); default online on, auto-accept off
 ```
 
 - Build cart lines with `makeCartItem({ restaurantId, menu, option, addons, note, qty })` (same choices + note → same `key`, so quantities merge).
@@ -286,7 +288,8 @@ Production: **https://eatshub-red.vercel.app** โปรเจกต์ Vercel �
 - ทุกออเดอร์จะ freeze รายการอาหาร หมายเหตุ ที่อยู่ ยอดเงิน และ `DEFAULT_RIDER` ไว้ ณ ตอนสร้าง เลขออเดอร์ใช้ลำดับที่บันทึกไว้ เริ่มต่อจากออเดอร์ตัวอย่าง 00012
 - การติดตามออเดอร์เดินไปทีละขั้นทุก 8 วินาที (รวมประมาณ 32 วินาที) ปุ่มข้ามสำหรับเดโมยังอยู่แม้ refresh หน้า ออเดอร์ COD จะเปลี่ยนเป็นชำระแล้วเมื่อจัดส่งเรียบร้อยเท่านั้น
 - ระหว่างขั้น "ส่งอาหาร" (ไรเดอร์กำลังมาหาลูกค้า) C10 แสดงแผนที่จำลองแทนภาพประกอบ: มอเตอร์ไซค์วิ่งตามเส้นทางไฮไลต์ไปหาหมุดลูกค้า พร้อมระยะทางและเวลาที่เหลือ ออเดอร์ที่ไรเดอร์ถือ มอเตอร์ไซค์จะหยุดก่อนถึงหน้าบ้านจนกว่าแอปไรเดอร์จะกดส่งอาหารแล้ว
-- ถ้าแอปไรเดอร์ sign in และ online อยู่ตอนสั่งอาหาร ออเดอร์จะถูกเสนอให้ไรเดอร์แทน โดยรออยู่ที่ขั้นที่ 1 ได้นานสุด 45 วินาที (popup R3 หรือรับทันทีถ้าเปิดรับงานอัตโนมัติ) เมื่อรับงานแล้ว จะเดินขั้นได้เฉพาะจากปุ่มของไรเดอร์ใน R4 (ไม่มีปุ่มข้ามใน C10) ถ้าไม่มีใครรับ ระบบเวลาจะเดินต่อตั้งแต่ขั้นที่ 2 ถ้าแอปไรเดอร์ sign out หรือ offline การติดตามจะเดินตามเวลาเหมือนเดิม
+- ถ้าแอปไรเดอร์ sign in และ online อยู่ตอนสั่งอาหาร ออเดอร์จะถูกเสนอให้ไรเดอร์แทน โดยรออยู่ที่ขั้นที่ 1 ได้นานสุด 45 วินาที (popup R3 หรือรับทันทีถ้าเปิดรับงานอัตโนมัติ) เมื่อรับงานแล้ว จะเดินขั้นได้เฉพาะจากปุ่มของไรเดอร์ใน R4 (ไม่มีปุ่มข้ามใน C10) ถ้าไม่มีใครรับ (หรือไรเดอร์กดปฏิเสธ) ระบบเวลาจะเดินต่อตั้งแต่ขั้นที่ 2 ถ้าแอปไรเดอร์ sign out หรือ offline การติดตามจะเดินตามเวลาเหมือนเดิม
+- แอปไรเดอร์ใช้งานเดี่ยว ๆ ได้ด้วย: ถ้าออนไลน์และว่างอยู่ที่ R2 ราว 5 วินาที จะเสนองานจำลองที่สร้างจากร้าน/เมนูจริง (`createDemoJob`, `simulated: true`) งานจำลองไม่แสดงในประวัติออเดอร์ของลูกค้าและออเดอร์ล่าสุดของหลังบ้าน แต่งานที่ส่งเสร็จนับเข้ารายได้ R6 ออเดอร์จริงของลูกค้าจะถูกเสนอก่อน รับงานอัตโนมัติเริ่มต้นเป็นปิด เพื่อให้เห็น popup R3 (ปฏิเสธ / รับงาน)
 - ออเดอร์แชร์ผ่าน `localStorage` และทุกแท็บฟังการเปลี่ยนแปลง จึงเปิดแอปลูกค้าและแอปไรเดอร์คู่กันสองหน้าต่าง (หรือสลับแอปในแท็บเดียว) แล้วเห็นความคืบหน้าตรงกันได้
 - เมื่อจัดส่งเรียบร้อย ลูกค้าให้คะแนนออเดอร์ได้ครั้งเดียวผ่าน `rate(id, { rider, restaurant, review })` แบบ Grab/LINE MAN: ดาวไรเดอร์ (1–5) บังคับ ส่วนดาวร้านค้าและรีวิว (ไม่เกิน 200 ตัวอักษร) ไม่บังคับ มีปุ่มกลับหน้าแรกทั้งก่อนและหลังให้คะแนน ปุ่ม "เขียนรีวิว" ในแท็บประวัติจะเปิด sheet เดียวกัน
 - ประวัติออเดอร์ใส่ออเดอร์ตัวอย่าง 4 รายการครั้งแรกครั้งเดียว ออเดอร์ใหม่ยังอยู่หลัง refresh และ logout และรองรับกรณีที่ประวัติถูกบันทึกว่าว่างจริง ๆ
@@ -373,11 +376,12 @@ useCart()    // { restaurant, items, noteToStore, noteToRider, coupon, totals,
              //   add(item, restaurant, { replace }), updateQty(key, qty), remove(key), clear(),
              //   setNotes({ noteToStore, noteToRider }), applyCoupon(code), removeCoupon() }
 useOrders()  // { orders, createOrder({ cart, address, payment }), getOrder(id), getStatus(order), advance(id), rate(id, { rider, restaurant, review }),
-             //   acceptJob(id, { auto }), advanceJob(id, fromStage) } — ฝั่งไรเดอร์ (R3–R4)
+             //   riderOrders, offerDemoJob(), acceptJob(id, { auto }), rejectJob(id), advanceJob(id, fromStage) } — ฝั่งไรเดอร์ (R3–R4)
+             //   `orders` ไม่รวมงานจำลองของไรเดอร์ ส่วน `riderOrders` รวมด้วย
 useSession() // { customerSignedIn, adminSignedIn, riderSignedIn, signIn('customer' | 'admin' | 'rider'), signOut(kind) }
 useAddress() // { address: { id, label, detail }, addresses, setAddress(id) } — เลือกใน C2 และเป็นค่าเริ่มต้นใน C8
 useFavorites() // { favorites, isFavorite(id), toggleFavorite(id) } — ร้านที่กด ♥
-useRiderStatus() // { online, autoAccept, setOnline(bool), setAutoAccept(bool) } — สวิตช์ของไรเดอร์ (R2, R7); ค่าเริ่มต้นเปิดทั้งคู่
+useRiderStatus() // { online, autoAccept, setOnline(bool), setAutoAccept(bool) } — สวิตช์ของไรเดอร์ (R2, R7); ค่าเริ่มต้นออนไลน์เปิด รับงานอัตโนมัติปิด
 ```
 
 - สร้างรายการในตะกร้าด้วย `makeCartItem({ restaurantId, menu, option, addons, note, qty })` (ตัวเลือกและหมายเหตุเหมือนกัน → `key` เดียวกัน จำนวนจึงรวมกัน)

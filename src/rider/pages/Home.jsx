@@ -6,7 +6,7 @@ import Card from '@/shared/components/Card'
 import { formatBaht } from '@/shared/lib/format'
 import { riderProfile } from '@/data/riderProfile'
 import { useOrders, useRiderStatus } from '@/state'
-import { canAcceptJob, getStatus, ORDER_STEPS } from '@/state/orders'
+import { canAcceptJob, DEMO_JOB_DELAY_MS, getStatus, ORDER_STEPS } from '@/state/orders'
 import { useOrderClock } from '@/shared/hooks/useOrderClock'
 import Switch from '@/rider/components/Switch'
 import JobOfferDialog from '@/rider/components/JobOfferDialog'
@@ -25,21 +25,30 @@ function Stat({ label, value }) {
 /**
  * R2 — rider home: online switch over a static map, wallet balances, auto-accept and a stats sheet.
  * R3 — while online, a new order offered to the rider opens the job popup here (or is taken straight
- * away with auto-accept). A job already in progress shows as a card linking back to R4 instead.
+ * away with auto-accept). With nothing offered and no job in progress, a simulated job is offered after
+ * DEMO_JOB_DELAY_MS so the flow can be shown without a customer order; customer orders come first.
+ * A job already in progress shows as a card linking back to R4 instead.
  */
 export default function Home() {
   const { online, autoAccept, setOnline, setAutoAccept } = useRiderStatus()
   const { today, acceptRate, credit, cash } = useRiderSummary()
-  const { orders, acceptJob } = useOrders()
+  const { riderOrders: orders, acceptJob, rejectJob, offerDemoJob } = useOrders()
   const now = useOrderClock()
   const navigate = useNavigate()
   const [closedId, setClosedId] = useState(null)
   const activeJob = orders.find((order) => order.riderJob && getStatus(order, now) < 5)
-  const offer = online && !activeJob ? orders.find((order) => canAcceptJob(order, now)) : undefined
+  const offers = online && !activeJob ? orders.filter((order) => canAcceptJob(order, now)) : []
+  const offer = offers.find((order) => !order.simulated) ?? offers[0]
   const autoOffer = autoAccept ? offer : undefined
   useEffect(() => {
     if (autoOffer) acceptJob(autoOffer.id, { auto: true })
   }, [autoOffer, acceptJob])
+  const idle = online && !activeJob && !offer
+  useEffect(() => {
+    if (!idle) return
+    const timer = setTimeout(offerDemoJob, DEMO_JOB_DELAY_MS)
+    return () => clearTimeout(timer)
+  }, [idle, offerDemoJob])
   // Auto-accepted jobs announce themselves once, until the rider starts or closes the popup.
   const announce = activeJob?.riderJob.auto && activeJob.riderJob.step === 2 ? activeJob : undefined
   const popup = announce ?? (autoAccept ? undefined : offer)
@@ -79,7 +88,9 @@ export default function Home() {
           />
           <div className="min-w-0 flex-1">
             <h1 className="font-semibold">{online ? 'คุณกำลังออนไลน์อยู่' : 'คุณออฟไลน์อยู่'}</h1>
-            <p className="text-xs text-neutral-500">{online ? 'พร้อมรับงานใหม่' : 'เปิดสวิตช์เพื่อเริ่มรับงาน'}</p>
+            <p className="text-xs text-neutral-500">
+              {!online ? 'เปิดสวิตช์เพื่อเริ่มรับงาน' : idle ? 'กำลังค้นหางานใหม่…' : 'พร้อมรับงานใหม่'}
+            </p>
           </div>
           <Switch checked={online} onChange={setOnline} label="ออนไลน์รับงาน" />
         </Card>
@@ -152,6 +163,7 @@ export default function Home() {
           now={now}
           auto={Boolean(popup.riderJob)}
           onAccept={() => startJob(popup)}
+          onReject={() => rejectJob(popup.id)}
           onDismiss={() => setClosedId(popup.id)}
         />
       )}

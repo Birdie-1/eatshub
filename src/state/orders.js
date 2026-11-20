@@ -6,6 +6,8 @@ export const PAYMENT_LABELS = { cod: 'เก็บเงินปลายทา
 export const ORDER_STEP_MS = 8000
 /** How long a new order waits at stage 1 for the rider (R3 countdown) before the clock takes over. */
 export const JOB_OFFER_MS = 45000
+/** How long the rider home waits, online and idle, before offering itself a simulated job (R3 demo). */
+export const DEMO_JOB_DELAY_MS = 5000
 export const ORDER_STEPS = [
   { label: 'รอรับออเดอร์', message: 'ร้านกำลังยืนยันออเดอร์ของคุณ', minutes: 30 },
   { label: 'ไปยังร้านค้า', message: 'ไรเดอร์กำลังเดินทางไปที่ร้าน', minutes: 25 },
@@ -84,9 +86,12 @@ export function getStatus(order, now = Date.now()) {
 export function advanceOrder(order, now = Date.now()) {
   const status = getStatus(order, now)
   if (status >= 5 || order.riderJob) return order
-  if (canAcceptJob(order, now)) return { ...order, jobOfferExpiresAt: new Date(now).toISOString() }
+  if (canAcceptJob(order, now)) return endOffer(order, now)
   return { ...order, offsetMs: (order.offsetMs || 0) + ORDER_STEP_MS }
 }
+
+/** Ends a rider offer now; the clock then takes over from stage 2 (as when the 45 seconds run out). */
+const endOffer = (order, now) => ({ ...order, jobOfferExpiresAt: new Date(now).toISOString() })
 
 /** An order offered to the rider, still waiting at stage 1 and not yet accepted. */
 export const canAcceptJob = (order, now = Date.now()) =>
@@ -104,6 +109,22 @@ export function acceptJob(order, now = Date.now(), { auto = false } = {}) {
     riderJob: { step: 2, times: [new Date(now).toISOString()], ...(auto && { auto: true }) },
   }
 }
+
+/**
+ * Rider rejects (R3): the offer ends now, so a customer order goes on with the clock from stage 2 exactly
+ * as if nobody had answered. Unchanged when the order is no longer offered.
+ */
+export function rejectJob(order, now = Date.now()) {
+  return canAcceptJob(order, now) ? endOffer(order, now) : order
+}
+
+/**
+ * A simulated job (`simulated: true`, built by `createDemoJob` in src/data/orders.js) the rider rejected or
+ * let run out. Nobody can see it any more, so it is dropped when the next one is offered. Jobs the rider
+ * took stay, because R6 income counts them.
+ */
+export const isStaleDemoJob = (order, now = Date.now()) =>
+  order.simulated === true && !order.riderJob && !canAcceptJob(order, now)
 
 /**
  * Rider button on R4 (ถึงร้านค้าแล้ว → รับอาหารแล้ว → ส่งอาหารแล้ว). `from` is the stage the button was
