@@ -128,6 +128,27 @@ export function stepTimes(order, now = Date.now()) {
   return [0, 1, 2, 3, 4].map((i) => (i >= status ? null : i === 0 ? created : start + i * ORDER_STEP_MS))
 }
 
+/** How far along the route a rider-driven order's map rider goes before the rider app marks it delivered. */
+const RIDER_WAIT_AT = 0.9
+
+/**
+ * The rider's ride to the customer (stage 4 ส่งอาหาร) for the C10 map, or null at any other stage.
+ * The rider covers the route in one ORDER_STEP_MS from reaching stage 4. A rider-driven order has no set
+ * end, so its rider stops at RIDER_WAIT_AT until the rider app delivers. `distanceKm` is the whole route.
+ * Returns { progress: 0–1, km: distance left (1 decimal, ≥ 0.1), minutes: time left (≥ 1) }.
+ */
+export function deliveryLeg(order, now = Date.now(), distanceKm = 2) {
+  if (getStatus(order, now) !== 4) return null
+  const elapsed = Math.max(0, now - stepTimes(order, now)[3]) / ORDER_STEP_MS
+  const progress = Math.min(order.riderJob ? RIDER_WAIT_AT : 1, elapsed)
+  const left = 1 - progress
+  return {
+    progress,
+    km: Math.max(0.1, Math.round(distanceKm * left * 10) / 10),
+    minutes: Math.max(1, Math.ceil(ORDER_STEPS[3].minutes * left)),
+  }
+}
+
 const isStars = (value) => Number.isInteger(value) && value >= 1 && value <= 5
 
 /** Rated once the rider has stars; older sample orders only carry the restaurant `rating`. */

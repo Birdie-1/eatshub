@@ -62,6 +62,7 @@ Production: **https://eatshub-red.vercel.app**. The Vercel project is linked to 
 - Checkout reads the real cart, addresses and `calcTotals` output. COD, PromptPay sample QR and PayPal confirmation are simulations; no financial credentials are collected.
 - Every order freezes its items, notes, address, totals and `DEFAULT_RIDER`. Order IDs use a persisted sequence beginning after sample order 00012.
 - Tracking advances every 8 seconds (about 32 seconds total); the demo skip button survives refresh. COD becomes paid only on delivery.
+- During "ส่งอาหาร" (rider on the way to the customer) C10 shows a drawn mock map instead of the illustration: a motorbike moving along a highlighted route to the customer's pin, with distance and minutes left. A rider-driven order's motorbike stops just short of the door until the rider app marks it delivered.
 - If the rider app is signed in and online when the order is placed, the order is offered to the rider instead: it waits at stage 1 for up to 45 seconds (R3 popup, or taken at once with auto-accept). Once accepted, only the rider's buttons on R4 move it (no skip button on C10); if nobody accepts, the clock takes over from stage 2. With the rider app signed out or offline, tracking runs on the clock as before.
 - Orders are shared through `localStorage` and every tab listens for changes, so the customer app and rider app can run side by side in two windows (or by switching apps in one tab) and follow each other.
 - Once delivered, the customer rates the order once via `rate(id, { rider, restaurant, review })`, Grab/LINE MAN style: rider stars (1–5) are required, restaurant stars and a review (≤ 200 chars) are optional. A back-to-home button is shown before and after rating. The history tab's "เขียนรีวิว" opens the same sheet.
@@ -163,7 +164,7 @@ useRiderStatus() // { online, autoAccept, setOnline(bool), setAutoAccept(bool) }
 - Restaurant/menu data: `getRestaurant(id)`, `findRestaurants({ q, categoryId, type })`, `toCartRestaurant(r)` from `@/data/restaurants`; `getMenu(id)`, `menusOf(restaurantId)` from `@/data/menus` (see `src/data/README.md`).
 - Coupons live in `src/data/coupons.js` (`EATSHUB20`, `NEWUSER100`).
 - `src/state/fixtures.js` has the spec's sample cart (ราชาอาหาร, 215 ฿ / 9 points) for tests; shipped screens read the live cart instead.
-- Rider jobs (`src/state/orders.js`): `canAcceptJob(order)`, `acceptJob`, `advanceJob` and `stepTimes(order)` (when each stage was reached, for C10). An offered order carries `jobOfferExpiresAt`; an accepted one carries `riderJob: { step, times, auto? }`. Nothing else in the order snapshot changes. `isRiderOnDuty()` (`src/state/preferences.js`) decides whether a new order is offered.
+- Rider jobs (`src/state/orders.js`): `canAcceptJob(order)`, `acceptJob`, `advanceJob` and `stepTimes(order)` (when each stage was reached, for C10). `deliveryLeg(order, now, distanceKm)` gives the C10 map's progress, km and minutes left during "ส่งอาหาร" (null otherwise). An offered order carries `jobOfferExpiresAt`; an accepted one carries `riderJob: { step, times, auto? }`. Nothing else in the order snapshot changes. `isRiderOnDuty()` (`src/state/preferences.js`) decides whether a new order is offered.
 - Everything is saved to `localStorage` (keys prefixed `eatshub:`); clear it to reset the demo. `subscribe(key, callback)` in `src/state/storage.js` delivers changes made by other tabs.
 
 ## Working together (2 people)
@@ -284,6 +285,7 @@ Production: **https://eatshub-red.vercel.app** โปรเจกต์ Vercel �
 - Checkout อ่านจากตะกร้าจริง ที่อยู่ และผลลัพธ์ของ `calcTotals` การชำระแบบ COD, QR PromptPay ตัวอย่าง และหน้ายืนยัน PayPal เป็นการจำลองทั้งหมด ไม่มีการเก็บข้อมูลทางการเงินใด ๆ
 - ทุกออเดอร์จะ freeze รายการอาหาร หมายเหตุ ที่อยู่ ยอดเงิน และ `DEFAULT_RIDER` ไว้ ณ ตอนสร้าง เลขออเดอร์ใช้ลำดับที่บันทึกไว้ เริ่มต่อจากออเดอร์ตัวอย่าง 00012
 - การติดตามออเดอร์เดินไปทีละขั้นทุก 8 วินาที (รวมประมาณ 32 วินาที) ปุ่มข้ามสำหรับเดโมยังอยู่แม้ refresh หน้า ออเดอร์ COD จะเปลี่ยนเป็นชำระแล้วเมื่อจัดส่งเรียบร้อยเท่านั้น
+- ระหว่างขั้น "ส่งอาหาร" (ไรเดอร์กำลังมาหาลูกค้า) C10 แสดงแผนที่จำลองแทนภาพประกอบ: มอเตอร์ไซค์วิ่งตามเส้นทางไฮไลต์ไปหาหมุดลูกค้า พร้อมระยะทางและเวลาที่เหลือ ออเดอร์ที่ไรเดอร์ถือ มอเตอร์ไซค์จะหยุดก่อนถึงหน้าบ้านจนกว่าแอปไรเดอร์จะกดส่งอาหารแล้ว
 - ถ้าแอปไรเดอร์ sign in และ online อยู่ตอนสั่งอาหาร ออเดอร์จะถูกเสนอให้ไรเดอร์แทน โดยรออยู่ที่ขั้นที่ 1 ได้นานสุด 45 วินาที (popup R3 หรือรับทันทีถ้าเปิดรับงานอัตโนมัติ) เมื่อรับงานแล้ว จะเดินขั้นได้เฉพาะจากปุ่มของไรเดอร์ใน R4 (ไม่มีปุ่มข้ามใน C10) ถ้าไม่มีใครรับ ระบบเวลาจะเดินต่อตั้งแต่ขั้นที่ 2 ถ้าแอปไรเดอร์ sign out หรือ offline การติดตามจะเดินตามเวลาเหมือนเดิม
 - ออเดอร์แชร์ผ่าน `localStorage` และทุกแท็บฟังการเปลี่ยนแปลง จึงเปิดแอปลูกค้าและแอปไรเดอร์คู่กันสองหน้าต่าง (หรือสลับแอปในแท็บเดียว) แล้วเห็นความคืบหน้าตรงกันได้
 - เมื่อจัดส่งเรียบร้อย ลูกค้าให้คะแนนออเดอร์ได้ครั้งเดียวผ่าน `rate(id, { rider, restaurant, review })` แบบ Grab/LINE MAN: ดาวไรเดอร์ (1–5) บังคับ ส่วนดาวร้านค้าและรีวิว (ไม่เกิน 200 ตัวอักษร) ไม่บังคับ มีปุ่มกลับหน้าแรกทั้งก่อนและหลังให้คะแนน ปุ่ม "เขียนรีวิว" ในแท็บประวัติจะเปิด sheet เดียวกัน
@@ -385,7 +387,7 @@ useRiderStatus() // { online, autoAccept, setOnline(bool), setAutoAccept(bool) }
 - ข้อมูลร้าน/เมนู: `getRestaurant(id)`, `findRestaurants({ q, categoryId, type })`, `toCartRestaurant(r)` จาก `@/data/restaurants`; `getMenu(id)`, `menusOf(restaurantId)` จาก `@/data/menus` (ดู `src/data/README.md`)
 - คูปองอยู่ใน `src/data/coupons.js` (`EATSHUB20`, `NEWUSER100`)
 - `src/state/fixtures.js` มีตะกร้าตัวอย่างตามสเปก (ราชาอาหาร, 215 ฿ / 9 คะแนน) สำหรับใช้ในเทสต์เท่านั้น หน้าจอจริงอ่านจากตะกร้าจริง
-- งานไรเดอร์ (`src/state/orders.js`): `canAcceptJob(order)`, `acceptJob`, `advanceJob` และ `stepTimes(order)` (เวลาที่ถึงแต่ละขั้น ใช้ใน C10) ออเดอร์ที่ถูกเสนอจะมี `jobOfferExpiresAt` ออเดอร์ที่รับแล้วจะมี `riderJob: { step, times, auto? }` ส่วนอื่นของ snapshot ออเดอร์ไม่เปลี่ยน `isRiderOnDuty()` (`src/state/preferences.js`) เป็นตัวตัดสินว่าจะเสนอออเดอร์ใหม่ให้ไรเดอร์หรือไม่
+- งานไรเดอร์ (`src/state/orders.js`): `canAcceptJob(order)`, `acceptJob`, `advanceJob` และ `stepTimes(order)` (เวลาที่ถึงแต่ละขั้น ใช้ใน C10) `deliveryLeg(order, now, distanceKm)` ให้ความคืบหน้า ระยะทาง (กม.) และเวลาที่เหลือของแผนที่ C10 ระหว่างขั้น "ส่งอาหาร" (ขั้นอื่นได้ null) ออเดอร์ที่ถูกเสนอจะมี `jobOfferExpiresAt` ออเดอร์ที่รับแล้วจะมี `riderJob: { step, times, auto? }` ส่วนอื่นของ snapshot ออเดอร์ไม่เปลี่ยน `isRiderOnDuty()` (`src/state/preferences.js`) เป็นตัวตัดสินว่าจะเสนอออเดอร์ใหม่ให้ไรเดอร์หรือไม่
 - ทุกอย่างบันทึกใน `localStorage` (key ขึ้นต้นด้วย `eatshub:`) ล้างออกเพื่อรีเซ็ตเดโม `subscribe(key, callback)` ใน `src/state/storage.js` ส่งต่อการเปลี่ยนแปลงที่เกิดจากแท็บอื่น
 
 ## การทำงานร่วมกัน (2 คน)
