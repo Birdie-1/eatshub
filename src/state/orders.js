@@ -127,6 +127,21 @@ export const isStaleDemoJob = (order, now = Date.now()) =>
   order.simulated === true && !order.riderJob && !canAcceptJob(order, now)
 
 /**
+ * Placing a customer order (C8) while the rider app is on duty (`onDuty`). The rider takes one job at a
+ * time, so a simulated job still offered or in progress is dropped to free the rider for the real
+ * order (delivered ones stay for R6 income). A rider busy with another customer order isn't offered the
+ * new one (`offer: false`), so it follows the clock instead of waiting unseen.
+ * => { orders: the list to keep, offer: whether to offer the new order to the rider }
+ */
+export function makeRoomForCustomerOrder(orders, onDuty, now = Date.now()) {
+  if (!onDuty) return { orders, offer: false }
+  const unfinished = (order) => (order.riderJob || canAcceptJob(order, now)) && getStatus(order, now) < 5
+  if (orders.some((order) => !order.simulated && order.riderJob && unfinished(order)))
+    return { orders, offer: false }
+  return { orders: orders.filter((order) => !(order.simulated && unfinished(order))), offer: true }
+}
+
+/**
  * Rider button on R4 (ถึงร้านค้าแล้ว → รับอาหารแล้ว → ส่งอาหารแล้ว). `from` is the stage the button was
  * shown for, so a stale or repeated click can't skip or repeat a stage. Unchanged when it doesn't apply.
  */
