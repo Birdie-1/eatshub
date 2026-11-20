@@ -36,7 +36,7 @@ src/
                         FloatingCartBar (C6), OrderHistoryCard (C11)
   rider/                rider app (R1–R7, scope in REQUIREMENTS §4.1; issues #34–#38)
     layouts/            RiderTabLayout (dark bottom nav หน้าแรก · กระเป๋าเงิน · รายได้ · บัญชี)
-    pages/              R1 sign-in, R2 home (+ R3 popup), R4 job + earnings summary; R5–R7 are placeholders until #37–#38
+    pages/              R1 sign-in, R2 home (+ R3 popup), R4 job + earnings summary, R5 wallets, R6 income, R7 account
     components/         RequireRider (demo route guard), Switch, StatsSheet (R2 pull-up sheet),
                         JobOfferDialog (R3), SignaturePad (R4)
     useRiderSummary.js  wallet balances + today's numbers shared by R2 and R5
@@ -209,7 +209,7 @@ Charts support focus, arrow keys, Home/End, previous/next month buttons, and exp
 
 A5 shows a local, attributed 77-province SVG that highlights the 19 service provinces from the **May–November 2022** press release (including Chumphon) and the three usage leaders, separate from the 2025 sample report. The release's headline figures were removed in #43. `coverage.js` owns province names and matches every province to an SVG id; no map/chart dependency was added.
 
-R5 `/rider/wallet` displays credit/cash balances derived from their ledgers, pending cash withdrawals, signed history, and informational credit channels. R6 `/rider/income` provides Bangkok-calendar daily/monthly reports, a scrollable day strip, exact-value monthly charts/tables, period KPIs and job history. Future months are empty. R7 `/rider/account` shows the shared demo profile/rating distribution, online/auto-accept switches, and read-only details at `/rider/account/profile`, `/rider/account/banks`, `/rider/account/vehicle`.
+R5 `/rider/wallet` displays credit/cash balances derived from their ledgers, pending cash withdrawals, signed history, and informational credit channels. R6 `/rider/income` provides Bangkok-calendar daily/monthly reports, a scrollable day strip, exact-value monthly charts/tables, period KPIs and job history. Future months are empty. R7 `/rider/account` shows the shared demo profile/rating distribution, online/auto-accept switches, and read-only details at `/rider/account/profile`, `/rider/account/banks`, `/rider/account/vehicle`. The three tab screens share `RiderTabHeader` (title, no back button — the bottom tabs navigate); on R5 the two balance cards are also the tabs that switch the history.
 
 `useRider()` from `@/state` provides one shared activity/ledger snapshot to R2/R5/R6/R7. The full R2 home from #40 reads it through `useRiderSummary`; R7 uses the existing `useRiderStatus()` store from R2 for both persisted switches. Rider logout clears only the rider session. `riderReports.js` groups the existing activity data without duplicating totals. Completed rider-driven orders from R3–R4 feed today’s income and the cash ledger directly from their order snapshots, once per order id. Timed customer deliveries are excluded; no duplicate income records are persisted.
 
@@ -259,7 +259,7 @@ src/
                         FloatingCartBar (C6), OrderHistoryCard (C11)
   rider/                แอปไรเดอร์ (R1–R7, scope ใน REQUIREMENTS §4.1; issue #34–#38)
     layouts/            RiderTabLayout (bottom nav สีเข้ม หน้าแรก · กระเป๋าเงิน · รายได้ · บัญชี)
-    pages/              R1 sign in, R2 หน้าแรก (+ popup R3), R4 งาน + สรุปรายได้; R5–R7 เป็น placeholder จนถึง #37–#38
+    pages/              R1 sign in, R2 หน้าแรก (+ popup R3), R4 งาน + สรุปรายได้, R5 กระเป๋าเงิน, R6 รายได้, R7 บัญชี
     components/         RequireRider (route guard แบบ demo), Switch, StatsSheet (sheet ดึงขึ้นใน R2),
                         JobOfferDialog (R3), SignaturePad (R4)
     useRiderSummary.js  ยอดกระเป๋าเงิน + ตัวเลขของวันนี้ ใช้ร่วมกันใน R2 และ R5
@@ -432,7 +432,7 @@ GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) รั�
 
 A5 แสดงแผนที่ SVG 77 จังหวัด (เก็บในเครื่อง มีระบุที่มา) ไฮไลต์ 19 จังหวัดที่ให้บริการตามข่าวประชาสัมพันธ์ช่วง **พ.ค.–พ.ย. 2565** (รวมชุมพร) และ 3 จังหวัดที่มีการใช้งานสูงสุด แยกจากรายงานตัวอย่างปี 2025 ตัวเลขสรุปจากข่าวถูกเอาออกใน #43 `coverage.js` เป็นเจ้าของชื่อจังหวัดและจับคู่ทุกจังหวัดกับ id ใน SVG ไม่ได้เพิ่ม dependency สำหรับแผนที่/กราฟ
 
-R5 `/rider/wallet` แสดงยอดเครดิต/เงินสดที่คำนวณจาก ledger ของแต่ละกระเป๋า รายการถอนเงินสดที่รอดำเนินการ ประวัติพร้อมเครื่องหมาย +/− และช่องทางเติมเครดิต (แสดงข้อมูลอย่างเดียว) R6 `/rider/income` มีรายงานรายวัน/รายเดือนตามปฏิทินเวลากรุงเทพฯ แถบเลือกวันแบบเลื่อนได้ กราฟ/ตารางรายเดือนพร้อมค่าจริง KPI ของช่วงเวลา และประวัติงาน เดือนในอนาคตจะว่าง R7 `/rider/account` แสดงโปรไฟล์เดโมและการกระจายคะแนนที่ใช้ร่วมกัน สวิตช์ online/รับงานอัตโนมัติ และรายละเอียดแบบอ่านอย่างเดียวที่ `/rider/account/profile`, `/rider/account/banks`, `/rider/account/vehicle`
+R5 `/rider/wallet` แสดงยอดเครดิต/เงินสดที่คำนวณจาก ledger ของแต่ละกระเป๋า รายการถอนเงินสดที่รอดำเนินการ ประวัติพร้อมเครื่องหมาย +/− และช่องทางเติมเครดิต (แสดงข้อมูลอย่างเดียว) R6 `/rider/income` มีรายงานรายวัน/รายเดือนตามปฏิทินเวลากรุงเทพฯ แถบเลือกวันแบบเลื่อนได้ กราฟ/ตารางรายเดือนพร้อมค่าจริง KPI ของช่วงเวลา และประวัติงาน เดือนในอนาคตจะว่าง R7 `/rider/account` แสดงโปรไฟล์เดโมและการกระจายคะแนนที่ใช้ร่วมกัน สวิตช์ online/รับงานอัตโนมัติ และรายละเอียดแบบอ่านอย่างเดียวที่ `/rider/account/profile`, `/rider/account/banks`, `/rider/account/vehicle` หน้าแท็บทั้งสามใช้ `RiderTabHeader` ร่วมกัน (มีชื่อหน้า ไม่มีปุ่มย้อนกลับ เพราะใช้แท็บด้านล่างนำทาง) ใน R5 การ์ดยอดเงินทั้งสองใบเป็นแท็บสลับประวัติด้วย
 
 `useRider()` จาก `@/state` ให้ snapshot กิจกรรม/ledger ชุดเดียวที่ใช้ร่วมกันใน R2/R5/R6/R7 หน้าแรก R2 ฉบับเต็มจาก #40 อ่านผ่าน `useRiderSummary` ส่วน R7 ใช้ store `useRiderStatus()` เดิมจาก R2 สำหรับสวิตช์ทั้งสองที่บันทึกไว้ Logout ของไรเดอร์ล้างเฉพาะ session ของไรเดอร์ `riderReports.js` จัดกลุ่มข้อมูลกิจกรรมที่มีอยู่โดยไม่ทำยอดรวมซ้ำ ออเดอร์ที่ไรเดอร์ส่งเสร็จจาก R3–R4 จะเข้าไปในรายได้วันนี้และ ledger เงินสดโดยตรงจาก snapshot ของออเดอร์ ครั้งเดียวต่อเลขออเดอร์ การส่งของลูกค้าที่เดินตามเวลาไม่นับรวม และไม่มีการบันทึกรายได้ซ้ำ
 
