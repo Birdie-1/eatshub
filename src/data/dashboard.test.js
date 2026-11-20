@@ -8,6 +8,8 @@ import {
   getRecentOrders,
   dashboardYear,
   summarizeTop,
+  averageOrderValue,
+  halfYearGrowth,
 } from './dashboard'
 import { menus } from './menus'
 import { restaurants } from './restaurants'
@@ -67,6 +69,20 @@ describe('A5 report invariants', () => {
       { sales: 50, orders: 1 },
     ]
     expect(summarizeTop(rows, { sales: 600 })).toEqual({ sales: 150, orders: 3, share: 25 })
+  })
+  it('derives the average order value from the report totals', () => {
+    expect(averageOrderValue).toBe(Math.round(177321 / 946))
+    expect(averageOrderValue).toBe(187)
+  })
+  it('compares the second half of the year with the first half', () => {
+    expect(halfYearGrowth('sales')).toBe(41)
+    expect(halfYearGrowth('orders')).toBe(41)
+    expect(halfYearGrowth('customers')).toBe(36)
+    const flat = Array.from({ length: 12 }, () => ({ sales: 10 }))
+    expect(halfYearGrowth('sales', flat)).toBe(0)
+    expect(halfYearGrowth('sales', [...flat.slice(0, 6).map(() => ({ sales: 0 })), ...flat.slice(6)])).toBe(
+      null,
+    )
   })
   it('uses real restaurant names, images and addresses', () => {
     expect(new Set(topRestaurants.map((row) => row.id)).size).toBe(5)

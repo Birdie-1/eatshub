@@ -5,97 +5,109 @@ import { monthlyDashboard } from '@/data/dashboard'
 import { formatBaht } from '@/shared/lib/format'
 
 const integer = new Intl.NumberFormat('th-TH')
-const shortMoney = new Intl.NumberFormat('th-TH', { maximumFractionDigits: 1 })
-const tones = { sales: 'bg-brand', restaurants: 'bg-info', customers: 'bg-success' }
 
-export default function MonthlyChart({ title, series, totalLabel, total }) {
+/** Twelve-month bar chart for one `monthlyDashboard` series; arrows/Home/End move between months. */
+export default function MonthlyChart({ title, series }) {
   const [selected, setSelected] = useState(monthlyDashboard.length - 1)
   const bars = useRef([])
-  const max = Math.max(1, ...monthlyDashboard.map((row) => row[series]))
+  const values = monthlyDashboard.map((row) => row[series])
+  const max = Math.max(1, ...values)
+  const peak = monthlyDashboard[values.indexOf(max)]
   const format = series === 'sales' ? formatBaht : (value) => integer.format(value)
-  const unit = series === 'sales' ? 'พันบาท' : series === 'restaurants' ? 'ร้าน (สะสม)' : 'คนใหม่'
   const active = monthlyDashboard[selected]
-  const focusMonth = (index) => bars.current[index]?.focus()
+  const last = monthlyDashboard.length - 1
+  const titleId = `monthly-${series}-title`
   const onKeyDown = (event, index) => {
-    let next
-    if (event.key === 'ArrowRight') next = Math.min(index + 1, 11)
-    if (event.key === 'ArrowLeft') next = Math.max(index - 1, 0)
-    if (event.key === 'Home') next = 0
-    if (event.key === 'End') next = 11
+    const next = {
+      ArrowRight: Math.min(index + 1, last),
+      ArrowLeft: Math.max(index - 1, 0),
+      Home: 0,
+      End: last,
+    }[event.key]
     if (next !== undefined) {
       event.preventDefault()
-      focusMonth(next)
+      bars.current[next]?.focus()
     }
   }
   return (
-    <Card as="section" className="min-w-0 border border-neutral-200/80 shadow-none" aria-label={title}>
-      <div className="flex items-start justify-between gap-3">
+    <Card
+      as="section"
+      className="min-w-0 border border-neutral-200 shadow-none sm:p-6"
+      aria-labelledby={titleId}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-sm font-semibold">{title}</h2>
-          <p className="mt-1 text-[11px] text-neutral-500">หน่วย: {unit}</p>
+          <h3 id={titleId} className="font-semibold">
+            {title}
+          </h3>
+          <p className="mt-1 text-xs text-neutral-500">
+            สูงสุด {peak.name} {format(peak[series])}
+          </p>
         </div>
-        <span className={`mt-1 size-2.5 shrink-0 rounded-full ${tones[series]}`} />
-      </div>
-      <p className="mt-4 text-xl font-semibold tabular-nums">
-        {format(total)}
-        <span className="ml-2 text-xs font-normal text-neutral-500">{totalLabel}</span>
-      </p>
-      <div role="group" aria-label={`${title} แยกตามเดือน`} className="mt-3 grid grid-cols-12 gap-1">
-        {monthlyDashboard.map((row, index) => (
+        <div className="flex items-center rounded-xl border border-neutral-200">
           <button
-            key={row.month}
-            ref={(element) => {
-              bars.current[index] = element
-            }}
             type="button"
-            aria-label={`${row.name} ${title} ${format(row[series])}`}
-            aria-pressed={selected === index}
-            onFocus={() => setSelected(index)}
-            onClick={() => setSelected(index)}
-            onKeyDown={(event) => onKeyDown(event, index)}
-            className={`flex h-44 min-w-0 flex-col items-center justify-end rounded-lg pb-1 outline-offset-2 transition hover:bg-neutral-50 ${selected === index ? 'bg-neutral-50 ring-1 ring-brand/60' : ''}`}
+            aria-label={`${title} เดือนก่อนหน้า`}
+            disabled={selected === 0}
+            onClick={() => setSelected(selected - 1)}
+            className="grid size-11 place-items-center rounded-l-xl text-neutral-500 hover:bg-neutral-50 disabled:opacity-25"
           >
-            <span aria-hidden="true" className="mb-1 text-[9px] leading-none tabular-nums text-neutral-600">
-              {series === 'sales' ? shortMoney.format(row[series] / 1000) : integer.format(row[series])}
-            </span>
-            <span
-              aria-hidden="true"
-              className={`w-3/4 rounded-t-sm ${tones[series]} ${selected === index ? '' : 'opacity-65'}`}
-              style={{ height: `${(row[series] / max) * 122}px` }}
-            />
-            <span aria-hidden="true" className="mt-2 whitespace-nowrap text-[9px] text-neutral-500">
-              {row.shortName}
-            </span>
+            <ChevronLeft className="size-4" />
           </button>
-        ))}
+          <output aria-live="polite" className="min-w-24 px-1 text-center text-xs leading-5">
+            <span className="block text-neutral-500">{active.name}</span>
+            <strong className="font-semibold tabular-nums">{format(active[series])}</strong>
+          </output>
+          <button
+            type="button"
+            aria-label={`${title} เดือนถัดไป`}
+            disabled={selected === last}
+            onClick={() => setSelected(selected + 1)}
+            className="grid size-11 place-items-center rounded-r-xl text-neutral-500 hover:bg-neutral-50 disabled:opacity-25"
+          >
+            <ChevronRight className="size-4" />
+          </button>
+        </div>
       </div>
-      <div className="mt-4 flex items-center gap-1 rounded-xl bg-surface px-1 py-1">
-        <button
-          type="button"
-          aria-label={`${title} เดือนก่อนหน้า`}
-          disabled={selected === 0}
-          onClick={() => setSelected(selected - 1)}
-          className="grid size-11 shrink-0 place-items-center rounded-lg text-neutral-500 disabled:opacity-25"
-        >
-          <ChevronLeft className="size-4" />
-        </button>
-        <output aria-live="polite" className="min-w-0 flex-1 text-center text-xs leading-5">
-          <span className="block text-neutral-500">{active.name}</span>
-          <strong className="font-semibold">{format(active[series])}</strong>
-        </output>
-        <button
-          type="button"
-          aria-label={`${title} เดือนถัดไป`}
-          disabled={selected === 11}
-          onClick={() => setSelected(selected + 1)}
-          className="grid size-11 shrink-0 place-items-center rounded-lg text-neutral-500 disabled:opacity-25"
-        >
-          <ChevronRight className="size-4" />
-        </button>
+      <div
+        role="group"
+        aria-label={`${title} แยกตามเดือน`}
+        className="mt-5 grid grid-cols-12 gap-0.5 sm:gap-1.5"
+      >
+        {monthlyDashboard.map((row, index) => {
+          const chosen = selected === index
+          return (
+            <button
+              key={row.month}
+              ref={(element) => {
+                bars.current[index] = element
+              }}
+              type="button"
+              aria-label={`${row.name} ${format(row[series])}`}
+              aria-pressed={chosen}
+              onFocus={() => setSelected(index)}
+              onClick={() => setSelected(index)}
+              onKeyDown={(event) => onKeyDown(event, index)}
+              className="group flex h-52 min-w-0 flex-col items-center justify-end rounded-lg pb-1 sm:h-60"
+            >
+              <span
+                aria-hidden="true"
+                className={`w-full max-w-9 rounded-t-md transition-colors ${chosen ? 'bg-brand-dark' : 'bg-brand/55 group-hover:bg-brand'}`}
+                style={{ height: `${(row[series] / max) * 100}%` }}
+              />
+              <span
+                aria-hidden="true"
+                className={`mt-2 whitespace-nowrap text-[10px] ${chosen ? 'font-semibold text-ink' : 'text-neutral-500'}`}
+              >
+                {row.shortName}
+              </span>
+            </button>
+          )
+        })}
       </div>
       <details className="mt-3 text-xs">
         <summary className="min-h-11 cursor-pointer py-3 text-neutral-500 underline underline-offset-4">
-          ดูข้อมูลรายเดือน
+          ดูตัวเลขรายเดือน
         </summary>
         <table className="w-full text-left">
           <caption className="sr-only">{title} จำนวนเต็มทุกเดือน</caption>

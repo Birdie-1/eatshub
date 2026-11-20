@@ -52,6 +52,14 @@ export const dashboardTotals = {
   restaurants: restaurants.length,
   customers: monthlyCustomers.reduce((total, count) => total + count, 0),
 }
+/** Report sales ÷ report orders, rounded to whole baht. */
+export const averageOrderValue = Math.round(dashboardTotals.sales / dashboardTotals.orders)
+/** % change of July–December over January–June for a monthly series; null when the first half is zero. */
+export function halfYearGrowth(key, rows = monthlyDashboard) {
+  const half = (from) => rows.slice(from, from + 6).reduce((total, row) => total + row[key], 0)
+  const first = half(0)
+  return first ? Math.round(((half(6) - first) / first) * 100) : null
+}
 const restaurantSales = [44800, 36500, 30200, 25600, 21900]
 const restaurantOrders = [240, 195, 161, 136, 116]
 export const topRestaurants = restaurants.slice(0, 5).map((restaurant, index) => ({
