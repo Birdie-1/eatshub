@@ -74,7 +74,7 @@ Production: **https://eatshub-red.vercel.app**. The Vercel project is linked to 
 Open `/admin/signin` and submit the prefilled `admin` demo form. Visiting `/admin/riders` while signed out redirects to sign-in and then returns to the requested page.
 The back office uses the full browser width: mobile rider cards below 1024px and a sortable table on larger screens (the table scrolls horizontally when needed).
 
-- 17 sample riders, search by name/code/phone/vehicle/province, work and account filters, page size and pagination.
+- 17 sample riders, search by name/code/phone/vehicle/province, status filter chips with counts (all · Online · Delivery · Offline · blocked; scroll sideways on phones), page size and pagination. Blocked riders are tinted in the list.
 - Mobile navigation opens as a modal drawer with Escape, backdrop dismissal and keyboard focus handling.
 - The sidebar lists only the screens that exist (dashboard, rider management, logout); unbuilt admin pages are hidden rather than shown as dead links.
 - Active/Block can be changed in page state. Blocking requires a reason and updates the editor and timestamp; reloading resets the sample data.
@@ -297,7 +297,7 @@ Production: **https://eatshub-red.vercel.app** โปรเจกต์ Vercel �
 เปิด `/admin/signin` แล้วกดส่งฟอร์ม demo `admin` ที่กรอกไว้แล้ว ถ้าเข้า `/admin/riders` ตอนยังไม่ได้ sign in จะถูกพาไปหน้า sign in แล้วกลับมาหน้าที่ขอไว้
 ระบบหลังบ้านใช้ความกว้างเต็มเบราว์เซอร์: ต่ำกว่า 1024px แสดงรายชื่อไรเดอร์เป็นการ์ด ส่วนจอใหญ่กว่านั้นเป็นตารางที่เรียงลำดับได้ (ตารางเลื่อนแนวนอนได้เมื่อจำเป็น)
 
-- ไรเดอร์ตัวอย่าง 17 คน ค้นหาด้วยชื่อ/รหัส/เบอร์โทร/ทะเบียนรถ/จังหวัด กรองสถานะงานและสถานะบัญชี เลือกจำนวนต่อหน้าและแบ่งหน้า
+- ไรเดอร์ตัวอย่าง 17 คน ค้นหาด้วยชื่อ/รหัส/เบอร์โทร/ทะเบียนรถ/จังหวัด ปุ่มกรองสถานะพร้อมจำนวน (ทั้งหมด · พร้อมรับงาน · กำลังจัดส่ง · ออฟไลน์ · ระงับใช้งาน บนมือถือเลื่อนแนวนอนได้) เลือกจำนวนต่อหน้าและแบ่งหน้า ไรเดอร์ที่ถูกระงับจะมีพื้นแถวสีแดงอ่อน
 - เมนูบนมือถือเปิดเป็น drawer แบบ modal ปิดได้ด้วย Escape หรือกดพื้นหลัง และจัดการ focus ของคีย์บอร์ด
 - Sidebar แสดงเฉพาะหน้าที่มีอยู่จริง (แดชบอร์ด, จัดการไรเดอร์, ออกจากระบบ) หน้าหลังบ้านที่ยังไม่ได้ทำจะถูกซ่อน ไม่แสดงเป็นลิงก์ที่กดไม่ได้
 - เปลี่ยน Active/Block ได้ใน state ของหน้า การ Block ต้องใส่เหตุผล และจะอัปเดตผู้แก้ไขกับเวลา เมื่อ reload ข้อมูลตัวอย่างจะกลับเป็นค่าเริ่มต้น
