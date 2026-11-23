@@ -118,13 +118,28 @@ export function rejectJob(order, now = Date.now()) {
   return canAcceptJob(order, now) ? endOffer(order, now) : order
 }
 
+/** Problems a rider can report to Call Center to have a job cancelled (R4). */
+export const CANCEL_REASONS = ['ร้านปิด / ไม่รับออเดอร์', 'เมนูที่สั่งหมด', 'ติดต่อลูกค้าไม่ได้', 'อื่น ๆ']
+/** How long the simulated Call Center takes to check and cancel (R4 sheet). */
+export const CALL_CENTER_MS = 2000
+
 /**
- * A simulated job (`simulated: true`, built by `createDemoJob` in src/data/orders.js) the rider rejected or
- * let run out. Nobody can see it any more, so it is dropped when the next one is offered. Jobs the rider
- * took stay, because R6 income counts them.
+ * Call Center cancels a job for the rider (R4): only an order the rider holds, before delivery, for one
+ * of CANCEL_REASONS. The whole order is cancelled (stage 6 for the customer too); the snapshot and the
+ * stages reached stay. Adds `cancelReason` and `cancelledAt`. Unchanged when it doesn't apply.
+ */
+export function cancelJob(order, reason, now = Date.now()) {
+  if (!order.riderJob || getStatus(order, now) >= 5 || !CANCEL_REASONS.includes(reason)) return order
+  return { ...order, cancelled: true, cancelReason: reason, cancelledAt: new Date(now).toISOString() }
+}
+
+/**
+ * A simulated job (`simulated: true`, built by `createDemoJob` in src/data/orders.js) the rider rejected,
+ * let run out or had cancelled. Nobody can see it any more, so it is dropped when the next one is offered.
+ * Jobs the rider delivered stay, because R6 income counts them.
  */
 export const isStaleDemoJob = (order, now = Date.now()) =>
-  order.simulated === true && !order.riderJob && !canAcceptJob(order, now)
+  order.simulated === true && (order.cancelled === true || (!order.riderJob && !canAcceptJob(order, now)))
 
 /**
  * Placing a customer order (C8) while the rider app is on duty (`onDuty`). The rider takes one job at a

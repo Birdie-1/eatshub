@@ -5,12 +5,15 @@ import {
   advanceOrder,
   buildOrder,
   canAcceptJob,
+  CANCEL_REASONS,
+  cancelJob,
   getStatus,
   isStaleDemoJob,
   makeRoomForCustomerOrder,
   JOB_OFFER_MS,
   ORDER_STEP_MS,
   rateOrder,
+  paymentStatus,
   rejectJob,
   stepTimes,
 } from './orders'
@@ -176,6 +179,43 @@ describe('makeRoomForCustomerOrder (a new customer order comes before demo jobs)
   it('changes nothing when the rider app is not on duty', () => {
     const list = [acceptJob(demo(4), t0 + 1000)]
     expect(makeRoomForCustomerOrder(list, false, at)).toEqual({ orders: list, offer: false })
+  })
+})
+
+describe('cancelJob (rider asks Call Center to cancel, R4)', () => {
+  const reason = CANCEL_REASONS[0]
+  it('cancels a job the rider holds at any stage before delivery, with the reason', () => {
+    let job = acceptJob(create(), t0 + 1000)
+    for (const step of [2, 3, 4]) {
+      const cancelled = cancelJob(job, reason, t0 + 9000)
+      expect(cancelled).toMatchObject({ cancelled: true, cancelReason: reason })
+      expect(cancelled.cancelledAt).toBe(new Date(t0 + 9000).toISOString())
+      expect(getStatus(cancelled, t0 + 9000)).toBe(6)
+      expect(paymentStatus(cancelled, 6)).toBe('ยกเลิก')
+      job = advanceJob(job, step, t0 + 2000)
+    }
+  })
+  it('keeps the snapshot and the rider stages reached so far', () => {
+    const job = advanceJob(acceptJob(create(), t0 + 1000), 2, t0 + 2000)
+    const cancelled = cancelJob(job, reason, t0 + 3000)
+    for (const key of ['items', 'totals', 'address', 'rider', 'restaurant', 'notes', 'riderJob'])
+      expect(cancelled[key]).toEqual(job[key])
+  })
+  it('ignores orders the rider does not hold, delivered or already cancelled orders, and unknown reasons', () => {
+    const offered = create()
+    const delivered = deliver()
+    const done = cancelJob(acceptJob(create(), t0 + 1000), reason, t0 + 2000)
+    const job = acceptJob(create(), t0 + 1000)
+    expect(cancelJob(offered, reason, t0)).toBe(offered)
+    expect(cancelJob(create(false), reason, t0 + 9000)).toEqual(create(false))
+    expect(cancelJob(delivered, reason, t0 + 9000)).toBe(delivered)
+    expect(cancelJob(done, CANCEL_REASONS[1], t0 + 3000)).toBe(done)
+    expect(cancelJob(job, 'เบื่อแล้ว', t0 + 2000)).toBe(job)
+  })
+  it('a cancelled simulated job is dropped with the other stale demo jobs', () => {
+    const demo = acceptJob({ ...create(), simulated: true }, t0 + 1000)
+    expect(isStaleDemoJob(demo, t0 + 2000)).toBe(false)
+    expect(isStaleDemoJob(cancelJob(demo, reason, t0 + 2000), t0 + 2000)).toBe(true)
   })
 })
 

@@ -4,6 +4,7 @@ import {
   advanceJob,
   advanceOrder,
   buildOrder,
+  cancelJob,
   getStatus,
   isStaleDemoJob,
   makeRoomForCustomerOrder,
@@ -113,6 +114,8 @@ export function OrdersProvider({ children }) {
       acceptJob: (id, { auto = false } = {}) => update(id, (order) => acceptJob(order, Date.now(), { auto })),
       /** R3: rider rejects an offered order; a customer order then follows the clock from stage 2. */
       rejectJob: (id) => update(id, (order) => rejectJob(order)),
+      /** R4: Call Center cancels the rider's job for `reason` (one of CANCEL_REASONS) before delivery. */
+      cancelJob: (id, reason) => update(id, (order) => cancelJob(order, reason)),
       /** R4: rider finished stage `from` (2 → 3 → 4 → 5); stale or repeated clicks are ignored. */
       advanceJob: (id, from) => update(id, (order) => advanceJob(order, from)),
       /** R8 / C13: `from` ('rider' | 'customer') sends a message; ignored once the chat is closed. */
