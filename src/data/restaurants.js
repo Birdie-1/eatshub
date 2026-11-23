@@ -22,7 +22,7 @@ import { menus } from './menus'
  * { id, name, types, categoryIds, image, cover, rating, reviewCount, minOrder, deliveryFee, distanceKm,
  *   promo,          // yellow promo line on cards, or null (text only — money rules use `offer`)
  *   offer,          // { percent, minFood, maxDiscount } used by calcTotals, or null
- *   recommended,    // blue "ร้านแนะนำ" badge
+ *   recommended,    // brand-yellow "ร้านแนะนำ" badge
  *   address, phone, hours: [{ days, ranges }], reviews: [{ name, rating, text, date }],
  *   featuredMenuIds, menuSections: [{ title, menuIds }] }
  *

@@ -6,7 +6,7 @@ import { useFavorites } from '@/state'
 
 /**
  * Horizontal restaurant row used on Home (C2) and Search (C3).
- * Top right shows the blue "ร้านแนะนำ" badge for recommended stores, otherwise a ♥ toggle.
+ * Top right shows the brand-yellow "ร้านแนะนำ" badge for recommended stores, otherwise a ♥ toggle.
  * `showFavorite` forces the ♥ toggle even for recommended stores (used on the favorites list).
  */
 export default function RestaurantCard({ restaurant: r, showFavorite = false }) {
@@ -50,7 +50,7 @@ export default function RestaurantCard({ restaurant: r, showFavorite = false }) 
 
       <div className="absolute top-3 right-3">
         {showBadge ? (
-          <Badge tone="info" solid className="px-2 text-[11px]">
+          <Badge tone="brand" solid className="px-2 text-[11px]">
             ร้านแนะนำ
           </Badge>
         ) : (

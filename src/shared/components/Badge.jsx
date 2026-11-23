@@ -16,7 +16,7 @@ const solidTones = {
   neutral: 'bg-muted text-white',
 }
 
-/** Status pill. `solid` uses the full color with white text (e.g. "ร้านแนะนำ" label). */
+/** Status pill. `solid` uses the full color (white text; dark text on brand yellow, e.g. "ร้านแนะนำ"). */
 export default function Badge({ tone = 'neutral', solid = false, className = '', children }) {
   return (
     <span
