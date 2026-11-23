@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams } from 'react-router'
-import { Banknote, Check, CircleCheck, Clock3, MapPin, Store } from 'lucide-react'
+import { Banknote, Check, CircleCheck, Clock3, Headset, MapPin, Store } from 'lucide-react'
 import TopBar from '@/shared/components/TopBar'
 import Button from '@/shared/components/Button'
 import Card from '@/shared/components/Card'
@@ -10,6 +10,7 @@ import { RIDER_EARNING } from '@/data/riderProfile'
 import { formatChoices, useOrders } from '@/state'
 import { getStatus, PAYMENT_LABELS } from '@/state/orders'
 import SignaturePad from '@/rider/components/SignaturePad'
+import CallCenterSheet from '@/rider/components/CallCenterSheet'
 import ChatButton from '@/shared/components/ChatButton'
 import { unreadCount } from '@/state/chat'
 import { useDemoCustomerReply } from '@/rider/useDemoCustomerReply'
@@ -63,10 +64,11 @@ function Message({ title, children }) {
 /** R4 — job in progress: stepper, pickup/drop-off, the order snapshot, one button per stage, then R4 summary. */
 export default function Job() {
   const { orderId } = useParams()
-  const { getOrder, advanceJob } = useOrders()
+  const { getOrder, advanceJob, cancelJob } = useOrders()
   const now = useOrderClock()
   const [signed, setSigned] = useState(false)
   const [confirmed, setConfirmed] = useState(false)
+  const [callCenter, setCallCenter] = useState(false)
   const order = getOrder(orderId)
   useDemoCustomerReply(order?.riderJob ? order : null, now)
 
@@ -76,7 +78,13 @@ export default function Job() {
   if (status === 6)
     return (
       <Message title="ออเดอร์นี้ถูกยกเลิก">
-        <p className="text-sm text-neutral-500">{order.id}</p>
+        <p className="break-all text-sm text-neutral-500">{order.id}</p>
+        {order.cancelReason && (
+          <p className="rounded-2xl bg-white p-4 text-sm leading-6">
+            Call Center ยกเลิกงานให้แล้ว · {order.cancelReason}
+            <span className="block text-xs text-neutral-500">ไม่นับเป็นรายได้</span>
+          </p>
+        )}
       </Message>
     )
 
@@ -160,6 +168,14 @@ export default function Job() {
         <ChatButton block to={chatPath} unread={unreadCount(order, 'rider')}>
           แชทกับลูกค้า
         </ChatButton>
+        <button
+          type="button"
+          onClick={() => setCallCenter(true)}
+          className="mx-auto flex min-h-11 items-center gap-1.5 rounded-xl px-3 text-sm text-neutral-500 underline underline-offset-4 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin"
+        >
+          <Headset className="size-4" aria-hidden="true" />
+          ติดต่อ Call Center
+        </button>
 
         {order.notes?.noteToRider && (
           <p className="rounded-2xl bg-brand-light p-3 text-sm leading-6">
@@ -227,6 +243,14 @@ export default function Job() {
           {stage.action}
         </Button>
       </div>
+      <CallCenterSheet
+        open={callCenter}
+        onClose={() => setCallCenter(false)}
+        onCancel={(reason) => {
+          cancelJob(order.id, reason)
+          setCallCenter(false)
+        }}
+      />
     </div>
   )
 }

@@ -94,6 +94,9 @@ export default function Tracking() {
             <h2 className="text-lg font-semibold leading-8" aria-live="polite">
               {step.message}
             </h2>
+            {cancelled && order.cancelReason && (
+              <p className="mt-2 text-sm text-neutral-500">Call Center ยกเลิกออเดอร์ · {order.cancelReason}</p>
+            )}
             {!complete && !cancelled && (
               <p className="mt-2 text-sm text-neutral-500">
                 คุณจะได้รับอาหารภายใน{' '}
